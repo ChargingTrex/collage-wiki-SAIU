@@ -38,8 +38,8 @@ const BRANCH_OUT  = `M 48,${MAIN_Y} C 66,${MAIN_Y} 70,${BRANCH_Y} 88,${BRANCH_Y}
 const BRANCH_BACK = `M 152,${BRANCH_Y} C 176,${BRANCH_Y} 178,${MAIN_Y} 196,${MAIN_Y}`;
 
 export function FossHero() {
-  const { isPlaying, isHovered, hoverProps } = useIntroMotion();
-  const { accentStyle } = useClubAccent('foss-club');
+  const { isPlaying, isReplaying, hoverProps } = useIntroMotion();
+  const { accent, accentStyle } = useClubAccent('foss-club');
   const state = isPlaying ? 'playing' : 'rested';
 
   const line = (delay, duration) => ({
@@ -55,17 +55,17 @@ export function FossHero() {
     <div
       {...hoverProps}
       style={accentStyle}
-      className="relative my-6 flex h-48 w-full items-center justify-between overflow-hidden rounded-2xl border border-sky-800/40 bg-slate-900 p-8 text-white shadow-xl"
+      className="relative my-6 flex h-48 w-full items-center justify-between overflow-hidden rounded-2xl border border-solid border-sky-800/40 bg-slate-900 p-8 text-white shadow-xl"
     >
-      <div className="z-10">
-        <h1 className="font-mono text-3xl font-bold" style={{ color: 'var(--club-accent)' }}>
+      <div className="z-10 max-w-[48%]">
+        <h1 className="font-mono text-3xl font-bold" style={{ color: accent.dark }}>
           FOSS Club
         </h1>
         <p className="mt-1 text-slate-300">Promoting Free and Open Source Software.</p>
       </div>
 
       <svg
-        key={isHovered ? 'hover' : 'intro'}
+        key={isReplaying ? 'hover' : 'intro'}
         viewBox="0 0 250 120"
         className="pointer-events-none absolute inset-y-0 right-0 h-full w-3/5"
         role="img"
@@ -75,35 +75,35 @@ export function FossHero() {
         <motion.path
           d={MAIN_PATH}
           fill="none"
-          stroke="var(--club-accent)"
+          stroke={accent.dark}
           strokeWidth="2"
           strokeLinecap="round"
           variants={line(0, 2.6)}
-          initial={false}
+          initial="rested"
           animate={state}
         />
         {/* feature branch out */}
         <motion.path
           d={BRANCH_OUT}
           fill="none"
-          stroke="var(--club-accent)"
+          stroke={accent.dark}
           strokeWidth="2"
           strokeLinecap="round"
           opacity="0.7"
           variants={line(0.6, 1.0)}
-          initial={false}
+          initial="rested"
           animate={state}
         />
         {/* merge back */}
         <motion.path
           d={BRANCH_BACK}
           fill="none"
-          stroke="var(--club-accent)"
+          stroke={accent.dark}
           strokeWidth="2"
           strokeLinecap="round"
           opacity="0.7"
           variants={line(1.6, 0.7)}
-          initial={false}
+          initial="rested"
           animate={state}
         />
 
@@ -115,10 +115,10 @@ export function FossHero() {
             cx={c.x}
             cy={c.lane === 'main' ? MAIN_Y : BRANCH_Y}
             r={R}
-            fill={c.lane === 'branch' ? 'var(--club-accent)' : '#0f172a'}
-            stroke="var(--club-accent)"
+            fill={c.lane === 'branch' ? accent.dark : '#0f172a'}
+            stroke={accent.dark}
             strokeWidth="2"
-            initial={false}
+            initial="rested"
             animate={state}
             variants={{
               rested: { scale: 1, opacity: 1 },
@@ -138,9 +138,9 @@ export function FossHero() {
           cy={MAIN_Y}
           r={R + 4}
           fill="none"
-          stroke="var(--club-accent)"
+          stroke={accent.dark}
           strokeWidth="1"
-          initial={false}
+          initial="rested"
           animate={state}
           variants={{
             rested: { opacity: 0.35, scale: 1 },

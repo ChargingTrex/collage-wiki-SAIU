@@ -28,12 +28,12 @@ export function LibraryHero({
   title = 'Campus Library Archive',
   subtitle = 'Four hundred events, catalogued and searchable.',
 }) {
-  const { isPlaying, isHovered, hoverProps } = useIntroMotion();
+  const { isPlaying, isReplaying, hoverProps } = useIntroMotion();
 
   return (
     <div
       {...hoverProps}
-      className="relative my-6 w-full overflow-hidden rounded-2xl border border-amber-800/20 bg-amber-50/50 px-8 py-6 shadow-inner dark:border-amber-700/20 dark:bg-slate-900/60"
+      className="relative my-6 w-full overflow-hidden rounded-2xl border border-solid border-amber-800/20 bg-amber-50/50 px-8 py-6 shadow-inner dark:border-amber-700/20 dark:bg-slate-900/60"
     >
       <div className="flex items-center justify-between gap-6">
         <div className="z-10">
@@ -50,7 +50,7 @@ export function LibraryHero({
           aria-label="Books settling onto a library shelf"
         >
           {/* Remounting on hover replays the whole fill from an empty shelf. */}
-          <g key={isHovered ? 'hover' : 'intro'}>
+          <g key={isReplaying ? 'hover' : 'intro'}>
             <Shelf
               books={SHELF_BOOKS}
               baseline={BASELINE}

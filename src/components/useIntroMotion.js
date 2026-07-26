@@ -2,20 +2,22 @@
 //
 // One rule, shared by every hero animation:
 //   Animate while the reader is arriving. Go still once they start working.
-//   Replay on demand when they hover it.
+//   Replay on demand when they click/tap it.
 //
-// "Working" = they scrolled, clicked, keyed, or touched. From that moment the
+// "Working" = they scrolled, keyed, or touch-scrolled. From that moment the
 // hero is frozen for the rest of the page visit — it does not come back when
 // they scroll back to the top, because by then they've already seen it and
-// it would just be noise.
+// it would just be noise. A plain click/tap on the hero itself is exempted
+// from "working" — it's a replay trigger, not a stop signal.
 //
-// Hover is the deliberate exception: the reader is pointing at the thing and
-// asking to see it again, so it plays for as long as the cursor is on it.
-// Hover is pointer-only — it never fires on touch, where there's no such
-// thing as "hovering without tapping."
+// Click/tap is a toggle: click once to play, click again to stop early (or
+// just let it finish on its own for heroes that don't loop). Hover-to-replay
+// was tried and dropped — an incidental hover (trackpad drift, cursor just
+// passing through) would stop/restart the hero without the reader meaning
+// to touch it at all. Click requires deliberate intent.
 //
 // Also respects prefers-reduced-motion: those users get the rested state
-// immediately, and hover does not override that.
+// immediately, and a click does not override that.
 //
 // Usage in any hero:
 //   const { isPlaying, hoverProps } = useIntroMotion();
@@ -23,13 +25,13 @@
 //     <motion.div animate={isPlaying ? 'playing' : 'rested'} variants={...} />
 //   </div>
 
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 
 export function useIntroMotion({ scrollThreshold = 24 } = {}) {
   const [isIntroPlaying, setIsIntroPlaying] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  // Reduced-motion is read once on mount and gates hover too, so a hover
-  // can't sneak animation past someone who asked for none.
+  const [isClickPlaying, setIsClickPlaying] = useState(false);
+  // Reduced-motion is read once on mount and gates click too, so it can't
+  // sneak animation past someone who asked for none.
   const allowsMotion = useRef(true);
 
   useEffect(() => {
@@ -75,27 +77,27 @@ export function useIntroMotion({ scrollThreshold = 24 } = {}) {
     };
   }, [scrollThreshold]);
 
-  // Spread onto the hero's outer element. Pointer events (not mouse events)
-  // so we can filter out touch, where "hover" doesn't exist — on a phone,
-  // a tap would otherwise both stop the intro and immediately replay it.
+  const toggleClickPlaying = useCallback(() => {
+    if (!allowsMotion.current) return;
+    setIsClickPlaying((was) => !was);
+  }, []);
+
+  // Spread onto the hero's outer element. Kept the name `hoverProps` even
+  // though it's click-driven now, so every hero's existing
+  // `<div {...hoverProps}>` keeps working unchanged.
   const hoverProps = useMemo(
     () => ({
-      onPointerEnter: (e) => {
-        if (e.pointerType === 'touch') return;
-        if (!allowsMotion.current) return;
-        setIsHovered(true);
-      },
-      onPointerLeave: (e) => {
-        if (e.pointerType === 'touch') return;
-        setIsHovered(false);
-      },
+      onClick: toggleClickPlaying,
     }),
-    []
+    [toggleClickPlaying]
   );
 
   return {
-    isPlaying: isIntroPlaying || isHovered,
-    isHovered,
+    isPlaying: isIntroPlaying || isClickPlaying,
+    // Each hero remounts its SVG on this (via `key={isReplaying ? ... }`) so
+    // Framer Motion restarts cleanly from the first keyframe instead of
+    // animating from wherever it happened to be.
+    isReplaying: isClickPlaying,
     hoverProps,
   };
 }

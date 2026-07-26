@@ -63,7 +63,7 @@ export function ArchivesHero({
   title = 'Event Archives',
   subtitle = 'Four hundred events. Every one still here.',
 }) {
-  const { isPlaying, isHovered, hoverProps } = useIntroMotion();
+  const { isPlaying, isReplaying, hoverProps } = useIntroMotion();
   const state = isPlaying ? 'playing' : 'rested';
 
   const pullFor = (i) => PULLS.find((p) => p.index === i);
@@ -71,7 +71,7 @@ export function ArchivesHero({
   return (
     <div
       {...hoverProps}
-      className="relative my-6 w-full overflow-hidden rounded-2xl border border-stone-700/25 bg-stone-100/70 px-8 py-6 shadow-inner dark:border-stone-600/20 dark:bg-stone-950/50"
+      className="relative my-6 w-full overflow-hidden rounded-2xl border border-solid border-stone-700/25 bg-stone-100/70 px-8 py-6 shadow-inner dark:border-stone-600/20 dark:bg-stone-950/50"
     >
       <div className="flex items-center justify-between gap-6">
         <div className="z-10">
@@ -82,7 +82,7 @@ export function ArchivesHero({
         </div>
 
         <svg
-          key={isHovered ? 'hover' : 'intro'}
+          key={isReplaying ? 'hover' : 'intro'}
           viewBox="0 0 190 130"
           className="h-32 w-56 shrink-0"
           role="img"
@@ -107,7 +107,7 @@ export function ArchivesHero({
             return (
               <motion.g
                 key={i}
-                initial={false}
+                initial="rested"
                 animate={state}
                 variants={{
                   rested: { y: 0 },
@@ -148,7 +148,7 @@ export function ArchivesHero({
                     transform={`rotate(-90, ${x + spine.w / 2}, ${topY + spine.h / 2})`}
                     className="fill-stone-100 font-mono"
                     style={{ fontSize: 7, letterSpacing: '0.1em' }}
-                    initial={false}
+                    initial="rested"
                     animate={state}
                     variants={{
                       rested: { opacity: 0 },

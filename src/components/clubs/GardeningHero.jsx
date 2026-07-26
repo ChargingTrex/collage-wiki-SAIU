@@ -39,7 +39,7 @@ const LEAVES = [
 ];
 
 export function GardeningHero() {
-  const { isPlaying, isHovered, hoverProps } = useIntroMotion();
+  const { isPlaying, isReplaying, hoverProps } = useIntroMotion();
   const { accentStyle } = useClubAccent('gardening-club');
   const state = isPlaying ? 'playing' : 'rested';
 
@@ -47,7 +47,7 @@ export function GardeningHero() {
     <div
       {...hoverProps}
       style={accentStyle}
-      className="relative my-6 flex h-48 w-full items-center justify-between overflow-hidden rounded-2xl border border-emerald-800/25 bg-emerald-50/50 p-8 shadow-md dark:border-emerald-700/25 dark:bg-emerald-950/25"
+      className="relative my-6 flex h-48 w-full items-center justify-between overflow-hidden rounded-2xl border border-solid border-emerald-800/25 bg-emerald-50/50 p-8 shadow-md dark:border-emerald-700/25 dark:bg-emerald-950/25"
     >
       <div className="z-10">
         <h1 className="text-3xl font-bold" style={{ color: 'var(--club-accent)' }}>
@@ -59,7 +59,7 @@ export function GardeningHero() {
       </div>
 
       <svg
-        key={isHovered ? 'hover' : 'intro'}
+        key={isReplaying ? 'hover' : 'intro'}
         viewBox="0 0 130 130"
         className="h-40 w-40 shrink-0"
         role="img"
@@ -89,7 +89,7 @@ export function GardeningHero() {
               transition: { duration: 1.6, ease: 'easeOut' },
             },
           }}
-          initial={false}
+          initial="rested"
           animate={state}
         />
 
@@ -115,7 +115,7 @@ export function GardeningHero() {
                 },
               },
             }}
-            initial={false}
+            initial="rested"
             animate={state}
           />
         ))}
@@ -135,7 +135,7 @@ export function GardeningHero() {
               transition: { delay: 1.85, duration: 0.5, ease: [0.34, 1.3, 0.64, 1] },
             },
           }}
-          initial={false}
+          initial="rested"
           animate={state}
         />
       </svg>

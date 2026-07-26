@@ -33,12 +33,28 @@ const SHELLS = [
   { rx: 52, ry: 20, rotate: 120, period: 2.9, restAt: '68%' },
 ];
 
-const ellipsePath = (rx, ry) =>
-  `M ${CX - rx},${CY} a ${rx},${ry} 0 1,0 ${rx * 2},0 a ${rx},${ry} 0 1,0 ${-rx * 2},0`;
+// Builds the arc path for an ellipse already tilted by `rotateDeg`, using the
+// arc command's own x-axis-rotation parameter — rather than drawing an
+// axis-aligned ellipse and trying to spin the traveling point afterward with
+// a separate CSS `rotate`. That combination (offset-path + an individual
+// `rotate` property) doesn't compose reliably: the point ends up traveling
+// the UNROTATED path while only its own facing angle rotates, so it visibly
+// cuts across the drawn (rotated) shell instead of tracing it. Baking the
+// tilt into the path itself means the point genuinely follows the shell.
+const ellipsePath = (rx, ry, rotateDeg) => {
+  const rad = (rotateDeg * Math.PI) / 180;
+  const cos = Math.cos(rad);
+  const sin = Math.sin(rad);
+  const x0 = CX - rx * cos;
+  const y0 = CY - rx * sin;
+  const dx = 2 * rx * cos;
+  const dy = 2 * rx * sin;
+  return `M ${x0},${y0} a ${rx},${ry} ${rotateDeg} 1,0 ${dx},${dy} a ${rx},${ry} ${rotateDeg} 1,0 ${-dx},${-dy}`;
+};
 
 export function ScienceHero() {
-  const { isPlaying, isHovered, hoverProps } = useIntroMotion();
-  const { accentStyle } = useClubAccent('science-society');
+  const { isPlaying, isReplaying, hoverProps } = useIntroMotion();
+  const { accent, accentStyle } = useClubAccent('science-society');
 
   return (
     <div
@@ -47,7 +63,7 @@ export function ScienceHero() {
       className="relative my-6 flex h-48 w-full items-center justify-between overflow-hidden rounded-2xl bg-cyan-950 p-8 text-white shadow-xl"
     >
       <div className="z-10">
-        <h1 className="text-3xl font-extrabold" style={{ color: 'var(--club-accent)' }}>
+        <h1 className="text-3xl font-extrabold" style={{ color: accent.dark }}>
           Science Society
         </h1>
         <p className="mt-1 text-cyan-200/80">
@@ -56,7 +72,7 @@ export function ScienceHero() {
       </div>
 
       <svg
-        key={isHovered ? 'hover' : 'intro'}
+        key={isReplaying ? 'hover' : 'intro'}
         viewBox="0 0 130 130"
         className="h-40 w-40 shrink-0"
         role="img"
@@ -71,7 +87,7 @@ export function ScienceHero() {
             rx={shell.rx}
             ry={shell.ry}
             fill="none"
-            stroke="var(--club-accent)"
+            stroke={accent.dark}
             strokeWidth="0.9"
             opacity="0.28"
             transform={`rotate(${shell.rotate}, ${CX}, ${CY})`}
@@ -83,17 +99,12 @@ export function ScienceHero() {
           <motion.circle
             key={`e-${i}`}
             r="4"
-            fill="var(--club-accent)"
+            fill={accent.dark}
             style={{
-              offsetPath: `path("${ellipsePath(shell.rx, shell.ry)}")`,
+              offsetPath: `path("${ellipsePath(shell.rx, shell.ry, shell.rotate)}")`,
               offsetRotate: '0deg',
-              // The shell's tilt has to be applied to the electron too, or it
-              // travels a level ellipse while the drawn one is rotated.
-              transformBox: 'view-box',
-              transformOrigin: `${CX}px ${CY}px`,
-              rotate: shell.rotate,
             }}
-            initial={false}
+            initial={{ offsetDistance: shell.restAt }}
             animate={
               isPlaying
                 ? { offsetDistance: ['0%', '100%'] }
@@ -110,9 +121,9 @@ export function ScienceHero() {
         {/* Nucleus — three overlapping circles, so it reads as particles
             bound together rather than one ball. */}
         <g>
-          <circle cx={CX - 3.5} cy={CY - 2} r="6" fill="var(--club-accent)" opacity="0.9" />
-          <circle cx={CX + 3.5} cy={CY - 1} r="6" fill="var(--club-accent)" opacity="0.75" />
-          <circle cx={CX} cy={CY + 4} r="6" fill="var(--club-accent)" />
+          <circle cx={CX - 3.5} cy={CY - 2} r="6" fill={accent.dark} opacity="0.9" />
+          <circle cx={CX + 3.5} cy={CY - 1} r="6" fill={accent.dark} opacity="0.75" />
+          <circle cx={CX} cy={CY + 4} r="6" fill={accent.dark} />
         </g>
       </svg>
     </div>

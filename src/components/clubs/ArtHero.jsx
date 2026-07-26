@@ -27,8 +27,8 @@ const STROKE_BODY =
   'C 60,56 40,58 6,64 Z';
 
 export function ArtHero() {
-  const { isPlaying, isHovered, hoverProps } = useIntroMotion();
-  const { accentStyle } = useClubAccent('art-club');
+  const { isPlaying, isReplaying, hoverProps } = useIntroMotion();
+  const { accent, accentStyle } = useClubAccent('art-club');
   const clipId = React.useId();
 
   return (
@@ -37,8 +37,11 @@ export function ArtHero() {
       style={accentStyle}
       className="relative my-6 flex h-48 w-full items-center justify-between overflow-hidden rounded-2xl bg-slate-900 p-8 text-white shadow-xl"
     >
-      <div className="z-10">
-        <h1 className="text-3xl font-extrabold" style={{ color: 'var(--club-accent)' }}>
+      <div className="z-10 self-end pb-2">
+        {/* Card is a fixed dark slate regardless of site theme, so this needs
+            the fixed "dark" accent (light fuchsia) always — see the same fix
+            on Astronomy/Film/Fashion. */}
+        <h1 className="text-3xl font-extrabold" style={{ color: accent.dark }}>
           Art Club
         </h1>
         <p className="mt-1 text-slate-300">Unleashing creativity through visual arts.</p>
@@ -53,7 +56,7 @@ export function ArtHero() {
       />
 
       <svg
-        key={isHovered ? 'hover' : 'intro'}
+        key={isReplaying ? 'hover' : 'intro'}
         viewBox="0 0 240 110"
         className="pointer-events-none absolute inset-y-0 right-0 h-full w-3/5"
         role="img"
@@ -67,7 +70,7 @@ export function ArtHero() {
               x="0"
               y="0"
               height="110"
-              initial={false}
+              initial={{ width: 240 }}
               animate={
                 isPlaying
                   ? { width: [0, 240] }
@@ -87,11 +90,11 @@ export function ArtHero() {
         <motion.path
           d={STROKE_BODY}
           clipPath={`url(#${clipId})`}
-          initial={false}
+          initial={{ fill: accent.dark }}
           animate={
             isPlaying
               ? { fill: ['#f472b6', '#a78bfa', '#38bdf8', '#f472b6'] }
-              : { fill: 'var(--club-accent)' }
+              : { fill: accent.dark }
           }
           transition={
             isPlaying
@@ -102,7 +105,7 @@ export function ArtHero() {
 
         {/* Brush tip riding the leading edge of the wipe. */}
         <motion.g
-          initial={false}
+          initial={{ x: 226, opacity: 0 }}
           animate={
             isPlaying
               ? { x: [6, 226], opacity: [1, 1, 0] }

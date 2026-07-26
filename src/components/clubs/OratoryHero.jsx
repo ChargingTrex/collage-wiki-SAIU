@@ -14,11 +14,11 @@ import { Mic } from 'lucide-react';
 import { useIntroMotion } from '../useIntroMotion';
 import { useClubAccent } from '../useClubAccent';
 
-const RINGS = [0, 0.6, 1.2]; // emission offsets, seconds
+const RINGS = [0, 0.9]; // emission offsets, seconds
 
 export function OratoryHero() {
-  const { isPlaying, isHovered, hoverProps } = useIntroMotion();
-  const { accentStyle } = useClubAccent('oratory-club');
+  const { isPlaying, isReplaying, hoverProps } = useIntroMotion();
+  const { accent, accentStyle } = useClubAccent('oratory-club');
 
   return (
     <div
@@ -27,23 +27,23 @@ export function OratoryHero() {
       className="relative my-6 flex h-48 w-full items-center justify-between overflow-hidden rounded-2xl bg-blue-950 p-8 text-white shadow-xl"
     >
       <div className="z-10">
-        <h1 className="text-3xl font-bold" style={{ color: 'var(--club-accent)' }}>
+        <h1 className="text-3xl font-bold" style={{ color: accent.dark }}>
           Oratory Club
         </h1>
         <p className="mt-1 text-blue-200/80">Mastering public speaking, debate, and rhetoric.</p>
       </div>
 
-      <div className="relative mr-6 flex h-28 w-28 items-center justify-center">
+      <div className="relative mr-6 flex h-36 w-36 items-center justify-center">
         {/* Expanding rings emitted from the mic. */}
         {RINGS.map((delay, i) => (
           <motion.span
             key={i}
-            className="absolute rounded-full border-2"
-            style={{ borderColor: 'var(--club-accent)', height: 40, width: 40 }}
-            initial={false}
+            className="absolute rounded-full border-2 border-solid"
+            style={{ borderColor: accent.dark, height: 56, width: 56 }}
+            initial={{ scale: 1, opacity: 0 }}
             animate={
               isPlaying
-                ? { scale: [0.6, 2.4], opacity: [0.7, 0] }
+                ? { scale: [0.6, 3.2], opacity: [0.7, 0] }
                 : { scale: 1, opacity: 0 }
             }
             transition={
@@ -56,10 +56,10 @@ export function OratoryHero() {
 
         {/* The mic itself — steady. It's the source, not the motion. */}
         <span
-          className="relative z-10 flex h-14 w-14 items-center justify-center rounded-full"
-          style={{ color: 'var(--club-accent)' }}
+          className="relative z-10 flex h-20 w-20 items-center justify-center rounded-full"
+          style={{ color: accent.dark }}
         >
-          <Mic className="h-12 w-12" />
+          <Mic className="h-16 w-16" />
         </span>
       </div>
     </div>

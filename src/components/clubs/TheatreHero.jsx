@@ -14,8 +14,8 @@ import { useIntroMotion } from '../useIntroMotion';
 import { useClubAccent } from '../useClubAccent';
 
 export function TheatreHero() {
-  const { isPlaying, isHovered, hoverProps } = useIntroMotion();
-  const { accentStyle } = useClubAccent('theatre-club');
+  const { isPlaying, isReplaying, hoverProps } = useIntroMotion();
+  const { accent, accentStyle } = useClubAccent('theatre-club');
   const state = isPlaying ? 'playing' : 'rested';
 
   // Curtain: closed covers the whole half; open pulls mostly off-frame.
@@ -28,14 +28,14 @@ export function TheatreHero() {
       className="relative my-6 flex h-48 w-full items-center justify-between overflow-hidden rounded-2xl bg-purple-950 p-8 text-white shadow-xl"
     >
       <div className="z-20">
-        <h1 className="font-serif text-3xl font-bold" style={{ color: 'var(--club-accent)' }}>
+        <h1 className="font-serif text-3xl font-bold" style={{ color: accent.dark }}>
           Theatre Club
         </h1>
         <p className="mt-1 text-purple-200/80">Bringing compelling stories to life on stage.</p>
       </div>
 
       <svg
-        key={isHovered ? 'hover' : 'intro'}
+        key={isReplaying ? 'hover' : 'intro'}
         viewBox="0 0 160 130"
         className="pointer-events-none absolute inset-y-0 right-0 h-full w-1/2"
         role="img"
@@ -43,9 +43,9 @@ export function TheatreHero() {
       >
         <defs>
           <radialGradient id="theatre-spot" cx="50%" cy="20%" r="75%">
-            <stop offset="0%" stopColor="var(--club-accent)" stopOpacity="0.55" />
-            <stop offset="55%" stopColor="var(--club-accent)" stopOpacity="0.12" />
-            <stop offset="100%" stopColor="var(--club-accent)" stopOpacity="0" />
+            <stop offset="0%" stopColor={accent.dark} stopOpacity="0.55" />
+            <stop offset="55%" stopColor={accent.dark} stopOpacity="0.12" />
+            <stop offset="100%" stopColor={accent.dark} stopOpacity="0" />
           </radialGradient>
         </defs>
 
@@ -53,13 +53,13 @@ export function TheatreHero() {
         <rect x="0" y="0" width="160" height="130" className="fill-black/40" />
 
         {/* Stage floor */}
-        <rect x="0" y="104" width="160" height="26" fill="var(--club-accent)" opacity="0.14" />
+        <rect x="0" y="104" width="160" height="26" fill={accent.dark} opacity="0.14" />
 
         {/* Spotlight cone — fades up only after the curtains have parted. */}
         <motion.polygon
           points="80,6 116,118 44,118"
           fill="url(#theatre-spot)"
-          initial={false}
+          initial="rested"
           animate={state}
           variants={{
             rested: { opacity: 1 },
@@ -72,8 +72,8 @@ export function TheatreHero() {
           cy="116"
           rx="26"
           ry="6"
-          fill="var(--club-accent)"
-          initial={false}
+          fill={accent.dark}
+          initial="rested"
           animate={state}
           variants={{
             rested: { opacity: 0.4 },
@@ -83,7 +83,7 @@ export function TheatreHero() {
 
         {/* Left curtain */}
         <motion.g
-          initial={false}
+          initial="rested"
           animate={state}
           variants={{
             rested: { x: `${-(1 - curtainOpen) * 50}%` },
@@ -101,7 +101,7 @@ export function TheatreHero() {
 
         {/* Right curtain */}
         <motion.g
-          initial={false}
+          initial="rested"
           animate={state}
           variants={{
             rested: { x: `${(1 - curtainOpen) * 50}%` },

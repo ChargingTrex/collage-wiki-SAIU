@@ -32,19 +32,21 @@ const FRAME_ART = [
 ];
 
 export function FilmSocietyHero() {
-  const { isPlaying, isHovered, hoverProps } = useIntroMotion();
-  const { accentStyle } = useClubAccent('film-society');
+  const { isPlaying, isReplaying, hoverProps } = useIntroMotion();
+  const { accent, accentStyle } = useClubAccent('film-society');
 
   // Intermittent pull-down: advance one frame, hold, advance again.
   // times[] creates the hold — the strip is stationary between pulls.
+  // `easeOut` on each pull (rather than `easeInOut`) makes the claw grab feel
+  // like one quick snap instead of easing hesitantly in and out of it.
   const advance = {
     y: [0, -FRAME_H, -FRAME_H, -FRAME_H * 2, -FRAME_H * 2, -FRAME_H * 3],
     transition: {
-      duration: 3.6,
+      duration: 2.6,
       times: [0, 0.12, 0.37, 0.49, 0.74, 0.86],
-      ease: 'easeInOut',
+      ease: 'easeOut',
       repeat: Infinity,
-      repeatDelay: 0.3,
+      repeatDelay: 0.15,
     },
   };
 
@@ -55,14 +57,19 @@ export function FilmSocietyHero() {
       className="relative my-6 flex h-48 w-full items-center justify-between overflow-hidden rounded-2xl bg-zinc-900 p-8 text-white shadow-xl"
     >
       <div className="z-10">
-        <h1 className="text-3xl font-bold tracking-wider" style={{ color: 'var(--club-accent)' }}>
+        {/* This card's background is a fixed near-black regardless of site
+            theme, so foreground color needs the fixed "dark" accent (light
+            salmon) always — `var(--club-accent)` flips with SITE theme and
+            in light mode resolves to a deep maroon meant for text on white,
+            which reads as low-contrast/near-invisible on this card. */}
+        <h1 className="text-3xl font-bold tracking-wider" style={{ color: accent.dark }}>
           Film Society
         </h1>
         <p className="mt-1 text-zinc-400">Appreciating, analyzing, and creating cinema.</p>
       </div>
 
       <svg
-        key={isHovered ? 'hover' : 'intro'}
+        key={isReplaying ? 'hover' : 'intro'}
         viewBox="0 0 90 130"
         className="h-44 w-28 shrink-0"
         role="img"
@@ -78,7 +85,7 @@ export function FilmSocietyHero() {
 
         <g clipPath="url(#film-gate)">
           <motion.g
-            initial={false}
+            initial={{ y: -FRAME_H }}
             animate={isPlaying ? advance : { y: -FRAME_H }}
             transition={isPlaying ? advance.transition : { duration: 0.4, ease: 'easeOut' }}
           >
@@ -137,18 +144,18 @@ export function FilmSocietyHero() {
                       y={y + (FRAME_H - 6) * art.y}
                       width={FRAME_W - 8}
                       height="1.6"
-                      fill="var(--club-accent)"
+                      fill={accent.dark}
                       opacity="0.7"
                     />
                   )}
                   {art.type === 'figure' && (
                     <>
-                      <circle cx={STRIP_X + FRAME_W / 2} cy={y + 10} r="3" fill="var(--club-accent)" opacity="0.7" />
-                      <rect x={STRIP_X + FRAME_W / 2 - 3} y={y + 14} width="6" height="9" rx="1.5" fill="var(--club-accent)" opacity="0.7" />
+                      <circle cx={STRIP_X + FRAME_W / 2} cy={y + 10} r="3" fill={accent.dark} opacity="0.7" />
+                      <rect x={STRIP_X + FRAME_W / 2 - 3} y={y + 14} width="6" height="9" rx="1.5" fill={accent.dark} opacity="0.7" />
                     </>
                   )}
                   {art.type === 'circle' && (
-                    <circle cx={STRIP_X + FRAME_W / 2} cy={y + (FRAME_H - 6) / 2} r="7" fill="none" stroke="var(--club-accent)" strokeWidth="1.6" opacity="0.7" />
+                    <circle cx={STRIP_X + FRAME_W / 2} cy={y + (FRAME_H - 6) / 2} r="7" fill="none" stroke={accent.dark} strokeWidth="1.6" opacity="0.7" />
                   )}
                 </g>
               );

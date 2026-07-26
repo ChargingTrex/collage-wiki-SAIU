@@ -49,8 +49,8 @@ const CONSTELLATION_PATH = STARS.map((s, i) =>
 const STAR_COLOR = '#FDE047';
 
 export function AstronomyHero() {
-  const { isPlaying, isHovered, hoverProps } = useIntroMotion();
-  const { accentStyle } = useClubAccent('astronomy-club');
+  const { isPlaying, isReplaying, hoverProps } = useIntroMotion();
+  const { accent, accentStyle } = useClubAccent('astronomy-club');
   const state = isPlaying ? 'playing' : 'rested';
 
   return (
@@ -60,14 +60,20 @@ export function AstronomyHero() {
       className="relative my-6 flex h-48 w-full items-center justify-between overflow-hidden rounded-2xl bg-slate-950 p-8 text-white shadow-xl"
     >
       <div className="z-10">
-        <h1 className="text-3xl font-extrabold" style={{ color: 'var(--club-accent)' }}>
+        {/* This card's background is a fixed dark navy regardless of site
+            theme, so the heading needs the fixed "dark" accent (light
+            indigo) always — `var(--club-accent)` flips with SITE theme and
+            in light mode resolves to the deep indigo meant for text on
+            white, which is nearly invisible against this permanently-dark
+            card. */}
+        <h1 className="text-3xl font-extrabold" style={{ color: accent.dark }}>
           Astronomy Club
         </h1>
         <p className="text-slate-300">Exploring the cosmos &amp; stargazing nights.</p>
       </div>
 
       <svg
-        key={isHovered ? 'hover' : 'intro'}
+        key={isReplaying ? 'hover' : 'intro'}
         viewBox="0 0 270 130"
         className="pointer-events-none absolute inset-y-0 right-0 h-full w-2/3"
         role="img"
@@ -147,15 +153,18 @@ export function AstronomyHero() {
           />
         </motion.g>
 
-        {/* --- Observer + telescope. Starts large and central, then recedes. --- */}
+        {/* --- Observer + telescope. Starts large and central, then recedes.
+              Peak scale/offset kept modest enough to stay clear of the
+              heading/subtitle column — a bigger swing used to grow left far
+              enough to overlap the text. --- */}
         <motion.g
           variants={{
             rested: { opacity: 0.5, scale: 1, x: 0, y: 0 },
             playing: {
               opacity: [1, 1, 0.5],
-              scale: [1.9, 1.9, 1],
-              x: [-46, -46, 0],
-              y: [-16, -16, 0],
+              scale: [1.35, 1.35, 1],
+              x: [-6, -6, 0],
+              y: [-6, -6, 0],
               transition: { duration: 3.2, times: [0, 0.3, 0.72], ease: 'easeInOut' },
             },
           }}

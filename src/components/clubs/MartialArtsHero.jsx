@@ -19,8 +19,8 @@ import { useIntroMotion } from '../useIntroMotion';
 import { useClubAccent } from '../useClubAccent';
 
 export function MartialArtsHero() {
-  const { isPlaying, isHovered, hoverProps } = useIntroMotion();
-  const { accentStyle } = useClubAccent('martial-arts-club');
+  const { isPlaying, isReplaying, hoverProps } = useIntroMotion();
+  const { accent, accentStyle } = useClubAccent('martial-arts-club');
   const state = isPlaying ? 'playing' : 'rested';
 
   return (
@@ -30,14 +30,14 @@ export function MartialArtsHero() {
       className="relative my-6 flex h-48 w-full items-center justify-between overflow-hidden rounded-2xl bg-red-950 p-8 text-white shadow-xl"
     >
       <div className="z-10">
-        <h1 className="text-3xl font-extrabold" style={{ color: 'var(--club-accent)' }}>
+        <h1 className="text-3xl font-extrabold" style={{ color: accent.dark }}>
           Martial Arts Club
         </h1>
         <p className="mt-1 text-red-200/80">Building discipline, fitness, and self-defense.</p>
       </div>
 
       <div className="relative mr-4 flex h-32 w-40 items-center justify-center">
-        <svg viewBox="0 0 160 130" className="h-full w-full" key={isHovered ? 'hover' : 'intro'}>
+        <svg viewBox="0 0 160 130" className="h-full w-full" key={isReplaying ? 'hover' : 'intro'}>
           {/* Two support blocks the plank rests across. */}
           <rect x="14" y="78" width="16" height="34" rx="2" className="fill-red-900" />
           <rect x="130" y="78" width="16" height="34" rx="2" className="fill-red-900" />
@@ -50,8 +50,8 @@ export function MartialArtsHero() {
             width="54"
             height="10"
             rx="2"
-            fill="var(--club-accent)"
-            initial={false}
+            fill={accent.dark}
+            initial="rested"
             animate={state}
             style={{ transformBox: 'fill-box', transformOrigin: 'left center' }}
             variants={{
@@ -70,8 +70,8 @@ export function MartialArtsHero() {
             width="54"
             height="10"
             rx="2"
-            fill="var(--club-accent)"
-            initial={false}
+            fill={accent.dark}
+            initial="rested"
             animate={state}
             style={{ transformBox: 'fill-box', transformOrigin: 'right center' }}
             variants={{
@@ -86,10 +86,10 @@ export function MartialArtsHero() {
 
           {/* Impact burst at the break point — brief spokes at contact. */}
           <motion.g
-            stroke="var(--club-accent)"
+            stroke={accent.dark}
             strokeWidth="2"
             strokeLinecap="round"
-            initial={false}
+            initial="rested"
             animate={state}
             variants={{
               rested: { opacity: 0 },
@@ -112,8 +112,8 @@ export function MartialArtsHero() {
         {/* The striking hand — descends, holds at contact, recovers slightly. */}
         <motion.div
           className="absolute"
-          style={{ color: 'var(--club-accent)', top: 0 }}
-          initial={false}
+          style={{ color: accent.dark, top: 0 }}
+          initial="rested"
           animate={state}
           variants={{
             rested: { y: 40, opacity: 0.9 },

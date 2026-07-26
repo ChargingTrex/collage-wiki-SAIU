@@ -16,29 +16,31 @@ import { useIntroMotion } from '../useIntroMotion';
 import { useClubAccent } from '../useClubAccent';
 
 // Each print: x along the trail, and a small y offset alternating up/down to
-// suggest left and right paws.
+// suggest left and right paws. Trail starts well clear of the svg's own left
+// edge (which sits close to the heading column) so the first print doesn't
+// overlap the heading text.
 const PRINTS = Array.from({ length: 6 }).map((_, i) => ({
-  x: 14 + i * 34,
-  y: 66 + (i % 2 === 0 ? -8 : 8),
+  x: 78 + i * 25,
+  y: 76 + (i % 2 === 0 ? -6 : 6),
   rot: i % 2 === 0 ? -12 : 12,
 }));
 
 // A single paw: main pad + four toes.
-function Paw() {
+function Paw({ color }) {
   return (
     <g>
-      <ellipse cx="0" cy="4" rx="6" ry="5" fill="var(--club-accent)" />
-      <circle cx="-5" cy="-4" r="2.1" fill="var(--club-accent)" />
-      <circle cx="-1.6" cy="-6.5" r="2.1" fill="var(--club-accent)" />
-      <circle cx="2.2" cy="-6.5" r="2.1" fill="var(--club-accent)" />
-      <circle cx="5.4" cy="-4" r="2.1" fill="var(--club-accent)" />
+      <ellipse cx="0" cy="4" rx="6" ry="5" fill={color} />
+      <circle cx="-5" cy="-4" r="2.1" fill={color} />
+      <circle cx="-1.6" cy="-6.5" r="2.1" fill={color} />
+      <circle cx="2.2" cy="-6.5" r="2.1" fill={color} />
+      <circle cx="5.4" cy="-4" r="2.1" fill={color} />
     </g>
   );
 }
 
 export function AnimalWelfareHero() {
-  const { isPlaying, isHovered, hoverProps } = useIntroMotion();
-  const { accentStyle } = useClubAccent('animal-welfare-society');
+  const { isPlaying, isReplaying, hoverProps } = useIntroMotion();
+  const { accent, accentStyle } = useClubAccent('animal-welfare-society');
   const state = isPlaying ? 'playing' : 'rested';
 
   return (
@@ -47,8 +49,8 @@ export function AnimalWelfareHero() {
       style={accentStyle}
       className="relative my-6 flex h-48 w-full items-center justify-between overflow-hidden rounded-2xl bg-amber-950 p-8 text-white shadow-xl"
     >
-      <div className="z-10">
-        <h1 className="text-3xl font-bold" style={{ color: 'var(--club-accent)' }}>
+      <div className="z-10 max-w-[60%]">
+        <h1 className="text-3xl font-bold" style={{ color: accent.dark }}>
           Animal Welfare Society
         </h1>
         <p className="mt-1 text-amber-200/80">
@@ -57,37 +59,44 @@ export function AnimalWelfareHero() {
       </div>
 
       <svg
-        key={isHovered ? 'hover' : 'intro'}
+        key={isReplaying ? 'hover' : 'intro'}
         viewBox="0 0 220 100"
         className="pointer-events-none absolute inset-y-0 right-0 h-full w-3/5"
         role="img"
         aria-label="A trail of paw prints ending in a heart"
       >
         {PRINTS.map((p, i) => (
-          <motion.g
-            key={i}
-            transform={`translate(${p.x}, ${p.y}) rotate(${p.rot})`}
-            initial={false}
-            animate={state}
-            variants={{
-              rested: { opacity: 0.85, scale: 1 },
-              playing: {
-                opacity: [0, 0.85],
-                scale: [0.5, 1],
-                transition: { delay: i * 0.24, duration: 0.35, ease: 'easeOut' },
-              },
-            }}
-            style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
-          >
-            <Paw />
-          </motion.g>
+          // Static position lives on a plain outer `<g>` — Framer Motion
+          // needs to own `transform` itself for the scale/opacity variants,
+          // so a translate/rotate ATTRIBUTE on the same motion element gets
+          // silently overridden (it renders `style="transform: none"` once
+          // settled, canceling the attribute entirely and leaving every
+          // print stacked at the SVG's own origin). Same bug, same fix, as
+          // Photography's corner brackets.
+          <g key={i} transform={`translate(${p.x}, ${p.y}) rotate(${p.rot})`}>
+            <motion.g
+              initial="rested"
+              animate={state}
+              variants={{
+                rested: { opacity: 0.85, scale: 1 },
+                playing: {
+                  opacity: [0, 0.85],
+                  scale: [0.5, 1],
+                  transition: { delay: i * 0.24, duration: 0.35, ease: 'easeOut' },
+                },
+              }}
+              style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+            >
+              <Paw color={accent.dark} />
+            </motion.g>
+          </g>
         ))}
 
         {/* Heart rises where the trail ends. */}
         <motion.path
           d="M 200,52 C 200,46 208,44 210,50 C 212,44 220,46 220,52 C 220,58 210,64 210,64 C 210,64 200,58 200,52 Z"
-          fill="var(--club-accent)"
-          initial={false}
+          fill={accent.dark}
+          initial="rested"
           animate={state}
           variants={{
             rested: { opacity: 1, scale: 1, y: 0 },

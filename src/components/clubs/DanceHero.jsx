@@ -33,8 +33,8 @@ const MAX_H = 64;
 const FLOOR_Y = 74;
 
 export function DanceHero() {
-  const { isPlaying, isHovered, hoverProps } = useIntroMotion();
-  const { accentStyle } = useClubAccent('dance-club');
+  const { isPlaying, isReplaying, hoverProps } = useIntroMotion();
+  const { accent, accentStyle } = useClubAccent('dance-club');
   const state = isPlaying ? 'playing' : 'rested';
 
   return (
@@ -44,14 +44,14 @@ export function DanceHero() {
       className="relative my-6 flex h-48 w-full items-center justify-between overflow-hidden rounded-2xl bg-rose-950 p-8 text-white shadow-xl"
     >
       <div className="z-10">
-        <h1 className="text-3xl font-extrabold" style={{ color: 'var(--club-accent)' }}>
+        <h1 className="text-3xl font-extrabold" style={{ color: accent.dark }}>
           Dance Club
         </h1>
         <p className="mt-1 text-rose-200/80">Expressing rhythm, grace, and movement.</p>
       </div>
 
       <svg
-        key={isHovered ? 'hover' : 'intro'}
+        key={isReplaying ? 'hover' : 'intro'}
         viewBox={`0 0 ${BARS.length * (BAR_W + BAR_GAP)} 90`}
         className="pointer-events-none absolute inset-y-0 right-0 h-full w-1/2"
         role="img"
@@ -70,8 +70,8 @@ export function DanceHero() {
               x={x}
               width={BAR_W}
               rx={BAR_W / 2}
-              fill="var(--club-accent)"
-              initial={false}
+              fill={accent.dark}
+              initial="rested"
               animate={state}
               variants={{
                 rested: { y: FLOOR_Y - baseH, height: baseH, opacity: 0.8 },
@@ -82,7 +82,10 @@ export function DanceHero() {
                   transition: {
                     duration: 0.9,
                     delay: offset,
-                    repeat: Infinity,
+                    // Two beats, then hold — an infinite pulse read as
+                    // distracting/relentless rather than musical. Stays
+                    // stopped until the reader hovers or clicks to replay.
+                    repeat: 1,
                     repeatType: 'loop',
                     ease: 'easeInOut',
                   },
@@ -92,7 +95,7 @@ export function DanceHero() {
           );
         })}
         {/* Floor line the bars stand on */}
-        <rect x="0" y={FLOOR_Y} width={BARS.length * (BAR_W + BAR_GAP)} height="2" rx="1" fill="var(--club-accent)" opacity="0.3" />
+        <rect x="0" y={FLOOR_Y} width={BARS.length * (BAR_W + BAR_GAP)} height="2" rx="1" fill={accent.dark} opacity="0.3" />
       </svg>
     </div>
   );

@@ -66,8 +66,8 @@ function step(grid) {
 }
 
 export function TuringitesHero() {
-  const { isPlaying, isHovered, hoverProps } = useIntroMotion();
-  const { accentStyle } = useClubAccent('turingites-computer-science-society');
+  const { isPlaying, isReplaying, hoverProps } = useIntroMotion();
+  const { accent, accentStyle } = useClubAccent('turingites-computer-science-society');
 
   const [grid, setGrid] = React.useState(() => makeGrid(SEED));
   const gridRef = React.useRef(grid);
@@ -75,8 +75,8 @@ export function TuringitesHero() {
 
   // Re-seed whenever a fresh run starts (initial arrival or a hover replay).
   React.useEffect(() => {
-    if (isHovered) setGrid(makeGrid(SEED));
-  }, [isHovered]);
+    if (isReplaying) setGrid(makeGrid(SEED));
+  }, [isReplaying]);
 
   // Generation stepper — only ticks while playing. Freezing on scroll leaves
   // the board mid-evolution, which is a perfectly good rested state.
@@ -97,10 +97,10 @@ export function TuringitesHero() {
     <div
       {...hoverProps}
       style={accentStyle}
-      className="relative my-6 flex h-48 w-full items-center justify-between overflow-hidden rounded-2xl border border-green-800/50 bg-black p-8 shadow-xl"
+      className="relative my-6 flex h-48 w-full items-center justify-between overflow-hidden rounded-2xl border border-solid border-green-800/50 bg-black p-8 shadow-xl"
     >
       <div className="z-10">
-        <h1 className="font-mono text-3xl font-bold" style={{ color: 'var(--club-accent)' }}>
+        <h1 className="font-mono text-3xl font-bold" style={{ color: accent.dark }}>
           Turingites
         </h1>
         <p className="mt-1 font-mono text-sm text-green-600/80">
@@ -134,7 +134,7 @@ export function TuringitesHero() {
                 width={CELL}
                 height={CELL}
                 rx="2"
-                fill="var(--club-accent)"
+                fill={accent.dark}
               />
             ) : (
               // Faint dot for dead cells — gives the "grid" texture without
@@ -145,7 +145,7 @@ export function TuringitesHero() {
                 y={r * (CELL + GAP) + CELL / 2 - 0.5}
                 width="1"
                 height="1"
-                fill="var(--club-accent)"
+                fill={accent.dark}
                 opacity="0.15"
               />
             )

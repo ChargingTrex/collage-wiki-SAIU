@@ -23,8 +23,8 @@ const POINTS = [
 const PLOT_PATH = POINTS.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p[0]},${p[1]}`).join(' ');
 
 export function EntrepreneurshipHero() {
-  const { isPlaying, isHovered, hoverProps } = useIntroMotion();
-  const { accentStyle } = useClubAccent('entrepreneurship-club');
+  const { isPlaying, isReplaying, hoverProps } = useIntroMotion();
+  const { accent, accentStyle } = useClubAccent('entrepreneurship-club');
   const state = isPlaying ? 'playing' : 'rested';
 
   return (
@@ -34,7 +34,12 @@ export function EntrepreneurshipHero() {
       className="relative my-6 flex h-48 w-full items-center justify-between overflow-hidden rounded-2xl bg-slate-900 p-8 text-white shadow-xl"
     >
       <div className="z-10">
-        <h1 className="text-3xl font-bold" style={{ color: 'var(--club-accent)' }}>
+        {/* Card is a fixed dark slate regardless of site theme, so this needs
+            the fixed "dark" accent (light emerald) always, not the theme-
+            flipping var(--club-accent) — same fix as Astronomy/Film/Fashion/
+            Art. This also directly satisfies "make the text a shade lighter"
+            since the deep emerald light-mode value was too dark here. */}
+        <h1 className="text-3xl font-bold" style={{ color: accent.dark }}>
           Entrepreneurship Club
         </h1>
         <p className="mt-1 text-slate-300">Fostering startup culture and business innovation.</p>
@@ -46,7 +51,7 @@ export function EntrepreneurshipHero() {
         <motion.div
           className="absolute left-2 top-6"
           style={{ color: 'var(--club-accent)' }}
-          initial={false}
+          initial="rested"
           animate={state}
           variants={{
             rested: { opacity: 0 },
@@ -57,18 +62,18 @@ export function EntrepreneurshipHero() {
             },
           }}
         >
-          <Lightbulb className="h-10 w-10" />
+          <Lightbulb className="h-14 w-14" />
         </motion.div>
 
-        <svg viewBox="0 0 210 100" className="h-full w-full" key={isHovered ? 'hover' : 'intro'}>
+        <svg viewBox="0 0 210 100" className="h-full w-full" key={isReplaying ? 'hover' : 'intro'}>
           {/* Currency mark, appears as the bulb fades. */}
           <motion.text
             x="24"
             y="44"
             textAnchor="middle"
             fill="var(--club-accent)"
-            style={{ fontSize: 34, fontWeight: 800 }}
-            initial={false}
+            style={{ fontSize: 48, fontWeight: 800 }}
+            initial="rested"
             animate={state}
             variants={{
               rested: { opacity: 0 },
@@ -88,7 +93,7 @@ export function EntrepreneurshipHero() {
             strokeWidth="1"
             className="text-slate-600"
             fill="none"
-            initial={false}
+            initial="rested"
             animate={state}
             variants={{
               rested: { opacity: 0.6 },
@@ -104,7 +109,7 @@ export function EntrepreneurshipHero() {
             strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
-            initial={false}
+            initial="rested"
             animate={state}
             variants={{
               rested: { pathLength: 1, opacity: 1 },
@@ -122,7 +127,7 @@ export function EntrepreneurshipHero() {
             cy={POINTS[POINTS.length - 1][1]}
             r="4"
             fill="var(--club-accent)"
-            initial={false}
+            initial="rested"
             animate={state}
             variants={{
               rested: { scale: 1, opacity: 1 },

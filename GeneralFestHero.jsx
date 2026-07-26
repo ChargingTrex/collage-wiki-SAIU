@@ -40,7 +40,7 @@ const PIECES = Array.from({ length: 22 }).map((_, i) => {
 });
 
 export function GeneralFestHero({ title = 'Annual College Fest', audioSrc }) {
-  const { isPlaying, isHovered, hoverProps } = useIntroMotion();
+  const { isPlaying, isReplaying, hoverProps } = useIntroMotion();
   const { accentStyle } = useClubAccent('art-club'); // borrows a festive multi-hue accent for the heading
 
   return (
@@ -56,7 +56,7 @@ export function GeneralFestHero({ title = 'Annual College Fest', audioSrc }) {
 
       <div className="z-10 flex flex-col items-center">
         <motion.div
-          initial={false}
+          initial={{ scale: 1, rotate: 0 }}
           animate={isPlaying ? { scale: [1, 1.25, 1], rotate: [0, -12, 8, 0] } : { scale: 1, rotate: 0 }}
           transition={isPlaying ? { duration: 0.6 } : { duration: 0.3 }}
         >
@@ -67,7 +67,7 @@ export function GeneralFestHero({ title = 'Annual College Fest', audioSrc }) {
 
       {/* Confetti — launches from center, arcs, falls, settles. */}
       <svg
-        key={isHovered ? 'hover' : 'intro'}
+        key={isReplaying ? 'hover' : 'intro'}
         viewBox="0 0 300 200"
         className="pointer-events-none absolute inset-0 h-full w-full"
         preserveAspectRatio="xMidYMid slice"
@@ -83,7 +83,7 @@ export function GeneralFestHero({ title = 'Annual College Fest', audioSrc }) {
           return (
             <motion.g
               key={p.id}
-              initial={false}
+              initial={{ x: originX + p.landX, y: originY + p.landY, opacity: 0.9, rotate: p.spin }}
               animate={
                 isPlaying
                   ? {

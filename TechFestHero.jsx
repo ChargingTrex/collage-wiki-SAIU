@@ -76,8 +76,8 @@ export function TechFestHero({
   tagline = '48 HOURS. BUILD SOMETHING REAL.',
   audioSrc,
 }) {
-  const { isPlaying, isHovered, hoverProps } = useIntroMotion();
-  const { accentStyle } = useClubAccent('turingites-computer-science-society'); // shares the CS "terminal" hue
+  const { isPlaying, isReplaying, hoverProps } = useIntroMotion();
+  const { accent, accentStyle } = useClubAccent('turingites-computer-science-society'); // shares the CS "terminal" hue
 
   const typed = useTypewriter(command, isPlaying);
   const commandDone = typed === command;
@@ -88,10 +88,10 @@ export function TechFestHero({
     <div
       {...hoverProps}
       style={accentStyle}
-      className="relative my-6 w-full overflow-hidden rounded-2xl border border-emerald-900/50 bg-slate-950 shadow-xl"
+      className="relative my-6 w-full overflow-hidden rounded-2xl border border-solid border-emerald-900/50 bg-slate-950 shadow-xl"
     >
       {/* Window chrome */}
-      <div className="flex items-center gap-2 border-b border-emerald-500/20 bg-slate-900/80 px-4 py-2.5 font-mono">
+      <div className="flex items-center gap-2 border-b border-solid border-emerald-500/20 bg-slate-900/80 px-4 py-2.5 font-mono">
         <span className="h-3 w-3 rounded-full bg-red-500/80" />
         <span className="h-3 w-3 rounded-full bg-yellow-500/80" />
         <span className="h-3 w-3 rounded-full bg-green-500/80" />
@@ -103,9 +103,9 @@ export function TechFestHero({
 
       {/* Terminal body */}
       <div
-        key={isHovered ? 'hover' : 'intro'}
+        key={isReplaying ? 'hover' : 'intro'}
         className="min-h-[9rem] px-6 py-5 font-mono"
-        style={{ color: 'var(--club-accent)' }}
+        style={{ color: accent.dark }}
       >
         {/* Command line */}
         <div className="text-sm sm:text-base">
@@ -128,13 +128,13 @@ export function TechFestHero({
         {/* Resolved title — the scramble decodes into this. */}
         <motion.div
           className="mt-5"
-          initial={false}
+          initial={{ opacity: 0 }}
           animate={{ opacity: commandDone || !isPlaying ? 1 : 0 }}
           transition={{ duration: 0.3 }}
         >
           <div
             className="text-2xl font-black tracking-[0.18em] sm:text-3xl"
-            style={{ color: 'var(--club-accent)' }}
+            style={{ color: accent.dark }}
           >
             {resolved}
           </div>

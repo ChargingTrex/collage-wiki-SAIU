@@ -283,3 +283,51 @@ Cultural borrows Theatre's, since fests don't have their own entries in
 registry. General and Cultural also use fixed festive multi-hue palettes
 (confetti colors, category colors) that unified-accent mode won't flatten —
 same situation as §10.
+
+---
+
+## 14. Dance Club audio — tried during CP3, reverted, deferred
+
+A click-to-play "Hear the beat" button (same contract as Music Club/fest
+audio — §7, §12: click-to-play, never autoplay, renders only when `audioSrc`
+is passed) was added to `DanceHero` during CP3 integration, then reverted at
+the requester's instruction the same session. No audio file existed to back
+it (`static/audio/` was empty), so the button rendered and clicked correctly
+but produced no sound — expected given no file, not a defect, but not worth
+carrying half-wired.
+
+If revisited: reuse the exact `MusicHero`/`FestSound` pattern already in the
+codebase (`audioRef` + `.play().catch(() => {})` + button that only renders
+when `audioSrc` is truthy) — the wiring is proven, only the prop, button copy,
+and an actual royalty-free/original audio file need adding back.
+
+---
+
+## 15. `EntrepreneurshipHero` — light-mode contrast fix left half-applied
+
+A Web Content Accessibility Guidelines (WCAG) 2.1 audit found that fixed-dark-card heroes (background stays dark
+regardless of site theme) were coloring text/fills with `var(--club-accent)`,
+which flips to the *light* accent hex in light site mode — designed for text
+on white, not for a permanently-dark card. In light mode this dropped heading
+contrast as low as 1.77:1–2.98:1 against a 3:1 (large text) / 4.5:1 (body)
+bar. Dark mode was already fine everywhere (`accent.dark` is the
+dark-optimized value and matches the card's fixed background).
+
+Fix is `accent.dark` instead of `var(--club-accent)` (`accent` already comes
+off `useClubAccent()`, no new import). Astronomy, FilmSociety, Fashion, Art,
+and 10 other heroes got the full migration. `EntrepreneurshipHero.jsx` got the
+`<h1>` (line 42) but missed four more spots still on `var(--club-accent)`:
+
+- line 53 — `Lightbulb` icon `color`
+- line 74 — `<motion.text>` "$" mark `fill` (literal SVG text, not just
+  decorative — this one is a real contrast failure at ~3.26:1)
+- line 108 — growth-line `<motion.path>` `stroke`
+- line 129 — peak-point `<motion.circle>` `fill`
+
+All four should become `accent.dark` to match the rest of the file.
+
+**Not a bug:** `GardeningHero` and `LiteraryHero` still use
+`var(--club-accent)` throughout and should stay that way — their card
+background is theme-adaptive (`bg-emerald-50/50` ↔ `dark:bg-emerald-950/25`),
+not fixed-dark, so the accent swap is correct there. Confirmed contrast
+4.9–6.9:1 (light) / 12+:1 (dark).

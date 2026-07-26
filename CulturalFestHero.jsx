@@ -30,7 +30,7 @@ const CYCLE_MS = 260;      // per-icon flash during the intro
 const CYCLES = 2;          // how many full passes before settling
 
 export function CulturalFestHero({ title = 'VIBRANCE 2026', audioSrc }) {
-  const { isPlaying, isHovered, hoverProps } = useIntroMotion();
+  const { isPlaying, isReplaying, hoverProps } = useIntroMotion();
   const { accentStyle } = useClubAccent('theatre-club'); // shares a rich cultural-purple heading accent
 
   const [phase, setPhase] = React.useState(isPlaying ? 'cycling' : 'settled');
@@ -52,13 +52,13 @@ export function CulturalFestHero({ title = 'VIBRANCE 2026', audioSrc }) {
       }
     }, CYCLE_MS);
     return () => clearInterval(id);
-  }, [isPlaying, isHovered]);
+  }, [isPlaying, isReplaying]);
 
   return (
     <div
       {...hoverProps}
       style={accentStyle}
-      className="relative my-6 flex h-52 w-full items-center justify-between overflow-hidden rounded-2xl border border-fuchsia-800/50 bg-fuchsia-950 px-10 shadow-xl"
+      className="relative my-6 flex h-52 w-full items-center justify-between overflow-hidden rounded-2xl border border-solid border-fuchsia-800/50 bg-fuchsia-950 px-10 shadow-xl"
     >
       {/* Ambient blurred blobs */}
       <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-pink-500/20 blur-3xl" />
@@ -86,7 +86,7 @@ export function CulturalFestHero({ title = 'VIBRANCE 2026', audioSrc }) {
 
       {/* Icon stage: single flashing icon during cycling, composed cluster once settled. */}
       <div
-        key={isHovered ? 'hover' : 'intro'}
+        key={isReplaying ? 'hover' : 'intro'}
         className="relative flex h-32 w-32 shrink-0 items-center justify-center"
       >
         {phase === 'cycling' ? (
