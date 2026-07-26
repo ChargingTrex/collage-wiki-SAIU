@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>College Wiki · Scholar Design System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Spectral:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- ============================================================
+    DESIGN TOKENS – Light & Dark Mode
+    "Scholar" — a second, independent system from the same college-wiki
+    brief. Where Marginalia borrowed from index cards and chalkboards,
+    Scholar borrows from university seals, honors gold, and library
+    stone: a more formal, institutional register.
+    ============================================================ -->
+    <style>
+        :root {
+            /* Primary — brand blue, from the reference palette */
+            --ds-primary-50: #eef4ff;
+            --ds-primary-100: #d9e6ff;
+            --ds-primary-200: #bcd1ff;
+            --ds-primary-300: #8fb2ff;
+            --ds-primary-400: #5c88ff;
+            --ds-primary-500: #3b6af5;
+            --ds-primary-600: #2549d4;
+            --ds-primary-700: #1d38ab;
+            --ds-primary-800: #1d3087;
+            --ds-primary-900: #1d2d69;
+            --ds-primary-950: #111a3f;
+
+            /* Secondary — warm orange, from the reference palette */
+            --ds-secondary-50: #fff8ed;
+            --ds-secondary-100: #ffefd4;
+            --ds-secondary-200: #ffdca8;
+            --ds-secondary-300: #ffc070;
+            --ds-secondary-400: #ff9d38;
+            --ds-secondary-500: #f77f0e;
+            --ds-secondary-600: #db6204;
+            --ds-secondary-700: #b54607;
+            --ds-secondary-800: #93360d;
+            --ds-secondary-900: #782d0e;
+            --ds-secondary-950: #401402;
+
+            /* Accent — teal, from the reference palette */
+            --ds-accent-50: #edfcfd;
+            --ds-accent-100: #d0f5f9;
+            --ds-accent-200: #a7ecf3;
+            --ds-accent-300: #6cdbe9;
+            --ds-accent-400: #34c1d5;
+            --ds-accent-500: #1aa4bb;
+            --ds-accent-600: #18849e;
+            --ds-accent-700: #1b6a80;
+            --ds-accent-800: #1e5769;
+            --ds-accent-900: #1d4959;
+            --ds-accent-950: #0d2e3b;
+
+            /* Neutrals — from the reference palette */
+            --ds-neutral-0: #ffffff;
+            --ds-neutral-50: #f8f9fc;
+            --ds-neutral-100: #f0f2f7;
+            --ds-neutral-200: #e3e6ef;
+            --ds-neutral-300: #c9cedc;
+            --ds-neutral-400: #a8b0c5;
+            --ds-neutral-500: #848da8;
+            --ds-neutral-600: #646d87;
+            --ds-neutral-700: #4d546b;
+            --ds-neutral-800: #353b4d;
+            --ds-neutral-900: #232836;
+            --ds-neutral-950: #15181f;
+
+            /* Semantic — from the reference palette */
+            --ds-success: #16a34a;
+            --ds-success-bg: #dcfce7;
+            --ds-warning: #eab308;
+            --ds-warning-bg: #fef9c3;
+            --ds-error: #dc2626;
+            --ds-error-bg: #fee2e2;
+            --ds-info: #2563eb;
+            --ds-info-bg: #dbeafe;
+
+            /* Surface (Light) */
+            --ds-bg: var(--ds-neutral-0);
+            --ds-bg-secondary: var(--ds-neutral-50);
+            --ds-bg-tertiary: var(--ds-neutral-100);
+            --ds-surface: var(--ds-neutral-0);
+            --ds-surface-2: var(--ds-neutral-50);
+
+            /* Text (Light) */
+            --ds-text: var(--ds-neutral-900);
+            --ds-text-secondary: var(--ds-neutral-700);
+            --ds-text-tertiary: var(--ds-neutral-500);
+
+            /* Borders (Light) */
+            --ds-border: var(--ds-neutral-200);
+            --ds-border-strong: var(--ds-neutral-300);
+
+            /* Shadows (Light) */
+            --ds-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+            --ds-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+            --ds-shadow-lg: 0 8px 32px rgba(26, 32, 80, 0.12), 0 4px 8px rgba(26, 32, 80, 0.05);
+
+            /* ---- Typography: four roles, four typefaces ----
+               display : hero / cover-page titles only
+               heading : h1–h6 inside content
+               body    : running text
+               mono    : code, tags, metadata */
+            --ds-font-display: 'Playfair Display', Georgia, serif;
+            --ds-font-heading: 'Spectral', Georgia, serif;
+            --ds-font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --ds-font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+
+            --ds-font-size-xs: 0.75rem;
+            --ds-font-size-sm: 0.875rem;
+            --ds-font-size-base: 1rem;
+            --ds-font-size-lg: 1.125rem;
+            --ds-font-size-xl: 1.25rem;
+            --ds-font-size-2xl: 1.5rem;
+            --ds-font-size-3xl: 1.875rem;
+            --ds-font-size-4xl: 2.25rem;
+            --ds-font-size-5xl: 3rem;
+
+            --ds-font-weight-regular: 400;
+            --ds-font-weight-medium: 500;
+            --ds-font-weight-semibold: 600;
+            --ds-font-weight-bold: 700;
+
+            --ds-line-height-normal: 1.55;
+            --ds-line-height-relaxed: 1.75;
+
+            /* Spacing */
+            --ds-space-2: 0.5rem;
+            --ds-space-4: 1rem;
+            --ds-space-6: 1.5rem;
+            --ds-space-8: 2rem;
+            --ds-space-12: 3rem;
+
+            /* Radius — sharper than a typical SaaS kit; reads more "letterhead" than "app" */
+            --ds-radius-sm: 0.2rem;
+            --ds-radius-md: 0.35rem;
+            --ds-radius-lg: 0.5rem;
+            --ds-radius-full: 9999px;
+
+            --ds-transition-fast: 150ms ease;
+            --ds-transition-base: 250ms ease;
+        }
+
+        /* -------- DARK MODE OVERRIDES -------- */
+        [data-theme='dark'] {
+            --ds-neutral-0: #15181f;
+            --ds-neutral-50: #1a1e2a;
+            --ds-neutral-100: #232836;
+            --ds-neutral-200: #353b4d;
+            --ds-neutral-300: #4d546b;
+            --ds-neutral-400: #848da8;
+            --ds-neutral-500: #a8b0c5;
+            --ds-neutral-600: #c9cedc;
+            --ds-neutral-700: #e3e6ef;
+            --ds-neutral-800: #f0f2f7;
+            --ds-neutral-900: #f8f9fc;
+            --ds-neutral-950: #ffffff;
+
+            --ds-bg: var(--ds-neutral-0);
+            --ds-bg-secondary: var(--ds-neutral-50);
+            --ds-bg-tertiary: var(--ds-neutral-100);
+            --ds-surface: var(--ds-neutral-50);
+            --ds-surface-2: var(--ds-neutral-100);
+
+            --ds-text: var(--ds-neutral-900);
+            --ds-text-secondary: var(--ds-neutral-700);
+            --ds-text-tertiary: var(--ds-neutral-500);
+
+            --ds-border: var(--ds-neutral-200);
+            --ds-border-strong: var(--ds-neutral-300);
+
+            --ds-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+            --ds-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+            --ds-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+
+            --ds-success-bg: #064e3b;
+            --ds-warning-bg: #713f12;
+            --ds-error-bg: #7f1d1d;
+            --ds-info-bg: #1e3a5f;
+
+            /* Brighten brand colors slightly for dark backgrounds */
+            --ds-primary-500: #5c88ff;
+            --ds-secondary-500: #ff9d38;
+            --ds-accent-500: #34c1d5;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--ds-font-body);
+            background: var(--ds-bg);
+            color: var(--ds-text);
+            line-height: var(--ds-line-height-normal);
+            transition: background var(--ds-transition-base), color var(--ds-transition-base);
+            padding: 2rem;
+        }
+
+        h1, h2, h3, h4, h5, h6 { font-family: var(--ds-font-heading); font-weight: var(--ds-font-weight-semibold); }
+
+        .theme-toggle {
+            position: fixed; top: 1.5rem; right: 1.5rem;
+            background: var(--ds-surface); border: 1px solid var(--ds-border);
+            border-radius: var(--ds-radius-full); padding: 0.6rem 1.2rem;
+            font-family: var(--ds-font-body); font-size: var(--ds-font-size-sm); font-weight: var(--ds-font-weight-medium);
+            color: var(--ds-text-secondary); cursor: pointer; display: flex; align-items: center; gap: 0.5rem;
+            box-shadow: var(--ds-shadow-sm); transition: all var(--ds-transition-fast); z-index: 1000;
+        }
+        .theme-toggle:hover { border-color: var(--ds-primary-500); color: var(--ds-text); box-shadow: var(--ds-shadow-md); }
+
+        .ds-container { max-width: 1200px; margin: 0 auto; }
+
+        .ds-header { margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 1px solid var(--ds-border); }
+        .ds-header h1 {
+            font-family: var(--ds-font-display);
+            font-size: var(--ds-font-size-5xl); font-weight: 700; letter-spacing: -0.01em;
+            color: var(--ds-text);
+        }
+        .ds-header p { font-size: var(--ds-font-size-lg); color: var(--ds-text-secondary); margin-top: 0.5rem; font-family: var(--ds-font-body); }
+        .ds-badge {
+            display: inline-block; background: var(--ds-primary-100); color: var(--ds-primary-700);
+            padding: 0.2rem 0.75rem; border-radius: var(--ds-radius-full);
+            font-family: var(--ds-font-mono); font-size: var(--ds-font-size-xs); font-weight: var(--ds-font-weight-medium);
+            margin-top: 0.75rem;
+        }
+        [data-theme='dark'] .ds-badge { background: var(--ds-primary-900); color: var(--ds-primary-200); }
+
+        .ds-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; margin: 2rem 0; }
+
+        .swatch-group { margin: 2rem 0 1rem; }
+        .swatch-group h3 { font-family: var(--ds-font-body); font-size: var(--ds-font-size-lg); font-weight: var(--ds-font-weight-semibold); margin-bottom: 0.75rem; }
+        .swatch-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .swatch { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; min-width: 60px; }
+        .swatch .color-box { width: 60px; height: 60px; border-radius: var(--ds-radius-md); border: 1px solid var(--ds-border); transition: transform var(--ds-transition-fast); }
+        .swatch .color-box:hover { transform: scale(1.05); }
+        .swatch .label { font-size: var(--ds-font-size-xs); color: var(--ds-text-tertiary); font-family: var(--ds-font-mono); text-align: center; }
+
+        /* -------- Typography: four roles, clearly labeled -------- */
+        .role-demo { background: var(--ds-surface); border: 1px solid var(--ds-border); border-radius: var(--ds-radius-lg); padding: 2rem; margin: 2rem 0; }
+        .role-row { display: flex; align-items: baseline; gap: 20px; padding: 14px 0; border-bottom: 1px solid var(--ds-border); }
+        .role-row:last-child { border-bottom: none; }
+        .role-tag { width: 130px; flex-shrink: 0; }
+        .role-tag .name { font-family: var(--ds-font-mono); font-size: var(--ds-font-size-xs); text-transform: uppercase; letter-spacing: 0.06em; color: var(--ds-text-tertiary); display: block; }
+        .role-tag .font { font-family: var(--ds-font-mono); font-size: var(--ds-font-size-xs); color: var(--ds-text-secondary); }
+        .role-sample.display { font-family: var(--ds-font-display); font-size: 2rem; font-weight: 700; }
+        .role-sample.heading { font-family: var(--ds-font-heading); font-size: 1.5rem; font-weight: 600; }
+        .role-sample.body { font-family: var(--ds-font-body); font-size: 1rem; }
+        .role-sample.mono { font-family: var(--ds-font-mono); font-size: 0.95rem; }
+
+        .component-demo { display: flex; flex-wrap: wrap; gap: 1.25rem; margin: 2rem 0; padding: 2rem; background: var(--ds-surface); border: 1px solid var(--ds-border); border-radius: var(--ds-radius-lg); align-items: center; }
+
+        .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.4rem; border-radius: var(--ds-radius-md); font-family: var(--ds-font-body); font-size: var(--ds-font-size-sm); font-weight: var(--ds-font-weight-medium); border: 1px solid transparent; cursor: pointer; transition: all var(--ds-transition-fast); background: var(--ds-surface); color: var(--ds-text); border-color: var(--ds-border); }
+        .btn:hover { box-shadow: var(--ds-shadow-sm); border-color: var(--ds-border-strong); }
+        .btn-primary { background: var(--ds-primary-500); color: #fff; border-color: var(--ds-primary-500); }
+        .btn-primary:hover { background: var(--ds-primary-600); border-color: var(--ds-primary-600); }
+        .btn-secondary { background: var(--ds-secondary-500); color: #fff; border-color: var(--ds-secondary-500); }
+        .btn-secondary:hover { background: var(--ds-secondary-600); border-color: var(--ds-secondary-600); }
+        .btn-outline { background: transparent; border-color: var(--ds-border-strong); }
+        .btn-outline:hover { background: var(--ds-bg-tertiary); }
+
+        .tag { display: inline-block; padding: 0.2rem 0.7rem; border-radius: var(--ds-radius-full); font-family: var(--ds-font-mono); font-size: var(--ds-font-size-xs); font-weight: var(--ds-font-weight-medium); background: var(--ds-bg-tertiary); color: var(--ds-text-secondary); border: 1px solid var(--ds-border); }
+        .tag-primary { background: var(--ds-primary-100); color: var(--ds-primary-700); border-color: var(--ds-primary-200); }
+        [data-theme='dark'] .tag-primary { background: var(--ds-primary-900); color: var(--ds-primary-200); border-color: var(--ds-primary-700); }
+        .tag-accent { background: var(--ds-accent-100); color: var(--ds-accent-700); border-color: var(--ds-accent-200); }
+        [data-theme='dark'] .tag-accent { background: var(--ds-accent-900); color: var(--ds-accent-200); border-color: var(--ds-accent-700); }
+        .tag-success { background: var(--ds-success-bg); color: var(--ds-success); border-color: var(--ds-success); }
+        .tag-warning { background: var(--ds-warning-bg); color: var(--ds-warning); border-color: var(--ds-warning); }
+        .tag-error { background: var(--ds-error-bg); color: var(--ds-error); border-color: var(--ds-error); }
+
+        .input-group { display: flex; flex-direction: column; gap: 0.25rem; }
+        .input-group label { font-family: var(--ds-font-body); font-size: var(--ds-font-size-sm); font-weight: var(--ds-font-weight-medium); color: var(--ds-text-secondary); }
+        .input-group input, .input-group select {
+            padding: 0.6rem 0.9rem; border-radius: var(--ds-radius-md); border: 1px solid var(--ds-border);
+            background: var(--ds-bg); color: var(--ds-text); font-family: var(--ds-font-body); font-size: var(--ds-font-size-sm);
+            outline: none; min-width: 220px; transition: border-color var(--ds-transition-fast), box-shadow var(--ds-transition-fast);
+        }
+        .input-group input:focus, .input-group select:focus { border-color: var(--ds-primary-500); box-shadow: 0 0 0 3px rgba(59, 106, 245, 0.15); }
+
+        .demo-card { background: var(--ds-surface); border: 1px solid var(--ds-border); border-radius: var(--ds-radius-lg); padding: 1.5rem; box-shadow: var(--ds-shadow-sm); }
+        .demo-card .card-title { font-family: var(--ds-font-heading); font-size: var(--ds-font-size-lg); font-weight: 600; margin-bottom: 0.25rem; }
+        .demo-card .card-sub { font-family: var(--ds-font-mono); font-size: var(--ds-font-size-xs); color: var(--ds-text-tertiary); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .demo-card .card-body { font-family: var(--ds-font-body); font-size: var(--ds-font-size-sm); color: var(--ds-text-secondary); line-height: var(--ds-line-height-relaxed); }
+        .demo-card .card-actions { margin-top: 1rem; display: flex; gap: 0.5rem; }
+
+        .divider { border: none; border-top: 1px solid var(--ds-border); margin: 2.5rem 0; }
+
+        footer { text-align: center; padding: 2rem 0; color: var(--ds-text-tertiary); font-size: var(--ds-font-size-sm); border-top: 1px solid var(--ds-border); font-family: var(--ds-font-body); }
+
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .component-demo { flex-direction: column; align-items: stretch; }
+            .ds-header h1 { font-size: var(--ds-font-size-4xl); }
+            .role-row { flex-direction: column; gap: 4px; }
+            .role-tag { width: auto; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <span class="icon" id="themeIcon">🌙</span>
+        <span id="themeLabel">Dark</span>
+    </button>
+
+    <div class="ds-container">
+
+        <header class="ds-header">
+            <h1>Scholar — College Wiki Design System</h1>
+            <p>An institutional, letterhead-formal system, now in the brand blue / orange / teal palette.</p>
+            <span class="ds-badge">v1.1 · Ready for Docusaurus + GitHub Pages</span>
+        </header>
+
+        <!-- ============= COLOR PALETTE ============= -->
+        <section>
+            <h2 style="font-size:var(--ds-font-size-3xl);margin-bottom:0.25rem;">Color Palette</h2>
+            <p style="color:var(--ds-text-secondary);margin-bottom:1.5rem;font-family:var(--ds-font-body);">Every swatch adapts to light / dark mode automatically.</p>
+
+            <div class="swatch-group">
+                <h3>Primary · <span style="font-weight:400;color:var(--ds-text-tertiary);font-size:var(--ds-font-size-sm);">Brand blue</span></h3>
+                <div class="swatch-grid" id="primarySwatches"></div>
+            </div>
+            <div class="swatch-group">
+                <h3>Secondary · <span style="font-weight:400;color:var(--ds-text-tertiary);font-size:var(--ds-font-size-sm);">Warm orange</span></h3>
+                <div class="swatch-grid" id="secondarySwatches"></div>
+            </div>
+            <div class="swatch-group">
+                <h3>Accent · <span style="font-weight:400;color:var(--ds-text-tertiary);font-size:var(--ds-font-size-sm);">Teal — highlights &amp; links</span></h3>
+                <div class="swatch-grid" id="accentSwatches"></div>
+            </div>
+            <div class="swatch-group">
+                <h3>Neutrals</h3>
+                <div class="swatch-grid" id="neutralSwatches"></div>
+            </div>
+            <div class="swatch-group">
+                <h3>Semantic</h3>
+                <div class="swatch-grid">                    <div class="swatch"><div class="color-box" style="background:var(--ds-success);"></div><span class="label">Success</span></div>
+                    <div class="swatch"><div class="color-box" style="background:var(--ds-warning);"></div><span class="label">Warning</span></div>
+                    <div class="swatch"><div class="color-box" style="background:var(--ds-error);"></div><span class="label">Error</span></div>
+                    <div class="swatch"><div class="color-box" style="background:var(--ds-info);"></div><span class="label">Info</span></div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="divider" />
+
+        <!-- ============= TYPOGRAPHY ============= -->
+        <section>
+            <h2 style="font-size:var(--ds-font-size-3xl);margin-bottom:0.25rem;">Typography — four roles</h2>
+            <p style="color:var(--ds-text-secondary);margin-bottom:1rem;font-family:var(--ds-font-body);">Each face has exactly one job. None of them substitute for another.</p>
+
+            <div class="role-demo">
+                <div class="role-row">
+                    <div class="role-tag"><span class="name">Display</span><span class="font">Playfair Display</span></div>
+                    <div class="role-sample display">The College Wiki</div>
+                </div>
+                <div class="role-row">
+                    <div class="role-tag"><span class="name">Heading</span><span class="font">Spectral</span></div>
+                    <div class="role-sample heading">Data Structures — Lecture 4</div>
+                </div>
+                <div class="role-row">
+                    <div class="role-tag"><span class="name">Body</span><span class="font">Inter</span></div>
+                    <div class="role-sample body">Running text stays neutral and highly legible across long reading sessions.</div>
+                </div>
+                <div class="role-row">
+                    <div class="role-tag"><span class="name">Mono</span><span class="font">JetBrains Mono</span></div>
+                    <div class="role-sample mono">CS301 · updated 2026-07-24</div>
+                </div>
+            </div>
+            <div style="margin-top:0.75rem;">
+                <span class="tag tag-primary">Tag</span>
+                <span class="tag tag-accent">Accent</span>
+                <span class="tag tag-success">Success</span>
+                <span class="tag tag-warning">Warning</span>
+                <span class="tag tag-error">Error</span>
+            </div>
+        </section>
+
+        <hr class="divider" />
+
+        <!-- ============= COMPONENTS ============= -->
+        <section>
+            <h2 style="font-size:var(--ds-font-size-3xl);margin-bottom:0.25rem;">Components</h2>
+            <p style="color:var(--ds-text-secondary);margin-bottom:1rem;font-family:var(--ds-font-body);">Ready-to-use building blocks for the wiki.</p>
+
+            <h3 style="font-family:var(--ds-font-body);font-size:var(--ds-font-size-lg);margin:1.5rem 0 0.5rem;">Buttons</h3>
+            <div class="component-demo">
+                <button class="btn btn-primary">Primary</button>
+                <button class="btn btn-secondary">Secondary</button>
+                <button class="btn btn-outline">Outline</button>
+                <button class="btn">Default</button>
+            </div>
+
+            <h3 style="font-family:var(--ds-font-body);font-size:var(--ds-font-size-lg);margin:1.5rem 0 0.5rem;">Cards</h3>
+            <div class="ds-grid">
+                <div class="demo-card">
+                    <div class="card-title">Wiki Page</div>
+                    <div class="card-sub">Module 3 · Trees &amp; Graphs</div>
+                    <div class="card-body">Card surfaces, borders, and shadows all pull from the same token set.</div>
+                    <div class="card-actions"><button class="btn btn-primary" style="padding:0.4rem 1rem;font-size:var(--ds-font-size-xs);">Read</button><button class="btn btn-outline" style="padding:0.4rem 1rem;font-size:var(--ds-font-size-xs);">Edit</button></div>
+                </div>
+                <div class="demo-card">
+                    <div class="card-title">Past Paper</div>
+                    <div class="card-sub">CS301 · Spring 2026</div>
+                    <div class="card-body">Archived and tagged by term, with a TA-reviewed badge where applicable.</div>
+                    <div class="card-actions"><button class="btn btn-secondary" style="padding:0.4rem 1rem;font-size:var(--ds-font-size-xs);">View</button></div>
+                </div>
+            </div>
+
+            <h3 style="font-family:var(--ds-font-body);font-size:var(--ds-font-size-lg);margin:1.5rem 0 0.5rem;">Form elements</h3>
+            <div class="component-demo" style="flex-direction:column;align-items:stretch;gap:1.25rem;">
+                <div style="display:flex;gap:2rem;flex-wrap:wrap;">
+                    <div class="input-group"><label for="demoInput">Email</label><input type="email" id="demoInput" placeholder="you@college.edu" /></div>
+                    <div class="input-group"><label for="demoSelect">Role</label><select id="demoSelect"><option>Student</option><option>Faculty</option><option>Staff</option></select></div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="divider" />
+
+        <footer>
+            <p>Scholar — College Wiki Design System · Built for <strong style="color:var(--ds-text-secondary);">Docusaurus</strong> + <strong style="color:var(--ds-text-secondary);">GitHub Pages</strong></p>
+        </footer>
+
+    </div>
+
+    <script>
+        (function() {
+            const scales = {
+                primarySwatches: 'primary',
+                secondarySwatches: 'secondary',
+                accentSwatches: 'accent',
+                neutralSwatches: 'neutral'
+            };
+            const steps = ['50','100','200','300','400','500','600','700','800','900','950'];
+            Object.entries(scales).forEach(([id, name]) => {
+                const el = document.getElementById(id);
+                el.innerHTML = steps.map(s =>
+                    `<div class="swatch"><div class="color-box" style="background:var(--ds-${name}-${s});"></div><span class="label">${s}</span></div>`
+                ).join('');
+            });
+
+            const toggleBtn = document.getElementById('themeToggle');
+            const icon = document.getElementById('themeIcon');
+            const label = document.getElementById('themeLabel');
+            const html = document.documentElement;
+
+            function setTheme(theme) {
+                if (theme === 'dark') { html.setAttribute('data-theme', 'dark'); icon.textContent = '☀️'; label.textContent = 'Light'; }
+                else { html.removeAttribute('data-theme'); icon.textContent = '🌙'; label.textContent = 'Dark'; }
+            }
+            // In-memory only — no persistence, since this file may run inside a
+            // sandboxed preview where storage APIs aren't available.
+            let current = 'light';
+            setTheme(current);
+            toggleBtn.addEventListener('click', function() {
+                current = current === 'dark' ? 'light' : 'dark';
+                setTheme(current);
+            });
+        })();
+    </script>
+
+</body>
+</html>

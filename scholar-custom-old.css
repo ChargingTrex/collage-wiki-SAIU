@@ -1,0 +1,122 @@
+/**
+ * "Scholar" — an alternate design system for the college wiki.
+ * OLD PALETTE — Indigo Seal / Brass Gold / Emerald Ivy.
+ * Built on Docusaurus's Infima framework. Drop this in as
+ * src/css/custom.css INSTEAD OF the Marginalia version or the
+ * newer blue/orange/teal Scholar version — pick one.
+ */
+
+:root {
+  /* Primary — Indigo Seal */
+  --ifm-color-primary: #3E4CBD;
+  --ifm-color-primary-dark: #333fa3;
+  --ifm-color-primary-darker: #2F3A9C;
+  --ifm-color-primary-darkest: #262F7D;
+  --ifm-color-primary-light: #5765c9;
+  --ifm-color-primary-lighter: #6270CE;
+  --ifm-color-primary-lightest: #8e99de;
+
+  --ifm-background-color: #FFFFFF;
+  --ifm-background-surface-color: #F7F8FA;
+  --card-surface: #F7F8FA;
+  --card-border: #DEE2E9;
+
+  --ifm-font-color-base: #1C2130;
+  --ifm-color-content-secondary: #414A60;
+
+  /* Secondary accent — Brass Gold, for "honors"/featured callouts */
+  --accent-gold: #C1841C;
+  --accent-gold-bg: #FDF8EC;
+  /* Tertiary accent — Emerald Ivy, for tags/verified */
+  --accent-emerald: #218A5E;
+  --accent-emerald-bg: #EAF7EF;
+
+  /* Typography — four roles, four typefaces */
+  --font-display: 'Playfair Display', Georgia, serif;   /* homepage hero only */
+  --font-heading: 'Spectral', Georgia, serif;            /* h1–h6 in docs */
+  --font-body: 'Inter', -apple-system, sans-serif;       /* running text */
+  --font-mono: 'JetBrains Mono', 'SFMono-Regular', monospace; /* tags, code, metadata */
+
+  --ifm-font-family-base: var(--font-body);
+  --heading-font-family: var(--font-heading);
+  --ifm-font-family-monospace: var(--font-mono);
+  --ifm-heading-font-weight: 600;
+  --ifm-line-height-base: 1.6;
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #7885D8;
+  --ifm-color-primary-dark: #5f6ecf;
+  --ifm-color-primary-darker: #5262cb;
+  --ifm-color-primary-darkest: #3d4dbf;
+  --ifm-color-primary-light: #919cdf;
+  --ifm-color-primary-lighter: #9ea7e3;
+  --ifm-color-primary-lightest: #c4caf0;
+
+  --ifm-background-color: #10131C;
+  --ifm-background-surface-color: #161A26;
+  --card-surface: #1C2130;
+  --card-border: #2C3345;
+
+  --ifm-font-color-base: #F7F8FA;
+  --ifm-color-content-secondary: #C3C9D4;
+
+  --accent-gold: #EABE55;
+  --accent-gold-bg: #3A2A0E;
+  --accent-emerald: #3AA877;
+  --accent-emerald-bg: #113325;
+}
+
+/* Headings use Spectral; hero gets Playfair Display */
+h1, h2, h3, h4, h5, h6, .navbar__title {
+  font-family: var(--heading-font-family);
+  letter-spacing: -0.005em;
+}
+
+.hero__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+.hero__subtitle {
+  font-family: var(--font-body);
+}
+
+/* Tags — mono, pill-shaped, brand-colored (unlike Marginalia's stamp look) */
+.badge, .tag {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  border-radius: 9999px;
+  padding: 2px 10px;
+  border: 1px solid var(--ifm-color-primary);
+  color: var(--ifm-color-primary);
+  background: transparent;
+}
+
+.badge--gold {
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+  background: var(--accent-gold-bg);
+}
+
+.badge--verified {
+  border-color: var(--accent-emerald);
+  color: var(--accent-emerald);
+  background: var(--accent-emerald-bg);
+}
+
+/* Cards */
+.card {
+  background: var(--card-surface);
+  border: 1px solid var(--card-border);
+  border-radius: 0.5rem;
+  box-shadow: none;
+}
+
+/* Admonitions */
+.theme-admonition {
+  border-radius: 0.35rem;
+  border: 1px solid var(--card-border);
+  background: var(--card-surface);
+  box-shadow: none;
+}

@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+
+# Node / Docusaurus (once scaffolded in CP1)
+node_modules/
+build/
+.docusaurus/
+.cache-loader/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor
+.vscode/
+.idea/
+
+# Claude Code local state
+.claude/
+graphify-out/
