@@ -11,6 +11,17 @@
 /* Handwriting fonts — Literary Club / blog signature flourishes (per CLAUDE.md) */
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Dancing+Script:wght@600;700&family=Great+Vibes&display=swap');
 
+/* Tailwind's injection points. Without these, tailwind-plugin.js's postcss
+   plugin has nothing to expand @tailwind directives into — it was running
+   successfully (confirmed via configurePostCss and the Tailwind CLI
+   directly) but generating zero utility classes in the actual build,
+   because there was no @tailwind utilities here for it to replace. `base`
+   is nearly empty since corePlugins.preflight is off (Infima owns the
+   reset); `utilities` is the one that actually matters. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   /* ---- Design tokens: Primary — brand blue ---- */
   --ds-primary-50: #eef4ff;
@@ -213,12 +224,34 @@
   --ifm-transition-fast: var(--ds-transition-fast);
   --ifm-transition-slow: var(--ds-transition-base);
 
-  /* =====================================================================
-     Accent bridge (per CLAUDE.md / useClubAccent.js) — useClubAccent sets
-     --club-accent-light/-dark inline per hero; this picks the right one
-     per color scheme. Unified mode is then a single-variable swap.
-     ===================================================================== */
+  /* AstronomyHero's background scatter dots: slate gray in light site mode,
+     matching the constellation stars' yellow once the site is in dark mode.
+     The hero's own card background stays dark regardless of site theme, so
+     this tracks the SITE's color scheme, not the club's per-club accent. */
+  --astronomy-dot-color: #94a3b8;
+}
+
+/* =====================================================================
+   Accent bridge (per CLAUDE.md / useClubAccent.js) — useClubAccent sets
+   --club-accent-light/-dark inline per hero; this picks the right one per
+   color scheme. Unified mode is then a single-variable swap.
+
+   Must be a universal selector, NOT :root — --club-accent-light/-dark are
+   only ever declared inline on each hero's own element, never at :root, so
+   substitution has to happen locally per-element. A `:root { --club-accent:
+   var(--club-accent-light) }` rule resolves once at :root (where
+   --club-accent-light is undefined) and inherits that already-invalid value
+   downward; a hero's local override can't retroactively fix a substitution
+   that already happened higher up the tree. `*` makes every element
+   (including each hero's root, and its descendants) recompute
+   --club-accent from whatever --club-accent-light/-dark is in scope for
+   THAT element.
+   ===================================================================== */
+* {
   --club-accent: var(--club-accent-light);
+}
+[data-theme='dark'] * {
+  --club-accent: var(--club-accent-dark);
 }
 
 [data-theme='dark'] {
@@ -264,7 +297,7 @@
 
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 
-  --club-accent: var(--club-accent-dark);
+  --astronomy-dot-color: #fde047;
 }
 
 /* =====================================================================

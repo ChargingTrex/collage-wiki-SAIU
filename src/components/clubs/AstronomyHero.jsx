@@ -32,15 +32,21 @@ const STARS = [
 
 // Scattered background stars — no lines, just depth.
 const FIELD = [
-  { cx: 20,  cy: 34, r: 0.8 }, { cx: 62,  cy: 26, r: 1.0 },
-  { cx: 96,  cy: 44, r: 0.7 }, { cx: 128, cy: 22, r: 0.9 },
-  { cx: 184, cy: 96, r: 0.8 }, { cx: 232, cy: 28, r: 1.0 },
-  { cx: 252, cy: 88, r: 0.7 }, { cx: 16,  cy: 70, r: 0.9 },
+  { cx: 20,  cy: 34, r: 1.2 }, { cx: 62,  cy: 26, r: 1.5 },
+  { cx: 96,  cy: 44, r: 1.1 }, { cx: 128, cy: 22, r: 1.4 },
+  { cx: 184, cy: 96, r: 1.2 }, { cx: 232, cy: 28, r: 1.5 },
+  { cx: 252, cy: 88, r: 1.1 }, { cx: 16,  cy: 70, r: 1.4 },
 ];
 
 const CONSTELLATION_PATH = STARS.map((s, i) =>
   `${i === 0 ? 'M' : 'L'} ${s.cx},${s.cy}`
 ).join(' ');
+
+// Stars are yellow because that's what stars look like — independent of the
+// club's actual accent color (Indigo, used for the heading/UI elsewhere).
+// Same pattern as Gaming's 2nd ghost / Art's color cycle / Fashion's gold:
+// the color is the concept here, not a themeable brand accent.
+const STAR_COLOR = '#FDE047';
 
 export function AstronomyHero() {
   const { isPlaying, isHovered, hoverProps } = useIntroMotion();
@@ -77,7 +83,7 @@ export function AstronomyHero() {
               transition: { duration: 3.2, times: [0, 0.34, 0.72], ease: 'easeOut' },
             },
           }}
-          initial={false}
+          initial="rested"
           animate={state}
           style={{ originX: '50%', originY: '60%' }}
         >
@@ -87,7 +93,7 @@ export function AstronomyHero() {
               cx={s.cx}
               cy={s.cy}
               r={s.r}
-              className="fill-slate-400"
+              fill="var(--astronomy-dot-color)"
               variants={{
                 rested: { opacity: 0.55 },
                 playing: {
@@ -95,7 +101,7 @@ export function AstronomyHero() {
                   transition: { delay: 1.1 + i * 0.06, duration: 0.5 },
                 },
               }}
-              initial={false}
+              initial="rested"
               animate={state}
             />
           ))}
@@ -106,7 +112,7 @@ export function AstronomyHero() {
               cx={s.cx}
               cy={s.cy}
               r={s.r}
-              fill="var(--club-accent)"
+              fill={STAR_COLOR}
               variants={{
                 rested: { opacity: 1 },
                 playing: {
@@ -114,7 +120,7 @@ export function AstronomyHero() {
                   transition: { delay: 1.2 + i * 0.09, duration: 0.4 },
                 },
               }}
-              initial={false}
+              initial="rested"
               animate={state}
             />
           ))}
@@ -124,7 +130,7 @@ export function AstronomyHero() {
           <motion.path
             d={CONSTELLATION_PATH}
             fill="none"
-            stroke="var(--club-accent)"
+            stroke={STAR_COLOR}
             strokeWidth="0.9"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -136,7 +142,7 @@ export function AstronomyHero() {
                 transition: { duration: 2.4, delay: 1.5, times: [0, 0.62, 1], ease: 'easeInOut' },
               },
             }}
-            initial={false}
+            initial="rested"
             animate={state}
           />
         </motion.g>
@@ -153,7 +159,7 @@ export function AstronomyHero() {
               transition: { duration: 3.2, times: [0, 0.3, 0.72], ease: 'easeInOut' },
             },
           }}
-          initial={false}
+          initial="rested"
           animate={state}
           style={{ originX: '50%', originY: '100%' }}
         >
