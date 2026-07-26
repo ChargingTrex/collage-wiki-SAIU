@@ -1,0 +1,324 @@
+/**
+ * Scholar design system (hybrid) — mapped onto Infima.
+ * Source of truth: `scholar-design-system-hybrid (1).html` (delivered as
+ * .html despite CLAUDE.md/BUILD-BRIEF referencing it as ".md" — see that
+ * file's embedded <style> block for the canonical token values this file
+ * mirrors). Do not hand-edit values here without updating that doc too.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Spectral:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+/* Handwriting fonts — Literary Club / blog signature flourishes (per CLAUDE.md) */
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Dancing+Script:wght@600;700&family=Great+Vibes&display=swap');
+
+:root {
+  /* ---- Design tokens: Primary — brand blue ---- */
+  --ds-primary-50: #eef4ff;
+  --ds-primary-100: #d9e6ff;
+  --ds-primary-200: #bcd1ff;
+  --ds-primary-300: #8fb2ff;
+  --ds-primary-400: #5c88ff;
+  --ds-primary-500: #3b6af5;
+  --ds-primary-600: #2549d4;
+  --ds-primary-700: #1d38ab;
+  --ds-primary-800: #1d3087;
+  --ds-primary-900: #1d2d69;
+  --ds-primary-950: #111a3f;
+
+  /* ---- Secondary — warm orange ---- */
+  --ds-secondary-50: #fff8ed;
+  --ds-secondary-100: #ffefd4;
+  --ds-secondary-200: #ffdca8;
+  --ds-secondary-300: #ffc070;
+  --ds-secondary-400: #ff9d38;
+  --ds-secondary-500: #f77f0e;
+  --ds-secondary-600: #db6204;
+  --ds-secondary-700: #b54607;
+  --ds-secondary-800: #93360d;
+  --ds-secondary-900: #782d0e;
+  --ds-secondary-950: #401402;
+
+  /* ---- Accent — Emerald Ivy (highlights & links) ---- */
+  --ds-accent-50: #eaf7ef;
+  --ds-accent-100: #cdeeda;
+  --ds-accent-200: #9cdcb8;
+  --ds-accent-300: #66c494;
+  --ds-accent-400: #3aa877;
+  --ds-accent-500: #218a5e;
+  --ds-accent-600: #186e4c;
+  --ds-accent-700: #14573e;
+  --ds-accent-800: #124533;
+  --ds-accent-900: #0f392b;
+  --ds-accent-950: #082018;
+
+  /* ---- Neutrals ---- */
+  --ds-neutral-0: #ffffff;
+  --ds-neutral-50: #f8f9fc;
+  --ds-neutral-100: #f0f2f7;
+  --ds-neutral-200: #e3e6ef;
+  --ds-neutral-300: #c9cedc;
+  --ds-neutral-400: #a8b0c5;
+  --ds-neutral-500: #848da8;
+  --ds-neutral-600: #646d87;
+  --ds-neutral-700: #4d546b;
+  --ds-neutral-800: #353b4d;
+  --ds-neutral-900: #232836;
+  --ds-neutral-950: #15181f;
+
+  /* ---- Semantic ---- */
+  --ds-success: #16a34a;
+  --ds-success-bg: #dcfce7;
+  --ds-warning: #eab308;
+  --ds-warning-bg: #fef9c3;
+  --ds-error: #dc2626;
+  --ds-error-bg: #fee2e2;
+  --ds-info: #2563eb;
+  --ds-info-bg: #dbeafe;
+
+  /* ---- Surface / text / border (light) ---- */
+  --ds-bg: var(--ds-neutral-0);
+  --ds-bg-secondary: var(--ds-neutral-50);
+  --ds-bg-tertiary: var(--ds-neutral-100);
+  --ds-surface: var(--ds-neutral-0);
+  --ds-surface-2: var(--ds-neutral-50);
+  --ds-text: var(--ds-neutral-900);
+  --ds-text-secondary: var(--ds-neutral-700);
+  --ds-text-tertiary: var(--ds-neutral-500);
+  --ds-border: var(--ds-neutral-200);
+  --ds-border-strong: var(--ds-neutral-300);
+
+  /* ---- Shadows (light) ---- */
+  --ds-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --ds-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --ds-shadow-lg: 0 8px 32px rgba(26, 32, 80, 0.12), 0 4px 8px rgba(26, 32, 80, 0.05);
+
+  /* ---- Typography: four roles, four typefaces ----
+     display : hero / cover-page titles only
+     heading : h1-h6 inside content
+     body    : running text
+     mono    : code, tags, metadata */
+  --ds-font-display: 'Playfair Display', Georgia, serif;
+  --ds-font-heading: 'Spectral', Georgia, serif;
+  --ds-font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ds-font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+
+  --ds-font-size-xs: 0.75rem;
+  --ds-font-size-sm: 0.875rem;
+  --ds-font-size-base: 1rem;
+  --ds-font-size-lg: 1.125rem;
+  --ds-font-size-xl: 1.25rem;
+  --ds-font-size-2xl: 1.5rem;
+  --ds-font-size-3xl: 1.875rem;
+  --ds-font-size-4xl: 2.25rem;
+  --ds-font-size-5xl: 3rem;
+
+  --ds-font-weight-regular: 400;
+  --ds-font-weight-medium: 500;
+  --ds-font-weight-semibold: 600;
+  --ds-font-weight-bold: 700;
+
+  --ds-line-height-normal: 1.55;
+  --ds-line-height-relaxed: 1.75;
+
+  /* ---- Spacing ---- */
+  --ds-space-2: 0.5rem;
+  --ds-space-4: 1rem;
+  --ds-space-6: 1.5rem;
+  --ds-space-8: 2rem;
+  --ds-space-12: 3rem;
+
+  /* ---- Radius — sharper than a typical SaaS kit; reads "letterhead" not "app" ---- */
+  --ds-radius-sm: 0.2rem;
+  --ds-radius-md: 0.35rem;
+  --ds-radius-lg: 0.5rem;
+  --ds-radius-full: 9999px;
+
+  --ds-transition-fast: 150ms ease;
+  --ds-transition-base: 250ms ease;
+
+  /* =====================================================================
+     Infima bridge — map --ds-* tokens onto the variables Infima/Docusaurus
+     actually render with, so the palette above drives the whole site.
+     ===================================================================== */
+
+  /* Primary (brand blue) */
+  --ifm-color-primary: var(--ds-primary-500);
+  --ifm-color-primary-dark: var(--ds-primary-600);
+  --ifm-color-primary-darker: var(--ds-primary-700);
+  --ifm-color-primary-darkest: var(--ds-primary-800);
+  --ifm-color-primary-light: var(--ds-primary-400);
+  --ifm-color-primary-lighter: var(--ds-primary-300);
+  --ifm-color-primary-lightest: var(--ds-primary-200);
+
+  /* Secondary (warm orange) — Infima's "secondary" semantic, repurposed as
+     our second brand color rather than its default neutral badge gray */
+  --ifm-color-secondary: var(--ds-secondary-500);
+  --ifm-color-secondary-dark: var(--ds-secondary-600);
+  --ifm-color-secondary-darker: var(--ds-secondary-700);
+  --ifm-color-secondary-darkest: var(--ds-secondary-800);
+  --ifm-color-secondary-light: var(--ds-secondary-400);
+  --ifm-color-secondary-lighter: var(--ds-secondary-300);
+  --ifm-color-secondary-lightest: var(--ds-secondary-200);
+
+  /* Semantic states */
+  --ifm-color-success: var(--ds-success);
+  --ifm-color-warning: var(--ds-warning);
+  --ifm-color-danger: var(--ds-error);
+  --ifm-color-info: var(--ds-info);
+
+  /* Accent (Emerald Ivy) drives links, per the design doc's own description */
+  --ifm-link-color: var(--ds-accent-500);
+  --ifm-link-hover-color: var(--ds-accent-600);
+
+  /* Neutral ramp -> Infima's emphasis scale (borders, hover states, dividers) */
+  --ifm-color-emphasis-0: var(--ds-neutral-0);
+  --ifm-color-emphasis-100: var(--ds-neutral-100);
+  --ifm-color-emphasis-200: var(--ds-neutral-200);
+  --ifm-color-emphasis-300: var(--ds-neutral-300);
+  --ifm-color-emphasis-400: var(--ds-neutral-400);
+  --ifm-color-emphasis-500: var(--ds-neutral-500);
+  --ifm-color-emphasis-600: var(--ds-neutral-600);
+  --ifm-color-emphasis-700: var(--ds-neutral-700);
+  --ifm-color-emphasis-800: var(--ds-neutral-800);
+  --ifm-color-emphasis-900: var(--ds-neutral-900);
+  --ifm-color-emphasis-1000: var(--ds-neutral-950);
+
+  /* Backgrounds / text */
+  --ifm-background-color: var(--ds-bg);
+  --ifm-background-surface-color: var(--ds-surface);
+  --ifm-font-color-base: var(--ds-text);
+  --ifm-navbar-background-color: var(--ds-surface);
+  --ifm-footer-background-color: var(--ds-neutral-900);
+
+  /* Typography */
+  --ifm-font-family-base: var(--ds-font-body);
+  --ifm-font-family-monospace: var(--ds-font-mono);
+  --ifm-heading-font-family: var(--ds-font-heading);
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+
+  /* Radius */
+  --ifm-button-border-radius: var(--ds-radius-md);
+  --ifm-card-border-radius: var(--ds-radius-lg);
+  --ifm-alert-border-radius: var(--ds-radius-md);
+  --ifm-code-border-radius: var(--ds-radius-sm);
+  --ifm-pagination-border-radius: var(--ds-radius-sm);
+
+  /* Shadows */
+  --ifm-global-shadow-lw: var(--ds-shadow-sm);
+  --ifm-global-shadow-md: var(--ds-shadow-md);
+  --ifm-global-shadow-tl: var(--ds-shadow-lg);
+
+  /* Transitions */
+  --ifm-transition-fast: var(--ds-transition-fast);
+  --ifm-transition-slow: var(--ds-transition-base);
+
+  /* =====================================================================
+     Accent bridge (per CLAUDE.md / useClubAccent.js) — useClubAccent sets
+     --club-accent-light/-dark inline per hero; this picks the right one
+     per color scheme. Unified mode is then a single-variable swap.
+     ===================================================================== */
+  --club-accent: var(--club-accent-light);
+}
+
+[data-theme='dark'] {
+  --ds-neutral-0: #15181f;
+  --ds-neutral-50: #1a1e2a;
+  --ds-neutral-100: #232836;
+  --ds-neutral-200: #353b4d;
+  --ds-neutral-300: #4d546b;
+  --ds-neutral-400: #848da8;
+  --ds-neutral-500: #a8b0c5;
+  --ds-neutral-600: #c9cedc;
+  --ds-neutral-700: #e3e6ef;
+  --ds-neutral-800: #f0f2f7;
+  --ds-neutral-900: #f8f9fc;
+  --ds-neutral-950: #ffffff;
+
+  --ds-bg: var(--ds-neutral-0);
+  --ds-bg-secondary: var(--ds-neutral-50);
+  --ds-bg-tertiary: var(--ds-neutral-100);
+  --ds-surface: var(--ds-neutral-50);
+  --ds-surface-2: var(--ds-neutral-100);
+
+  --ds-text: var(--ds-neutral-900);
+  --ds-text-secondary: var(--ds-neutral-700);
+  --ds-text-tertiary: var(--ds-neutral-500);
+
+  --ds-border: var(--ds-neutral-200);
+  --ds-border-strong: var(--ds-neutral-300);
+
+  --ds-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --ds-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --ds-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+
+  --ds-success-bg: #064e3b;
+  --ds-warning-bg: #713f12;
+  --ds-error-bg: #7f1d1d;
+  --ds-info-bg: #1e3a5f;
+
+  /* Brighten brand colors slightly for dark backgrounds */
+  --ds-primary-500: #5c88ff;
+  --ds-secondary-500: #ff9d38;
+  --ds-accent-500: #3aa877;
+
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+
+  --club-accent: var(--club-accent-dark);
+}
+
+/* =====================================================================
+   Button-contrast fix (WCAG 2.1 AA) — scoped to buttons only, per the
+   audit in changes.md. --ifm-color-secondary/--ifm-link-color still use
+   the literal design-doc anchors elsewhere (badges, borders, links); only
+   the button fills themselves get the corrected shades.
+   ===================================================================== */
+.button--secondary {
+  background-color: var(--ds-secondary-700);
+  border-color: var(--ds-secondary-700);
+  color: #fff;
+}
+.button--secondary:hover {
+  background-color: var(--ds-secondary-800);
+  border-color: var(--ds-secondary-800);
+}
+
+/* Light mode's --ds-primary-500 (#3b6af5) passes AA as a button fill
+   (4.60:1). Dark mode redefines --ds-primary-500 to a brighter #5c88ff for
+   link/text legibility, but that same brightening drops white-on-button
+   contrast to 3.27:1 (fails AA) — pin dark-mode button fill to the
+   unbrightened -600/-700 steps instead, which hold 7:1+ in both themes. */
+[data-theme='dark'] .button--primary {
+  background-color: var(--ds-primary-600);
+  border-color: var(--ds-primary-600);
+}
+[data-theme='dark'] .button--primary:hover {
+  background-color: var(--ds-primary-700);
+  border-color: var(--ds-primary-700);
+}
+
+/* =====================================================================
+   Club typography exception — Turingites CS Society and FOSS Club pages
+   swap to Tech Forward (Space Grotesk / IBM Plex) via this scoped class.
+   Everything else keeps the Classic Ivy typefaces above. Wrap those two
+   pages' content in <div className="tech-club"> (convert to .mdx if not
+   already) — see scholar-design-system-hybrid (1).html for the rationale.
+   ===================================================================== */
+.tech-club {
+  --ds-font-display: 'Space Grotesk', -apple-system, sans-serif;
+  --ds-font-heading: 'Space Grotesk', -apple-system, sans-serif;
+  --ds-font-body: 'IBM Plex Sans', -apple-system, sans-serif;
+  --ds-font-mono: 'IBM Plex Mono', 'SF Mono', monospace;
+
+  --ifm-font-family-base: var(--ds-font-body);
+  --ifm-font-family-monospace: var(--ds-font-mono);
+  --ifm-heading-font-family: var(--ds-font-heading);
+}
+.tech-club h1,
+.tech-club h2,
+.tech-club h3,
+.tech-club h4,
+.tech-club h5,
+.tech-club h6 {
+  letter-spacing: -0.01em;
+}

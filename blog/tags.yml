@@ -1,0 +1,158 @@
+# Blog tag taxonomy for the Sai University Wiki.
+# Three groups: (1) one tag per club, (2) one tag per fest, (3) event-type
+# tags, plus a standalone tag for posts written by an individual student
+# rather than on behalf of a club. A post can carry a club/fest tag AND an
+# event-type tag AND (if applicable) student-voices.
+#
+# Tags double as the club/fest -> event listing mechanism: tagging a post
+# `art-club` makes it show up on /blog/tags/art-club automatically, no
+# separate frontmatter field needed to link an event back to its club.
+
+# ---- Clubs ----
+literary-club:
+  label: Literary Club
+  permalink: /literary-club
+  description: Events run by the Literary Club
+
+art-club:
+  label: Art Club
+  permalink: /art-club
+  description: Events run by the Art Club
+
+dance-club:
+  label: Dance Club
+  permalink: /dance-club
+  description: Events run by the Dance Club
+
+gardening-club:
+  label: Gardening Club
+  permalink: /gardening-club
+  description: Events run by the Gardening Club
+
+astronomy-club:
+  label: Astronomy Club
+  permalink: /astronomy-club
+  description: Events run by the Astronomy Club
+
+theatre-club:
+  label: Theatre Club
+  permalink: /theatre-club
+  description: Events run by the Theatre Club
+
+photography-club:
+  label: Photography Club
+  permalink: /photography-club
+  description: Events run by the Photography Club
+
+gaming-club:
+  label: Gaming Club
+  permalink: /gaming-club
+  description: Events run by the Gaming Club
+
+oratory-club:
+  label: Oratory Club
+  permalink: /oratory-club
+  description: Events run by the Oratory Club
+
+entrepreneurship-club:
+  label: Entrepreneurship Club
+  permalink: /entrepreneurship-club
+  description: Events run by the Entrepreneurship Club
+
+fashion-club:
+  label: Fashion Club
+  permalink: /fashion-club
+  description: Events run by the Fashion Club
+
+science-society:
+  label: Science Society
+  permalink: /science-society
+  description: Events run by the Science Society
+
+music-club:
+  label: Music Club
+  permalink: /music-club
+  description: Events run by the Music Club
+
+film-society:
+  label: Film Society
+  permalink: /film-society
+  description: Events run by the Film Society
+
+turingites-computer-science-society:
+  label: Turingites CS Society
+  permalink: /turingites-computer-science-society
+  description: Events run by the Turingites Computer Science Society
+
+animal-welfare-society:
+  label: Animal Welfare Society
+  permalink: /animal-welfare-society
+  description: Events run by the Animal Welfare Society
+
+martial-arts-club:
+  label: Martial Arts Club
+  permalink: /martial-arts-club
+  description: Events run by the Martial Arts Club
+
+foss-club:
+  label: FOSS Club
+  permalink: /foss-club
+  description: Events run by the FOSS Club
+
+# ---- Fests ----
+tech-fest:
+  label: Tech Fest
+  permalink: /tech-fest
+  description: Events that were part of the university's tech fest
+
+general-fest:
+  label: General Fest
+  permalink: /general-fest
+  description: Events that were part of the university's general fest
+
+cultural-fest:
+  label: Cultural Fest
+  permalink: /cultural-fest
+  description: Events that were part of the university's cultural fest
+
+# ---- Event type ----
+workshop:
+  label: Workshop
+  permalink: /workshop
+  description: Hands-on, skills-focused sessions
+
+competition:
+  label: Competition
+  permalink: /competition
+  description: Contests, tournaments, and judged events
+
+talk:
+  label: Talk
+  permalink: /talk
+  description: Guest talks, lectures, and panel discussions
+
+screening:
+  label: Screening
+  permalink: /screening
+  description: Film or media screenings
+
+exhibition:
+  label: Exhibition
+  permalink: /exhibition
+  description: Showcases, displays, and open exhibits
+
+performance:
+  label: Performance
+  permalink: /performance
+  description: Live performances — theatre, dance, music
+
+hackathon:
+  label: Hackathon
+  permalink: /hackathon
+  description: Extended build/coding events
+
+# ---- Individual student authorship ----
+student-voices:
+  label: Student Voices
+  permalink: /student-voices
+  description: Posts written by a student individually, not on behalf of a club
