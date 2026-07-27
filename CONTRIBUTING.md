@@ -15,25 +15,38 @@ Pick the section below that matches what you're doing.
 
 ## 1. Editing content without touching code
 
-> **Not available yet.** Decap CMS needs a real backend (GitHub OAuth or
-> Git Gateway) to save changes, which only works once the site has actual
-> hosting set up (GitHub Pages + the CMS backend). Until then, `/admin` may
-> not be wired up, and content edits should go through a developer via PR.
-> This section describes how it will work once hosting is live.
+> **Structurally scaffolded, not yet saveable.** `/admin` loads a real
+> Decap CMS config now (`static/admin/config.yml`), but its backend has no
+> auth wired up — the form renders, but there's nothing behind it that can
+> actually commit a change yet. See `docs-internal/decap-cms-auth-todo.md`
+> for exactly why (it's a hosting decision, GitHub OAuth-proxy vs Netlify
+> Identity, not just a missing config value) and what unblocks it. Until
+> then, content edits go through a developer via PR.
 
 Go to `/admin` on the live site (or `http://localhost:3000/admin` locally).
-This opens **Decap CMS**, a form-based editor. From there you can:
+This opens **Decap CMS**, a form-based editor. Right now it has one
+collection wired up:
 
-- Add a new **event post** (this becomes a dated entry under the club's
-  archive) — write the text and upload images through the form.
-- Edit a **club page** (constitution, exec board, description).
+- **Events** — add a new dated event write-up (text + tags + images,
+  through a form) under `blog/`. Tag it with the relevant club/fest so it
+  shows up on that club's own Events page automatically.
 
-You do not need to know Markdown, React, or Git. Images you upload are
-automatically stored next to the post they belong to, so they keep working
-even as the archive grows.
+**Club and fest pages (`docs/clubs/*`, `docs/fests/*`) are NOT editable via
+the CMS** — those are MDX files with hero-component imports and a
+`<ClubContact>` embed, not plain prose. Decap CMS collections replace a
+file's entire frontmatter + body with only what's represented in its field
+config; letting a non-technical editor save through a generic body widget
+would silently strip those imports and break the page. Exposing that
+safely needs the prose pulled out into plain frontmatter fields first — a
+content-model change, not a CMS-config one (also noted in the auth-todo
+doc). For now, club/fest page edits go through a developer via PR too.
 
-If `/admin` won't load or won't save, that's a developer issue (CMS config or
-GitHub Pages auth) — report it rather than editing files by hand.
+You do not need to know Markdown, React, or Git to use the Events
+collection. Images you upload are automatically stored next to the post
+they belong to, so they keep working even as the archive grows.
+
+If `/admin` won't load, that's a real bug — report it. If it loads but
+won't save, that's expected right now (see above), not a bug to report.
 
 ---
 
@@ -49,14 +62,23 @@ npm start          # http://localhost:3000, hot reload
 Other useful commands:
 
 ```bash
-npm run build       # production build — must pass before any PR
-npm run serve       # serve the production build locally
-npm run clear       # wipe Docusaurus's cache if something looks stale
+npm run build            # production build — must pass before any PR
+npm run serve            # serve the production build locally
+npm run clear            # wipe Docusaurus's cache if something looks stale
+npm run test:e2e         # builds the site, then runs the Playwright suite
+npm run test:e2e:report  # opens the last HTML report
 ```
 
-Before opening a PR, always run `npm run build` locally. A page that only
-breaks in the production build (not `npm start`) is a common way bugs slip
-through.
+Before opening a PR, always run `npm run build` **and** `npm run test:e2e`
+locally. A page that only breaks in the production build (not `npm start`)
+is a common way bugs slip through — the e2e suite runs against the
+production build for exactly this reason. See `TEST_REPORT.md` for what's
+covered (navigation, all 18 club pages, all 3 fest pages, the Events/Blog
+tag-filtering split, the full `useIntroMotion` playback contract, theme
+toggling) and what isn't yet (Decap CMS, the footer easter egg, the accent
+unified-mode toggle, off-screen pause — none of those exist yet, so there's
+nothing to test). Tests live in `tests/e2e/`; add one alongside whatever
+you're changing rather than only relying on manual verification.
 
 ---
 
@@ -65,24 +87,96 @@ through.
 ```
 src/
   css/custom.css              site-wide styles + Scholar design tokens (--ds-*)
-  theme/Footer/index.js       swizzled footer (the dino easter egg lives here)
+  plugins/
+    club-events-plugin.js     reads blog frontmatter at build time, groups
+                              posts by tag (club/fest/event-type) plus one
+                              global recent-first list — powers
+                              ClubEventsList and RecentActivity below via
+                              `usePluginData('club-events-plugin')`
+  theme/
+    Footer/index.js           swizzled footer — wraps (not replaces) the
+                              default Footer; currently adds the LinkedIn/
+                              Instagram/mail/GitHub/report-an-issue icon row.
+                              The dino easter egg is planned for this same
+                              file (not built yet).
+    DocSidebarItem/Link/      swizzled (ejected) — renders a lucide icon
+                              before a doc's sidebar label, from that doc's
+                              `sidebar_custom_props.icon` frontmatter
+    DocSidebarItem/Category/  swizzled (ejected), same icon behavior as
+                              Link but for folder-based docs — needed
+                              because a club becomes a sidebar *category*
+                              once it has an Events subpage, and upstream's
+                              Category component doesn't read
+                              `customProps` the way Link does
   components/
     useIntroMotion.js         shared animation-lifecycle hook — all heroes use this
     useClubAccent.js          shared per-club accent-color hook
     clubAccents.js            the accent color for every club, one place
+    useLoadMore.js            generic client-side "load more" pagination hook
+    EventCard.jsx             one event's summary card (date/title/description)
+    ClubEventsList.jsx        renders a club's Events page — paginated list
+                              of that club's tagged posts + a link to its
+                              full tag-page timeline
+    RecentActivity.jsx        homepage "Recent Activity" section — the 5
+                              most recent posts site-wide, any club/fest
+    TagFilteredEvents.jsx     tag picker + recent-posts feed, same plugin
+                              data — powers /events (real content only,
+                              excludes student-voices) and /student-voices
+                              (all tags) via its `tagIds` prop
+    MiniHeroCard.jsx          scales a real hero down for a directory grid
+                              card (used by /clubs and /explore)
+    LibraryHero.jsx           the Blog hero (student writing — a shelf still
+                              being filled). Shares a shelf-of-books motif
+                              with ArchivesHero but is a separate hero for a
+                              separate page — don't conflate the two
+    ArchivesHero.jsx          the Archives hero (the completed event
+                              history) — lives on docs/resources/archives.mdx
     primitives/Book.jsx       shared visual primitive
     clubs/                    18 club hero components
     fests/                    fest hero components + FestSound
-  pages/index.js              homepage
+  pages/
+    index.js                  homepage
+    clubs.js                  /clubs — 18 club mini-hero cards
+    fests.js                   /fests — 3 full-size fest heroes
+    explore.js                 /explore — every hero + Events/Blog/Archives cards
+    events.js                  /events — tag-filtered real-content feed
+    student-voices.js          /student-voices — the Blog landing page (LibraryHero)
 docs/
-  clubs/                      one .mdx page per club (hero component at the top)
+  intro.mdx                    "Docs" nav target — a real wiki overview, not
+                                the stock Docusaurus tutorial (see
+                                tutorial-reference/ below for that)
+  clubs/<slug>/                one folder per club:
+                                - index.mdx        the club page (hero at top)
+                                - _category_.json  label/description/icon —
+                                                   keep in sync with index.mdx
+                                - events.mdx        thin ClubEventsList wrapper,
+                                                   don't hand-edit its content
+  fests/
   resources/
+    archives.mdx                the Archives hero's doc page
 blog/
   YYYY-MM-DD-<event-slug>/    one folder per event, images co-located inside
 static/
-  admin/index.html            Decap CMS config
+  admin/                       Decap CMS — structurally scaffolded (see
+                              section 1); `config.yml`'s Events collection
+                              works once a backend is wired up (still not —
+                              see docs-internal/decap-cms-auth-todo.md);
+                              club/fest pages deliberately NOT exposed here
   audio/                      fest/club audio files
+  js/github-badge.js          navbar GitHub badge — date label + live star/fork
+                              counts, loaded via docusaurus.config.js's
+                              `scripts` array (see github-badge-guide.md)
   img/
+tutorial-reference/           the stock Docusaurus classic-template tutorial
+                              content, moved out of docs/ so it stops
+                              cluttering the sidebar — not part of the live
+                              site, not linked from anywhere
+docs-internal/                 planning/decision docs about the project,
+                              not site content — not part of the Docusaurus
+                              build at all (outside docs/)
+tests/e2e/                     Playwright suite — see TEST_REPORT.md and
+                              this doc's "Developer setup" section
+playwright.config.js
 ```
 
 ### Adding a new event post
@@ -107,9 +201,12 @@ tags: [astronomy-club, talk]
 ```
 
 - If the post is a club event, include that club's tag (e.g. `astronomy-club`)
-  so it automatically appears on that club's tag page
-  (`/blog/tags/astronomy-club`) — this is how a club's page can list its own
-  events without any extra linking work.
+  so it automatically appears both on that club's tag page
+  (`/blog/tags/astronomy-club`) and on that club's own Events page
+  (`/docs/clubs/astronomy-club/events`) — this is how a club's page can list
+  its own events without any extra linking work. (A club's Events page shows
+  "no events recorded yet" until at least one post carries its tag — that's
+  expected, not a bug, while the archive is still being backfilled.)
 - If it was part of a fest, add the fest's tag too (`tech-fest`,
   `general-fest`, or `cultural-fest`).
 - Add one event-type tag if it fits: `workshop`, `competition`, `talk`,
@@ -120,11 +217,35 @@ tags: [astronomy-club, talk]
 Don't invent new tags ad hoc — add them to `blog/tags.yml` first so the tag
 page gets a proper label and description.
 
+**Where a post shows up depends on its tags, not its folder:** `/events`
+(the "Events" nav item) only ever considers tags defined in `blog/tags.yml`
+*other than* `student-voices` — a club tag, a fest tag, or an event-type tag.
+`/student-voices` (the "Blog" nav item) considers every defined tag. A post
+tagged only `student-voices` appears on Blog only; a post tagged
+`astronomy-club, talk` appears on Events (and that club's own Events page)
+but not Blog; a post carrying both a club tag and `student-voices` can appear
+on both. Posts with tags that aren't in `blog/tags.yml` at all (e.g. the
+leftover Docusaurus tutorial posts) never appear on either — that's the
+filter working as intended, not a bug.
+
 ### Adding or editing a club page
 
-Club pages live at `docs/clubs/<slug>.mdx`. The hero component goes at the
-top of the file. See the club table in the root `CLAUDE.md` for the correct
-slug and accent name for each club.
+Each club's page lives at `docs/clubs/<slug>/index.mdx` — a folder, not a
+flat file. The hero component still goes at the top, same as before. Two
+sibling files complete the folder and normally don't need touching beyond
+keeping them in sync:
+
+- `_category_.json` — `label`, `description`, and `customProps.icon`, copied
+  from `index.mdx`'s own frontmatter. If you change the title, description,
+  or icon on one, update the other to match, or the sidebar/generated-index
+  card will show stale info.
+- `events.mdx` — a thin wrapper (`<ClubEventsList clubSlug="<slug>" />`).
+  Don't hand-edit its content; the list it shows comes from tagged blog
+  posts (see "Adding a new event post" above), not from anything written
+  directly in this file.
+
+See the club table in the root `CLAUDE.md` for the correct slug and accent
+name for each club.
 
 ---
 
@@ -135,13 +256,21 @@ behavior locally in a component** — extend the hook instead, so all 23 heroes
 stay consistent.
 
 ```jsx
-const { isPlaying, isHovered, hoverProps } = useIntroMotion();
+const { isPlaying, isReplaying, hoverProps } = useIntroMotion();
 const { accentStyle, accentName, isUnified } = useClubAccent('astronomy-club');
 ```
 
-- `useIntroMotion` — plays the intro once on arrival, goes still on
-  scroll/click/key/touch, replays on hover (pointer only), respects
-  `prefers-reduced-motion`, and pauses heroes that scroll off-screen.
+- `useIntroMotion` — plays the intro once on arrival, goes still once the
+  reader scrolls/keys, and replays on **click/tap** (spread `hoverProps` on
+  the hero's root element regardless of the name — it now wires `onClick`,
+  not pointer-enter/leave). Hover-to-replay was tried and dropped: an
+  incidental hover (trackpad drift, cursor passing through) stopped/replayed
+  heroes the reader never meant to touch, and hover doesn't exist on touch
+  devices anyway. Also respects `prefers-reduced-motion`. **Off-screen pause
+  (`IntersectionObserver`) is not implemented yet** — heroes that loop
+  (`repeat: Infinity` while `isPlaying`) keep animating even when scrolled
+  out of view; this is deferred until after the homepage mini-hero cards
+  land (see `animation-caveats (3).md` §9 and `changes.md`).
 - `useClubAccent` — resolves the club's accent color, or the unified site
   color if the visitor has switched accent mode. Renders `per-club` on first
   paint to avoid a hydration mismatch.
@@ -186,13 +315,23 @@ reuse as-is.
 ## 6. Before opening a PR
 
 - [ ] `npm run build` succeeds
+- [ ] `npm run test:e2e` passes (add a test for what you changed if the
+      suite doesn't already cover it)
 - [ ] New/changed heroes: animate on load, go still on scroll, replay on
-      hover, respect reduced motion
+      **click/tap** (not hover — see §4), respect reduced motion
+- [ ] Any random/non-deterministic value used during a hero's initial
+      render (confetti-style layouts, etc.) uses a seeded PRNG, not
+      `Math.random()`/`Date.now()` directly — those differ between SSR and
+      client hydration and throw a React hydration-mismatch error. See
+      `GeneralFestHero.jsx`'s `mulberry32` for the pattern.
 - [ ] New colors are `--ds-*` tokens, not hardcoded hex, and meet the
       contrast rules above
 - [ ] Blog images are co-located, not referenced by absolute path
+- [ ] New club added: `docs/clubs/<slug>/` has `index.mdx`, `_category_.json`,
+      and `events.mdx` (copy an existing club's folder as a template)
 - [ ] No new audio autoplays — audio is click-to-play only
-- [ ] `/admin` still loads and can save a test edit, if you touched CMS config
+- [ ] `/admin` still loads, if you touched CMS config (it can't save yet —
+      see §1 — so there's no "test edit" to try until auth is wired up)
 
 ## 7. What requires explicit sign-off
 

@@ -1,0 +1,28 @@
+---
+title: Astronomy Club
+description: Exploring the cosmos & stargazing nights at Sai University.
+hide_title: true
+sidebar_custom_props:
+  icon: Telescope
+---
+
+import { AstronomyHero } from '@site/src/components/clubs/AstronomyHero';
+import { ClubContact } from '@site/src/components/ClubContact';
+import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+
+<AstronomyHero />
+
+The Astronomy Club hosts stargazing nights, telescope workshops, and talks on
+current astronomical events for the Sai University community.
+
+{/*
+  CP2 smoke test only. Constitution/exec-board/directory content for this
+  club lands in CP3 alongside the other 17 club pages.
+*/}
+
+## Contact
+
+<ClubContact
+  clubSlug="astronomy-club"
+  {...CLUB_CONTACTS['astronomy-club']}
+/>

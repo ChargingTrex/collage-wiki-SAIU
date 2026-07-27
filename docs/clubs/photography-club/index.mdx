@@ -1,0 +1,24 @@
+---
+title: Photography Club
+description: Capturing moments through the lens at Sai University.
+hide_title: true
+sidebar_custom_props:
+  icon: Camera
+---
+
+import { PhotographyHero } from '@site/src/components/clubs/PhotographyHero';
+import { ClubContact } from '@site/src/components/ClubContact';
+import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+
+<PhotographyHero />
+
+The Photography Club runs photo walks, gear workshops, and themed shoots
+around campus, with member work regularly featured across the wiki's event
+archive.
+
+## Contact
+
+<ClubContact
+  clubSlug="photography-club"
+  {...CLUB_CONTACTS['photography-club']}
+/>

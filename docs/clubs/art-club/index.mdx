@@ -1,0 +1,24 @@
+---
+title: Art Club
+description: Unleashing creativity through visual arts at Sai University.
+hide_title: true
+sidebar_custom_props:
+  icon: Palette
+---
+
+import { ArtHero } from '@site/src/components/clubs/ArtHero';
+import { ClubContact } from '@site/src/components/ClubContact';
+import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+
+<ArtHero />
+
+The Art Club brings together students who paint, sketch, and experiment with
+visual media, hosting open studio sessions, exhibitions, and workshops across
+the year.
+
+## Contact
+
+<ClubContact
+  clubSlug="art-club"
+  {...CLUB_CONTACTS['art-club']}
+/>

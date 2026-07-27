@@ -1,0 +1,23 @@
+---
+title: Martial Arts Club
+description: Building discipline, fitness, and self-defense at Sai University.
+hide_title: true
+sidebar_custom_props:
+  icon: Hand
+---
+
+import { MartialArtsHero } from '@site/src/components/clubs/MartialArtsHero';
+import { ClubContact } from '@site/src/components/ClubContact';
+import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+
+<MartialArtsHero />
+
+The Martial Arts Club trains students in disciplined striking and self-defense
+fundamentals, with regular sparring sessions and belt-grading practice.
+
+## Contact
+
+<ClubContact
+  clubSlug="martial-arts-club"
+  {...CLUB_CONTACTS['martial-arts-club']}
+/>

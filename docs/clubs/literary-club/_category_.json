@@ -1,0 +1,7 @@
+{
+  "label": "Literary Club",
+  "description": "Celebrating the written and spoken word at Sai University.",
+  "customProps": {
+    "icon": "BookOpen"
+  }
+}

@@ -1,0 +1,24 @@
+---
+title: Dance Club
+description: Expressing rhythm, grace, and movement at Sai University.
+hide_title: true
+sidebar_custom_props:
+  icon: Footprints
+---
+
+import { DanceHero } from '@site/src/components/clubs/DanceHero';
+import { ClubContact } from '@site/src/components/ClubContact';
+import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+
+<DanceHero />
+
+The Dance Club welcomes students of every style and skill level, running
+regular practice sessions, choreography workshops, and performances at campus
+events and fests.
+
+## Contact
+
+<ClubContact
+  clubSlug="dance-club"
+  {...CLUB_CONTACTS['dance-club']}
+/>

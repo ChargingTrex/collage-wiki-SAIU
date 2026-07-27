@@ -1,0 +1,21 @@
+/**
+ * Copied from @docusaurus/theme-classic unchanged, plus .cardTitleLucideIcon
+ * for the per-club lucide icon (see index.js).
+ */
+
+.cardTitleIcon {
+  font-size: 1.6rem;
+  margin-right: 0.6rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.cardTitleLucideIcon {
+  width: 1.3rem;
+  height: 1.3rem;
+  color: var(--accent-light);
+}
+
+:global([data-theme='dark']) .cardTitleLucideIcon {
+  color: var(--accent-dark);
+}

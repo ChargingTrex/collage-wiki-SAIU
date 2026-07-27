@@ -1,0 +1,23 @@
+---
+title: Film Society
+description: Appreciating, analyzing, and creating cinema at Sai University.
+hide_title: true
+sidebar_custom_props:
+  icon: Film
+---
+
+import { FilmSocietyHero } from '@site/src/components/clubs/FilmSocietyHero';
+import { ClubContact } from '@site/src/components/ClubContact';
+import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+
+<FilmSocietyHero />
+
+The Film Society runs screenings, director discussions, and a student-made
+short film program, open to anyone who loves watching or making movies.
+
+## Contact
+
+<ClubContact
+  clubSlug="film-society"
+  {...CLUB_CONTACTS['film-society']}
+/>

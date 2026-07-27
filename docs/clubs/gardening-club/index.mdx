@@ -1,0 +1,24 @@
+---
+title: Gardening Club
+description: Cultivating green spaces across Sai University.
+hide_title: true
+sidebar_custom_props:
+  icon: Sprout
+---
+
+import { GardeningHero } from '@site/src/components/clubs/GardeningHero';
+import { ClubContact } from '@site/src/components/ClubContact';
+import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+
+<GardeningHero />
+
+The Gardening Club maintains campus green spaces and runs hands-on sessions on
+composting, native planting, and seasonal growing for anyone who wants to get
+their hands in the soil.
+
+## Contact
+
+<ClubContact
+  clubSlug="gardening-club"
+  {...CLUB_CONTACTS['gardening-club']}
+/>

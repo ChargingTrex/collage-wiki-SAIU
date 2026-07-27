@@ -1,0 +1,24 @@
+---
+title: Science Society
+description: Advancing scientific curiosity and research at Sai University.
+hide_title: true
+sidebar_custom_props:
+  icon: FlaskConical
+---
+
+import { ScienceHero } from '@site/src/components/clubs/ScienceHero';
+import { ClubContact } from '@site/src/components/ClubContact';
+import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+
+<ScienceHero />
+
+The Science Society runs experiments, lab demos, and speaker sessions across
+physics, chemistry, and biology, open to anyone curious about how things
+work.
+
+## Contact
+
+<ClubContact
+  clubSlug="science-society"
+  {...CLUB_CONTACTS['science-society']}
+/>

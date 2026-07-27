@@ -1,0 +1,24 @@
+---
+title: Theatre Club
+description: Bringing compelling stories to life on stage at Sai University.
+hide_title: true
+sidebar_custom_props:
+  icon: Drama
+---
+
+import { TheatreHero } from '@site/src/components/clubs/TheatreHero';
+import { ClubContact } from '@site/src/components/ClubContact';
+import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+
+<TheatreHero />
+
+The Theatre Club stages original and adapted productions each semester,
+running auditions, rehearsals, and backstage crews open to actors and
+technicians alike.
+
+## Contact
+
+<ClubContact
+  clubSlug="theatre-club"
+  {...CLUB_CONTACTS['theatre-club']}
+/>

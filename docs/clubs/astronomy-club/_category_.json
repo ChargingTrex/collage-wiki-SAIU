@@ -1,0 +1,7 @@
+{
+  "label": "Astronomy Club",
+  "description": "Exploring the cosmos & stargazing nights at Sai University.",
+  "customProps": {
+    "icon": "Telescope"
+  }
+}

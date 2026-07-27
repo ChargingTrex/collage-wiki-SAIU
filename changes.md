@@ -1,5 +1,86 @@
 # Changes
 
+## 2026-07-28 — Per-club Events pages, homepage Recent Activity, club-events-plugin
+
+Files: `src/plugins/club-events-plugin.js` (new), `docusaurus.config.js`,
+`package.json`, `src/components/useLoadMore.js`/`EventCard.jsx`/
+`ClubEventsList.jsx`/`RecentActivity.jsx` (new), `src/theme/DocSidebarItem/
+Category/*` (new, ejected+patched), `docs/clubs/*` (all 18, flat `.mdx` →
+folder + `_category_.json` + `events.mdx`), `src/pages/index.js`
+
+Closed the gap flagged back in CP4 (`changes.md`'s own 2026-07-28 CP4 entry:
+"the blog plugin doesn't expose its post list via the standard `usePluginData`
+global-data mechanism by default in this setup") by building a small custom
+Docusaurus plugin, `club-events-plugin.js`, instead of trying to read the
+blog plugin's own (unexposed) content. It globs `blog/**/*.{md,mdx}` directly,
+parses frontmatter via `@docusaurus/utils`'s `parseMarkdownFile`/
+`DEFAULT_PARSE_FRONT_MATTER` (the same utility the blog plugin itself uses
+internally — no new parsing dependency needed), and groups posts by
+whatever tag they carry (club/fest/event-type, per `blog/tags.yml`) plus one
+global date-sorted list. Deliberately tag-agnostic, not "club-aware," so a
+future sitewide Archives page (`ArchivesHero`, still unwired) can read the
+same `usePluginData('club-events-plugin')` data with zero plugin changes.
+
+**Permalink derivation had to byte-match the blog plugin's own default**
+(this site has `onBrokenLinks: 'throw'`, so a wrong link is a hard build
+failure, not a cosmetic bug). Copied `@docusaurus/plugin-content-blog`'s
+`DATE_FILENAME_REGEX`/`parseBlogFileName` logic verbatim rather than
+approximating it — verified by adding a throwaway slug-less, date-prefixed
+test post, comparing the plugin's computed permalink against the URL the
+real blog build actually served it at (`/blog/2024/01/15/plugin-verify-temp`
+in both cases), then deleting the test post.
+
+**Each club gets its own Events page** (`docs/clubs/<slug>/events`, e.g.
+`/docs/clubs/art-club/events`), reading that club's tagged posts via
+`ClubEventsList`, paginated client-side (`useLoadMore`, capped, "load more"),
+with a "view full timeline" link out to Docusaurus's own auto-generated
+`/blog/tags/<slug>` page. Converting each club from a flat `docs/clubs/
+<slug>.mdx` into a folder (`index.mdx` + `_category_.json` + `events.mdx`,
+smoke-tested on Art Club first, then rolled out identically to the other 17)
+surfaced a real regression: a `type: 'doc'` sidebar item becomes `type:
+'category'` once it's a folder, and this project's existing icon patch
+(`DocSidebarItem/Link`, from the 2026-07-28 icons entry above) only
+reads `sidebar_custom_props.icon` on the `Link` component — `Category` is
+stock upstream and never reads `customProps` at all, so every club's sidebar
+icon (and its `/docs/category/clubs` card description) would have silently
+disappeared. Fixed with the same pattern already used for `Link`: ejected
+`DocSidebarItem/Category`, threaded `customProps?.icon` through to render
+the matching lucide icon before the category label. One-time shared fix,
+applies to all 18 clubs.
+
+**Bug found and fixed:** Docusaurus only generates a `/blog/tags/<tag>` page
+for tags with at least one real post — with zero real event posts existing
+yet (only the Docusaurus tutorial scaffold + one placeholder), the "view full
+timeline" link would have pointed at a page that doesn't exist for all 18
+clubs simultaneously, hard-failing the build. Fixed by only rendering that
+link when a club actually has events; confirmed by temporarily tagging one
+scaffold post `art-club`, rebuilding (link + target page both resolved
+correctly), then removing the tag and reconfirming the empty-state message
+takes over cleanly.
+
+**Homepage's fest-hero showcase (`FestsSection`, 3 heroes) replaced with
+`RecentActivity`** — the 5 most recent posts site-wide, same plugin/
+`EventCard` as the per-club pages. Fest pages themselves untouched, still
+reachable at `/docs/fests/<slug>` and via the navbar/footer `Fests` link.
+
+Verified end-to-end in a real browser (Playwright + a static build): full
+`npm run build` clean (zero broken links) after each stage and once more
+with all 18 clubs converted; homepage screenshot shows the "Recent Activity"
+heading and 5 dated post cards with no fest-hero markup left, zero console
+errors apart from the already-documented (see the GitHub-badge entry above)
+`api.github.com` 404 on a private repo. Hit one dev-server hiccup while
+checking this live: another concurrently-running session had a half-finished
+blog post (`blog/2026-07-28-stop-asking-ai-for-answers/`) referencing an
+image that didn't exist yet, which hard-fails MDX compilation for the whole
+site (not just that route); moved the post aside temporarily to verify the
+homepage in isolation, and by the time verification finished the other
+session had supplied the missing image itself — moved back and reconfirmed
+with a clean restart. Not this session's file, not this session's fix.
+
+Not yet done: the sitewide filterable Archives page (browse by club/fest/
+year, `ArchivesHero`) — deliberately deferred; the plugin's data shape
+(`{posts, postsByTag, tagsMeta}`) is already general enough for it.
+
 ## 2026-07-26 — Real blog tag taxonomy
 
 File: `blog/tags.yml` (was still tutorial placeholders — `facebook`, `hello`,
@@ -305,3 +386,682 @@ mid-animation values, not just a single jump.
 Not yet re-verified: the 6-heroes-loop-forever `IntersectionObserver`
 off-screen-pause question flagged in §9 — still open, to be raised with the
 requester now that all 23 heroes are integrated and confirmed rendering.
+
+**Update, same day:** re-raised with the requester. Decision: leave the
+off-screen pause at CP7b as originally planned — the directory/clubs listing
+page doesn't render a hero per card today, so the "many heroes looping at
+once" cost doesn't actually exist yet. Revisit once CP4's mini-hero cards
+populate that page.
+
+## 2026-07-27 — GitHub badge, footer contact icons, footer theme fix
+
+Files: `docusaurus.config.js`, `static/js/github-badge.js` (new),
+`src/theme/Footer/index.js` (new — Footer swizzled with `--wrap`),
+`src/css/custom.css`, `CONTRIBUTING.md`
+
+Implemented the navbar GitHub badge from `github-badge-guide.md` as written
+(repo name, month/year label, live star/fork counts fetched client-side, kept
+GitHub's own authentic dark/gray styling rather than re-skinning to the
+Scholar palette — the requester's explicit call). Hit one real bug while
+wiring it: the CSS comment introducing the badge's stylesheet block
+contained the literal text `--ds-*/--club-accent`, and that `*/` prematurely
+closed the CSS comment mid-sentence, corrupting everything parsed after it
+(surfaced as an unrelated-looking "unclosed string" error much further down
+the file). Fixed by rewording the comment. Separately, the badge's date
+field stayed empty in `npm start` (no SSR — the async script's
+`DOMContentLoaded` fires before React has rendered the navbar HTML into the
+DOM) but populates correctly in the actual production build, which does have
+the badge markup present in the static HTML before any script runs — not a
+real bug, just a dev-server-only artifact. Star/fork counts show `—`
+placeholders because `api.github.com/repos/ChargingTrex/collage-wiki-SAIU`
+currently 404s for unauthenticated requests — near-certainly because the
+repo is private (GitHub returns 404, not 403, for private repos to avoid
+confirming they exist) — the badge is behaving exactly per its designed
+fallback in that case.
+
+**Footer swizzled** (`--wrap`, per the easter-egg doc's already-documented
+approach, though this was for contact icons, not the dino yet) to add a
+LinkedIn / Instagram / mail / GitHub / report-an-issue icon row below the
+standard footer. Discovered lucide-react (the icon library used everywhere
+else in this project) doesn't include brand/company logos at all — it's a
+generic icon set, confirmed by checking the installed package's icon files
+directly — so LinkedIn/Instagram/GitHub are hand-embedded SVG paths inside
+`src/theme/Footer/index.js` (GitHub reuses the same octocat path already in
+the navbar badge), matching the one pattern already used in this codebase
+for brand marks. LinkedIn and Instagram hrefs and the mailto address are
+placeholders (`PLACEHOLDER_LINKEDIN_URL`, `PLACEHOLDER_INSTAGRAM_URL`,
+`PLACEHOLDER_EMAIL` — grep "PLACEHOLDER" to find them) since Sai University's
+real social URLs weren't available this session; GitHub and report-an-issue
+both point at this repo's real URL.
+
+**Found and fixed while doing this:** the footer was permanently dark
+regardless of the site's light/dark toggle. Root cause was two-fold —
+`docusaurus.config.js` had `footer: { style: 'dark' }`, which is a static
+Infima style choice unrelated to the reader's theme preference (removed);
+and the replacement custom CSS's first attempt used `--ds-neutral-900`,
+which doesn't work as a "fixed dark" value the way it sounds — the whole
+`--ds-neutral-*` ramp is deliberately *inverted* under `[data-theme='dark']`
+elsewhere in `custom.css` (so components that use it for text/surface colors
+don't need per-theme rewrites), which meant the footer's "dark" background
+picked up the ramp's now-inverted (light) end specifically in dark mode.
+Fixed with fixed hex values in explicit `[data-theme='dark']` /
+`[data-theme='light']` blocks instead of the semantic ramp tokens.
+
+**`CONTRIBUTING.md`** updated to match reality: the `useIntroMotion` example
+and description referenced `isHovered`/hover-replay, both stale since
+yesterday's click-to-play switch; corrected to `isReplaying`/click, and
+noted the off-screen pause is still not implemented (was previously
+described as already working). Also documented the new
+`static/js/github-badge.js` and the now-swizzled `Footer` in the "where
+things live" section.
+
+**Not yet committed** — another session had files staged
+(`github-badge-guide.md`, a "toggle ui dark/light mode" doc, plus new
+untracked `ClubContact.jsx`/`clubContacts.js`/planning docs) at the point
+this work finished, so committing was held off rather than bundling their
+possibly-unfinished work in under this session's commit.
+
+## 2026-07-28 — CP4: homepage/clubs split, fest heroes moved in, fests get their own doc pages
+
+Files: `src/pages/clubs.js` (new), `src/pages/index.js`, `src/pages/index.module.css`,
+`src/components/MiniHeroCard.jsx` (new), `src/data/clubDirectory.js` (new),
+`src/components/fests/*Hero.jsx` (moved in from project root), `docs/fests/*.mdx`
+(new), `src/components/useIntroMotion.js`
+
+Another session left content drafts (`homepage-content.md`, `club homepage.md`)
+proposing a different split than the original CP4 wording (mini-hero cards
+directly on the homepage): a lean homepage focused on stats/activity/about,
+with the 18-club mini-hero grid moved to its own `/clubs` directory page.
+Confirmed with the requester and built it that way, with the club-homepage
+copy (intro line, current-vs-past-team-roster note) placed above the grid on
+`/clubs` per their explicit instruction.
+
+**`MiniHeroCard.jsx`** renders each club's real hero (not a separate
+mini-implementation) at natural size inside a fixed-width wrapper, scaled
+down with a plain CSS `transform: scale()`, wrapped in a `Link` to that
+club's doc page. The wrapper has `pointer-events: none` — the outer card is
+the click target, not the hero's own internal click-to-replay handler, since
+those would otherwise both fire on any click.
+
+**Fest heroes** (`TechFestHero`/`GeneralFestHero`/`CulturalFestHero`) moved
+from the project root into `src/components/fests/`, matching the file-
+integration map. Placed on the homepage in a dedicated Fests section (full
+size, not mini — each hero handles its own click-to-replay/sound-button
+interactions, so it can't be wrapped in a page-level `Link` the way club
+cards are; each gets a separate "View this fest →" link below it instead)
+and given their own `docs/fests/<slug>.mdx` pages, mirroring `docs/clubs/`,
+per explicit request ("fests should have a sep directory like clubs").
+
+**Per-fest fixes/polish, per review:**
+- **Cultural Fest** renamed to its real name, **MoSAIc** (was a placeholder
+  "VIBRANCE 2026"); icon-ring animation enlarged (stage 128px→176px, ring
+  radius 44→58, icon circles 36px→44px).
+- **General Fest** was visibly plainer than its siblings (flat two-color
+  gradient, single icon, no tagline) — added the same ambient-glow-blob
+  depth technique already used on Cultural Fest, a radial spotlight behind
+  the icon/title, a tagline line (previously had none), and richer confetti
+  (22→34 pieces, wider settled spread — was clustered in a narrow band just
+  below center, reading as sparse once at rest).
+- **Tech Fest** — found and fixed a real, reproducible bug while checking
+  whether its scramble effect ever fully resolves: the interval advanced
+  `frame`/`locked`, built the display string, *then* checked whether to
+  clear itself — so the exact tick that finally reached `locked >=
+  target.length` cleared the interval using the *previous* tick's
+  still-one-short `locked` value. The fully-resolved string was computed but
+  never rendered before the interval died, so the very last character of
+  the title stayed permanently scrambled (confirmed via frame-by-frame
+  sampling: stuck on "INNOVISION 202+" indefinitely). Fixed by advancing
+  frame/locked *before* building the string each tick.
+
+**`useIntroMotion` gained an opt-in `playOnVisible` mode**, used only by the
+3 fest heroes. The existing mount-time arrival check only looks at
+`window.scrollY` once, at mount — for a hero below the fold on a page (the
+homepage's Fests section), that's still 0 at a fresh page load regardless of
+where the hero sits, so the intro played immediately, off-screen, and had
+already finished by the time the reader scrolled down to see it. With
+`playOnVisible: true`, the hero instead waits for an `IntersectionObserver`
+to report it in view before starting. Two real bugs surfaced while building
+and verifying this (confirmed with frame-by-frame position/timing sampling,
+not just before/after screenshots):
+1. `IntersectionObserver`'s `entry.isIntersecting` is true for *any* overlap
+   at all, even one pixel — it does **not** mean "at least `threshold`
+   visible" the way the option name suggests. Checking `intersectionRatio
+   >= threshold` explicitly was required; using `isIntersecting` alone made
+   the hero start playing as soon as a single pixel entered the viewport.
+2. Even with the ratio check, the very first observer callback (fired
+   shortly after mount) reported a **higher** ratio than the page's true
+   settled position, because it ran before the `@import`ed Google Fonts
+   (Playfair Display/Spectral) finished loading and swapped in — the
+   pre-swap fallback-font layout was shorter, so the hero measured as more
+   visible than it actually was once fonts settled. Since the observer
+   disconnects on its first qualifying reading, that stale ratio locked in
+   a premature "visible" verdict. Fixed by delaying observer setup by one
+   beat (250ms) so it starts observing only after initial font/layout
+   settling. Verified end-to-end: the hero now stays static through several
+   seconds below the fold, then genuinely plays once scrolled into view.
+
+Not done this session: pulling live "recent blog posts" onto the homepage
+(a nice-to-have from the content draft) — the blog plugin doesn't expose
+its post list via the standard `usePluginData` global-data mechanism by
+default in this setup, and building a reliable version needs more
+investigation than was worth risking on this pass. Kept a plain "Browse
+Events" CTA instead.
+
+## 2026-07-28 — Fests page, navbar Docs/Blog/Events, footer parity, Events vs Blog split
+
+Files: `src/pages/fests.js` (new), `docusaurus.config.js`,
+`blog/2026-07-28-student-voices-placeholder/index.md` (new)
+
+**`/fests` page** built mirroring `/clubs`: the 3 fest heroes at full size
+(not mini — same reason as the homepage's Fests section, they own their
+click-to-replay/sound interactions and can't be `Link`-wrapped), each with a
+"View X →" link to its `docs/fests/<slug>` page. Added to the navbar
+(`{to: '/fests', label: 'Fests'}`) per explicit request that clicking Fests
+in the header should land on an all-fest-heroes page "like the clubs" one,
+not the docs category index.
+
+**Navbar gained `Docs` (`/docs/intro`) and `Blog`**; footer's "Wiki" column
+updated to match (Clubs/Fests/Docs/Events/Blog). Confirmed with the
+requester via AskUserQuestion that **`Blog` and `Events` are two distinct,
+non-overlapping nav items**, not a rename of one into the other — requester's
+words: "blogs will show only student voices posts, whereas events will show
+all the fests, clubs and general events." So `Events` → `/blog` (the full
+chronological archive, unchanged), `Blog` → `/blog/tags/student-voices` (only
+posts an individual student wrote on their own).
+
+Wiring `Blog` to that tag route surfaced two real, non-obvious behaviors of
+Docusaurus's blog-tag system: (1) `tags.yml`'s custom `permalink:
+/student-voices` field does **not** change the tag's actual generated route
+in this setup — it's still served at the default `/blog/tags/student-voices`
+regardless; (2) a tag with **zero** posts using it generates **no page at
+all** (plain 404), confirmed by checking before/after adding a real post.
+Since no real student-authored post existed yet, added
+`blog/2026-07-28-student-voices-placeholder/index.md` (tagged
+`student-voices`, no `authors` field — deliberately not inventing a fake
+student persona, body text clearly labels it a placeholder) purely so the
+new `Blog` nav item has a real, non-broken destination. Replace/delete once
+genuine student posts exist.
+
+**Bug reported ("i cannt access docs at all"), diagnosed as not a real
+bug**: root cause was the *other*, concurrently-running dev server (port
+3000, started outside this session's control) had crashed from an earlier
+Rspack cache panic and was never restarted. Verified this session's own
+server (port 3005) was serving `/docs/*` correctly the entire time via direct
+Playwright testing (page load, sidebar navigation, zero console errors)
+before concluding there was no actual regression — fixed by restarting the
+3000 server, not by changing any code.
+
+**Floating icon quick-jump menu for the homepage**: requested alongside the
+above ("add a side bar in the home page with a icon"); clarified via
+AskUserQuestion that a floating quick-jump icon button was wanted, not a
+permanent docs-style sidebar. **Not yet built** — remains open.
+
+## 2026-07-28 — HANDOFF-3.md
+
+Wrote `HANDOFF-3.md`, a fresh dense resume-context document (same 5-section
+shape as `HANDOFF-1.md`/`HANDOFF-2.md`) covering everything from CP4 forward:
+the homepage/clubs/fests split, the click-to-play/`playOnVisible` playback
+changes, the Events-vs-Blog nav split, the GitHub badge/footer work, all
+bugs found and fixed, and the still-uncommitted state pending the concurrent
+session's parallel edits. Next up per that doc: an `/explore` page (all 23
+heroes + Blog/Archive cards), the floating quick-jump menu, and revisiting
+the off-screen `IntersectionObserver` pause now that multi-hero pages exist.
+
+## 2026-07-28 — Explore page, Archives finally gets a doc page
+
+Files: `src/pages/explore.js` (new), `docs/resources/archives.mdx` (new),
+`docs/resources/_category_.json` (new), `src/css/custom.css`,
+`src/pages/clubs.js`, `docusaurus.config.js`
+
+**`ArchivesHero.jsx` had existed since CP2/CP3 with zero doc-page wiring** —
+flagged as a known gap in `HANDOFF-3.md` (`/clubs`' own copy referenced "a
+separate Archives page" as plain unlinked text for exactly this reason).
+Fixed by adding `docs/resources/archives.mdx` (new `docs/resources/`
+category, matching CLAUDE.md's target directory layout, position 4 after
+Fests) wiring in `ArchivesHero` with no props — it already ships sensible
+defaults. `src/pages/clubs.js`'s "Archives page" mention is now a real
+`Link` to `/docs/resources/archives` instead of dead text.
+
+**`/explore` page** built per request ("add explore page with all the
+heroes, a blog and archive cards with icons"): reuses the exact same
+`CLUB_DIRECTORY`/`MiniHeroCard` grid as `/clubs` (18 cards) and the same
+full-size fest hero + "View X →" pattern as `/fests` (3 heroes), under
+"Clubs"/"Fests" headings on one page. Two additional non-hero cards sit at
+the end of the club grid — `Blog` (lucide `BookOpen` icon → `/blog/tags/
+student-voices`, matching the navbar's Blog target) and `Archives` (lucide
+`Archive` icon → the new `/docs/resources/archives`) — sized to match
+`.mini-hero-card`'s footprint via a new `.explore-icon-card` class so they
+sit flush in the same flex grid. Library's hero remains unwired (not
+requested this round — only Blog/Archive cards were asked for); noted as
+still-open.
+
+One CSS pitfall avoided while building `.explore-icon-card`: initially set
+the icon color to `var(--club-accent)`, matching the hero convention, but
+`--club-accent-light`/`-dark` are **only ever set inline by `useClubAccent`
+on a specific hero's own root** — outside any hero (as these cards are) the
+variable is simply undefined, which would have made the icon color silently
+invalid rather than erroring. Used `var(--ifm-color-primary)` instead, since
+these cards aren't tied to any one club's accent.
+
+**Added `/explore` to the navbar and footer** (first item, ahead of
+Clubs/Fests), matching the precedent set earlier this session for every
+other new top-level page (Clubs, Fests) — an unlinked page would otherwise
+have no discoverable entry point.
+
+Verified end-to-end with a real browser after a full dev-server restart
+(config changes don't hot-reload): navbar order `Explore, Clubs, Fests,
+Docs, Events, Blog`; `/explore` renders 18 mini-hero cards + 2 icon cards
+under "Clubs", 3 fest heroes under "Fests"; clicking the Archives card
+correctly lands on `/docs/resources/archives`, which renders the
+`ArchivesHero` component with zero console errors. Also ran a full
+`npm run build` afterward specifically to confirm the new routes don't trip
+`onBrokenLinks: 'throw'` — passed clean.
+
+Still not committed — same reason as every entry above this one this
+session (concurrent session's parallel edits to shared files, holding off
+until that's sorted out with the requester).
+
+## 2026-07-28 — Library repurposed as the Blog hero, /student-voices landing page, tag-filtered recent-posts feed
+
+Files: `src/components/LibraryHero.jsx`, `src/pages/student-voices.js` (new),
+`src/components/TagFilteredEvents.jsx` (new), `docusaurus.config.js`,
+`src/pages/explore.js`
+
+**Clarified split, confirmed by the requester**: `LibraryHero` and
+`ArchivesHero` are two separate heroes that happen to share a shelf-of-books
+visual motif — Library = the Blog hero (individual student writing, a shelf
+still being filled), Archives = the Archive hero (the completed event
+history, already wired to `docs/resources/archives.mdx` earlier this
+session). `LibraryHero.jsx`'s default `title`/`subtitle` had drifted to say
+"Campus Library Archive" / "Four hundred events, catalogued and
+searchable" — that's Archives' copy, not Library's — corrected to "Student
+Voices" / "Writing, projects, and reflections — published by students, for
+themselves." Its header comment and `SHELF_BOOKS` spine labels
+(`ARCHIVE`→`ESSAYS`, `THESES`→`PROJECTS`) updated to match.
+
+**`/student-voices` (new page)** — the requester wanted Blog to work "like
+the clubs page": its own landing page with the hero up top, not a bare link
+straight into Docusaurus's auto-generated tag listing. Structure: full-size
+`LibraryHero`, a short blurb distinguishing it from Events, a link to the
+underlying `/blog/tags/student-voices` listing, then the new tag-filter feed
+(below).
+
+**This changed an earlier locked decision** (Blog nav → `/blog/tags/
+student-voices` directly, confirmed earlier this session via
+AskUserQuestion) — flagged explicitly per the requester's standing
+instruction to surface exactly this kind of conflict; re-confirmed via a
+second AskUserQuestion and the requester chose the new landing page. Navbar
+`Blog` item, footer's "Wiki" column `Blog` link, and the Explore page's Blog
+icon-card all repointed from `/blog/tags/student-voices` to `/student-voices`.
+
+**`TagFilteredEvents.jsx` (new)** — a tag picker + recent-posts feed, per
+request ("give a provision to select all the tags [that] bring the last 5
+to 10 blogs/events"). Reuses the concurrent session's `club-events-plugin`
+data (`usePluginData('club-events-plugin')` → `{posts, tagsMeta}`, already
+sorted newest-first) and its `EventCard`/`useLoadMore` components — same
+data source as their `RecentActivity` (homepage) and `ClubEventsList`
+(per-club events pages), not a second parallel blog-data reader. Opens with
+every one of the 29 tags (18 clubs + 3 fests + 7 event-types +
+`student-voices`) pre-selected, so it's populated immediately; unchecking
+tags narrows the feed live. Results capped at 10, revealed 5 at a time via
+`useLoadMore`'s existing "Load more" pattern. "Select all tags" / "Clear"
+buttons for the two extremes.
+
+**Found while wiring this in (not caused by, and not fixed as part of, this
+work — flagging for awareness):** the dev server is currently failing to
+hot-reload at all, sitewide, because `blog/2026-07-28-stop-asking-ai-for-
+answers/index.md` (not part of this session's own work — appeared during
+this session from elsewhere, most likely the concurrent session) references
+a local image, `./blind-reliance-vs-active-dialogue.png`, that does not
+exist in its post folder — the folder only contains `index.md`, no image.
+Docusaurus's MDX loader hard-fails the whole blog compilation on this
+(`onBrokenMarkdownImages` defaults to throw), which cascades into "Errors
+while compiling. Reload prevented." for the entire site, not just that post.
+Did not touch this file — it reads as someone else's in-progress post
+missing an asset they haven't added yet, not something to silently delete
+or paper over. Needs the real image added (or the reference/post removed)
+before the dev server or a production build will run clean again.
+
+Verified (aside from the above, pre-existing, unrelated breakage): navbar
+`Blog` → `/student-voices` confirmed via direct href check; page renders the
+`LibraryHero`, 29 tag checkboxes, and an initially-populated feed; `Clear`
+correctly empties the feed and shows the empty-state message; `Select all
+tags` correctly repopulates it.
+
+## 2026-07-28 — Archive-planning doc, clubs-grid sizing, General Fest polish, Clubs nav/sidebar/card icons
+
+Files: `archive planning.md` (new), `src/components/MiniHeroCard.jsx`,
+`src/css/custom.css`, `src/components/fests/GeneralFestHero.jsx`,
+`docusaurus.config.js`, `docs/clubs/*.mdx` (18, frontmatter only),
+`src/data/sidebarIcons.js` (new), `src/theme/DocSidebarItem/Link/*` (new),
+`src/theme/DocCard/Heading/Icon/*` (new)
+
+**Archive planning.** Talked through (before writing anything) how the
+400+ event archive and yearly club-leadership rollover should actually work,
+since the two look similar but need different treatment: events are already
+permanently dated once posted (`/blog` + `blog/tags.yml`, unchanged, never
+moved — a future Archives page just layers a timeline/search UI over the
+existing tags, using the still-unwired `ArchivesHero`), whereas a club's
+*current* exec board is living state that gets silently overwritten unless
+explicitly snapshotted first. Landed on snapshot-then-overwrite: at rollover,
+copy the outgoing board into a permanent `docs/archive/<slug>/<year-range>-
+board.mdx` (fests: `-committee.mdx`), then edit the live `docs/clubs/<slug>
+.mdx` / `docs/fests/<slug>.mdx` page in place. Archive files live in one
+central `docs/archive/` tree grouped by club/fest, not nested inside each
+club's own folder. Written up in `archive planning.md`; planning only, not
+implemented — content-sourcing the real historical events (mostly on
+Instagram, incomplete) is a separate manual effort for later.
+
+**Clubs directory grid read as too zoomed-out.** `MiniHeroCard.jsx` renders
+each hero at natural size then scales it down with a plain CSS `transform`;
+the scale factor (0.58) and the fixed card box in `custom.css` it was tuned
+to (325×112px) both got bumped proportionally to 0.68 / 381×131px. Verified
+in a real browser: grid still wraps cleanly, no clipping, hover lift
+unaffected.
+
+**General Fest Hero polish.** Another session was mid-edit on this exact
+file for the same complaint when this work started (glow blobs, spotlight,
+tagline, denser confetti); waited for it to finish, then added a bunting
+banner and a radial flash behind the popper on top of that pass. **Real bug
+found while verifying live:** the confetti/bunting `<svg>` used
+`preserveAspectRatio="xMidYMid slice"`, but the card's actual rendered aspect
+ratio (~6:1) is nothing like the 300×200 viewBox (1.5:1) — "slice" was
+cropping to a ~50-unit sliver down the vertical center, so the bunting (near
+the viewBox top) was invisible and confetti landed *below* that sliver once
+settled. The card read as plain not because the effects were missing but
+because they were being cropped out entirely; switched to
+`preserveAspectRatio="none"` so the full viewBox always maps onto the real
+card. Also added, per a follow-up request to use Framer features not already
+in play: `variants`/`staggerChildren` orchestrating the bunting and a
+title/tagline entrance (previously had *no* entrance at all — text just
+appeared while everything else animated in), and a `whileHover` bump on the
+popper layered on top of the card's existing hover-replay.
+
+**Clubs navbar link, sidebar icons, card icons.** Three related fixes,
+requested and verified one at a time in a real browser each time:
+1. Navbar `Clubs` was `type: 'docSidebar'`, which lands on Docusaurus's
+   plain auto-generated `/docs/category/clubs` index rather than the actual
+   `/clubs` hero-grid page; changed to a direct link.
+2. Added `sidebar_custom_props: { icon: <LucideName> }` to all 18 club docs'
+   frontmatter and ejected `DocSidebarItem/Link` (`src/theme/`) to render
+   the matching lucide icon before each sidebar label — upstream has no
+   icon slot at all, it's plain text.
+3. The `/docs/category/clubs` page itself (still reachable directly/via
+   breadcrumbs even though the navbar no longer points at it) kept showing
+   generic file icons after fix 2 — turned out to use a *different*
+   component (`DocCard`), which derives its icon purely from a leading
+   emoji in the label, not from `sidebar_custom_props`. Ejected
+   `DocCard/Heading/Icon` too, same source of truth.
+4. Both new icon components color themselves via `useClubAccent(slug)` —
+   the same hook every hero already uses, keyed by the doc's own route slug
+   — rather than a flat generic color, so a club's sidebar/card icon is
+   always that club's real accent. Verified directly: Astronomy Club's
+   sidebar icon and card icon are the same indigo as its hero's heading.
+
+Dev-server verification note: hit a stale/leftover server still bound to
+port 3000 from an earlier check mid-session — its log showed `[ERROR]
+Something is already running on port 3000` while still serving requests, so
+a screenshot briefly "passed" against pre-fix code. Caught by checking the
+log instead of trusting a green screenshot; killing the port and confirming
+a fresh `[SUCCESS] Docusaurus website is running` line before re-verifying
+is now the pattern for any check that follows a same-session file edit.
+
+## 2026-07-28 — Events page (real content only), Events on Explore, footer sync, tutorial content relocated
+
+Files: `src/pages/events.js` (new), `src/components/TagFilteredEvents.jsx`,
+`src/pages/explore.js`, `docusaurus.config.js`, `docs/intro.mdx` (rewritten),
+`tutorial-reference/` (new — `docs/tutorial-basics/`, `docs/tutorial-extras/`,
+old `docs/intro.mdx` moved here), `CONTRIBUTING.md`
+
+**Events page was showing everything, not just real content.** The "Events"
+nav item pointed straight at Docusaurus's stock `/blog` index, which lists
+every non-draft post regardless of tag — including the four leftover
+Docusaurus tutorial posts (`docusaurus`, `hello`, `hola`, `facebook` tags,
+none of which are real taxonomy). Fixed by building a custom `/events` page
+(same pattern as `/student-voices`): `TagFilteredEvents` gained an optional
+`tagIds` prop bounding which tags it will ever match a post against (both
+which checkboxes render and which posts are eligible) — `/events` passes
+every `blog/tags.yml` tag *except* `student-voices` (18 clubs + 3 fests + 7
+event-types = 28), so a post only appears there if it carries an actual
+club/fest/event-type tag; `/student-voices` continues to pass no restriction
+(all 29 tags), unchanged from how it already worked. Verified in a real
+browser: `/events` renders exactly 28 tag checkboxes with no "Student Voices"
+option; `/student-voices` still shows 29. Navbar/footer "Events" repointed
+from `/blog` to `/events`; the raw `/blog` route itself is untouched (still
+serves individual post pages, RSS/Atom feeds, and the tag pages other
+components link out to — only the nav entry point changed).
+
+**Events surfaced on the Explore page** — a third icon card (lucide
+`CalendarDays`) alongside the existing Blog/Archives cards, linking to
+`/events`.
+
+**Footer's "Wiki" column "Events" link** updated to match the navbar
+(`/blog` → `/events`).
+
+**Leftover Docusaurus tutorial content moved out of `docs/`** into a new
+`tutorial-reference/` folder at the project root (`docs/tutorial-basics/`,
+`docs/tutorial-extras/`, and `docs/intro.mdx` itself — the "Tutorial Intro"
+page, entirely about installing Docusaurus, not this wiki). This was also
+the site's "Docs" nav destination (`/docs/intro`), a gap flagged but not
+acted on earlier this session (`HANDOFF-3.md` §5: "worth reconsidering
+later"). Since `sidebars.js` autogenerates from `docs/`'s folder structure,
+moving these out also removes them from the sidebar with no config change.
+Wrote a **new** `docs/intro.mdx` at the same route — a real overview linking
+to Clubs/Fests/Resources/Explore/Events/Blog — so `/docs/intro` still
+resolves and nothing links to a 404.
+
+**Bug found and fixed while verifying:** the new `docs/intro.mdx` first
+linked to `/docs/clubs`, `/docs/fests`, `/docs/resources` directly, which
+`npm run build` immediately caught as broken links — a category folder's
+`generated-index` page (no `index.mdx` of its own inside `docs/clubs/` etc.)
+actually serves at `/docs/category/<slug>`, not `/docs/<slug>` (same
+distinction another session's changes.md entry already hit for the Clubs
+navbar item). Fixed by linking Clubs/Fests to their real hero-grid pages
+(`/clubs`, `/fests`) instead, and Resources to `/docs/category/resources`.
+
+**`CONTRIBUTING.md`** updated: directory tree now lists all the new
+top-level pages (`events.js`, `student-voices.js`, `explore.js`, etc.),
+`TagFilteredEvents.jsx`/`MiniHeroCard.jsx`/`LibraryHero.jsx`/`ArchivesHero.jsx`
+in the component list (previous version was missing them and, for
+`LibraryHero`, didn't clarify it's a *separate* hero from `ArchivesHero`
+despite the shared shelf motif), the new `tutorial-reference/` folder, and a
+corrected `static/admin` line — the old tree listed `admin/index.html` as if
+Decap CMS were already scaffolded, but it isn't (no `static/admin/` exists
+at all yet; section 1 of the same doc already said as much, the directory
+tree just hadn't been kept in sync). Also added a short "where a post shows
+up depends on its tags" note explaining the Events/Blog tag-filtering split
+concretely, so a contributor tagging a real post can predict where it'll
+land.
+
+Verified end-to-end: full `npm run build` clean after all of the above
+(zero broken links); dev-server browser check confirmed navbar order
+(`Explore, Clubs, Fests, Docs, Events, Blog`), `/docs/intro`'s real heading,
+`/events`'s 28-tag picker, `/student-voices`'s unchanged 29-tag picker, and
+Explore's three icon cards (`Events`, `Blog`, `Archives`).
+
+### Checkpoint status check (requested, not new work)
+
+Reviewed the CP0–CP8 master plan
+(`~/.claude/plans/push-to-https-github-com-chargingtrex-co-spicy-star.md`)
+against actual repo state:
+
+- **CP0–CP3**: done (git history has explicit CP0/CP1/CP2/CP3 commits,
+  `d2c9967` is the last one — everything since is uncommitted).
+- **CP4** (homepage mini-heroes + fests): partially superseded, not failed —
+  the concurrent session replaced the homepage's fest-hero section with
+  `RecentActivity`; the mini-hero grid and fest heroes both still exist and
+  are reachable (`/clubs`, `/fests`, `/explore`), just not on the homepage
+  itself anymore.
+- **CP5** (blog + CMS): blog/co-located-images half is real and working
+  (confirmed via `stop-asking-ai-for-answers`'s co-located PNG); **Decap CMS
+  is not scaffolded at all** — no `static/admin/` directory exists yet.
+  `CONTRIBUTING.md` §1 already said as much, but its directory-tree section
+  had drifted and listed `admin/index.html` as if it existed — fixed as
+  part of today's `CONTRIBUTING.md` update, above.
+- **CP6** (footer easter egg): **not built.** `react-chrome-dino` is
+  installed but nothing in `src/theme/Footer/index.js` references it —
+  confirmed via direct grep, zero matches for "dino"/"chrome-dino".
+- **CP7a** (accent unified-mode toggle UI): **not built** — `setAccentMode`/
+  `useAccentMode` are only referenced inside `useClubAccent.js` itself (where
+  they're defined), nothing calls them from any UI. Matches what
+  `CLAUDE.md`'s own "Remaining infra tasks" section already flags.
+- **CP7b** (off-screen `IntersectionObserver` pause, sitewide): **not
+  built** — `useIntroMotion.js` only has the fest-specific `playOnVisible`
+  opt-in from earlier this session; no generic pause for looping heroes
+  exists yet.
+- **CP8** (deploy): **not done** — no `gh-pages` branch exists locally, and
+  nothing beyond the CP0 initial push has been pushed to `origin` at all.
+
+Net: CP0–CP3 solid, CP4 evolved rather than regressed, CP5 half-done
+(content side works, CMS side doesn't exist), CP6/CP7a/CP7b/CP8 all still
+open. None of this is new work from this pass — just a status read, since
+none of the day's other tasks touched CMS, the easter egg, the accent
+toggle, the off-screen pause, or deployment.
+
+## 2026-07-28 — First e2e test suite (57 tests), a real hydration bug found and fixed, Decap CMS scaffolded, CP5 auth-decision doc written
+
+Files: `playwright.config.js` (new), `tests/e2e/*` (new, 8 spec files +
+`base.js`/`fixtures.js`/`helpers.js`), `package.json` (new
+`test:e2e`/`test:e2e:report`/`pretest:e2e` scripts, `@playwright/test`
+devDependency), `TEST_REPORT.md` (new), `.gitignore`,
+`src/components/fests/GeneralFestHero.jsx`, `static/admin/index.html` (new),
+`static/admin/config.yml` (new), `docs-internal/decap-cms-auth-todo.md`
+(new), `CONTRIBUTING.md`
+
+Requested before starting the next checkpoint: a real, checked-in test
+suite (not one-off ad hoc scripts) covering the whole site, a report, and
+finishing CP5's Decap CMS decision doc — then push.
+
+### Test suite
+
+Built with `@playwright/test` (proper devDependency this time, not the
+earlier ad hoc `--no-save` install from the Explore-page verification
+pass), running against the actual **production build**
+(`docusaurus build` + `docusaurus serve`) rather than the dev server —
+dev mode serves a near-empty CSR-only shell in its raw HTML, so testing the
+build is closer to what a real visitor gets and is what
+`onBrokenLinks: 'throw'` already gates on. `npm run test:e2e` runs the build
+first automatically (`pretest:e2e`). 57 tests across 8 files; see
+`TEST_REPORT.md` for the full coverage table.
+
+### Two real site bugs found by writing these tests
+
+1. **Hydration mismatch on `/fests` and `/explore`** (React error #418,
+   `onRecoverableError`). `GeneralFestHero.jsx`'s confetti (`PIECES`) was
+   built with `Math.random()` at module scope, under a comment claiming
+   this was "deterministic so SSR and client agree." That's incorrect: the
+   module evaluates twice per page load — once during server-side
+   prerendering, once again in the browser during hydration — and
+   `Math.random()` produces a different sequence *each time it's called*,
+   not each time the *page* loads, so the two evaluations never agreed.
+   Fixed by replacing it with a seeded PRNG (`mulberry32`, fixed seed
+   `20260728`), producing byte-identical output both times. Confirmed via
+   the test suite: the React error is gone from both routes across
+   repeated runs. **General lesson captured in `CONTRIBUTING.md`'s PR
+   checklist**: any non-deterministic value computed during a hero's
+   initial render needs a seeded PRNG, not `Math.random()`/`Date.now()`
+   directly.
+2. **Confirmed correct, not a bug**: `/events` currently shows "No posts
+   match the selected tags" no matter which tags are selected, because zero
+   posts in the repo carry a real club/fest/event-type tag yet (only
+   tutorial-scaffold posts and one `student-voices`-only post exist). A
+   test that assumed Select-All would surface visible posts was rewritten
+   to check the buttons' actual checkbox mechanics instead — the empty
+   state is the correct, already-documented behavior until the archive is
+   backfilled.
+
+### Test-infrastructure bugs found and fixed (not site bugs — a debugging trail worth keeping)
+
+The first full run had 51 of 57 tests failing; tracking down why, rather
+than assuming the site was broken, surfaced several real testing gotchas:
+
+- **`baseURL` + a leading-slash `page.goto()` silently lands on the wrong
+  page.** `baseURL` has its own path segment
+  (`http://localhost:3100/collage-wiki-SAIU`, matching Docusaurus's
+  `baseUrl`). Per WHATWG URL resolution, `page.goto('/clubs')` treats the
+  leading `/` as absolute-from-origin, silently dropping
+  `/collage-wiki-SAIU` and requesting `http://localhost:3100/clubs`
+  instead — which the static server's fallback served as the *homepage*
+  (200 status, zero console errors), so a shallow status-only check
+  couldn't tell the difference; a `.mini-hero-card` count assertion could,
+  and did (0 instead of 18), which is what actually surfaced this. Fixed by
+  dropping the leading slash in every `page.goto()` call and adding a
+  trailing slash to `baseURL`; strengthened the navbar-link test to assert
+  the resulting URL, not just a 200, closing the exact gap that hid this.
+- **A live third-party API call rate-limited itself under test
+  parallelism.** The navbar's GitHub badge (`static/js/github-badge.js`)
+  fires a real `fetch('https://api.github.com/...')` on every page load;
+  running dozens of page loads in parallel tripped GitHub's unauthenticated
+  rate limit (403) within the run. Fixed with a `page.route` mock
+  (`tests/e2e/base.js`, a custom `test` fixture every spec file imports
+  instead of `@playwright/test` directly) — deterministic, and stops the
+  suite from hammering a real external service as a side effect of testing.
+- **Accessible-name collisions.** `getByRole('link', {name: 'Clubs', exact:
+  true})` (etc.) matched 3–4 elements at once (navbar, sidebar, footer,
+  body) — fixed by scoping to `article`/`main`/`footer` per test. Also hit
+  the reverse case: `getByRole('link', {name: 'GitHub', exact: true})`
+  found *zero* matches, because the footer's external-link icon's
+  `(opens in new tab)` alt text gets folded into the accessible name
+  (`"GitHub (opens in new tab)"`) — fixed with a `/^GitHub/` regex instead
+  of an exact string.
+- **Clicking a `pointer-events-none` element.** Hero SVGs have
+  `pointer-events-none` (the real click handler is on the parent div, per
+  `useIntroMotion`'s `hoverProps`) — a real click there passes through to
+  the div underneath, but Playwright's actionability check calls that
+  "intercepted" and refuses. Fixed with `{force: true}`.
+- **Screenshot-diff timing flakiness.** A single before/after pixel-hash
+  pair can land on two identical frames purely by chance (both samples
+  catching the same brief hold in a keyframe timeline), reporting "no
+  motion" for a hero that's genuinely animating — confirmed by watching the
+  same unchanged test flip between pass and fail across otherwise-identical
+  reruns. Replaced with a multi-sample helper (6 samples over ~700ms,
+  passes if *any* pair differs); stable across 3 repeated full runs
+  afterward.
+- **The theme toggle is a 3-way cycle** (system → light → dark → system),
+  not on/off. Starting from "system" (resolves to "light" here), one click
+  just locks in "light" explicitly — no visible change — and a second click
+  is what actually reaches "dark". Fixed by clicking until
+  `data-theme="dark"` is observed (capped at 3 tries).
+
+### Decap CMS: structural scaffold + the CP5 decision doc
+
+`static/admin/index.html` (loads Decap CMS via CDN script) and
+`static/admin/config.yml` (real config, not a stub) — one working
+collection, **Events** (`blog/`): title, date, a tag `select` (mirrors
+`blog/tags.yml` — Decap can't read that file directly, so this list has to
+be kept in sync by hand), description, markdown body, with uploads
+co-located beside the post (`media_folder: ''`), matching the site's
+existing image convention.
+
+**Club and fest pages (`docs/clubs/*`, `docs/fests/*`) are deliberately NOT
+exposed as CMS collections** — real constraint discovered while designing
+this, not a stylistic choice: those are MDX files with hero-component
+imports and a `<ClubContact>` embed, and Decap CMS collections replace a
+file's *entire* frontmatter + body with only what's represented in
+`fields:`. A non-technical editor saving through a generic body widget
+would silently strip those imports and break the page. Safely exposing
+club/fest editing needs the prose pulled out into plain frontmatter fields
+the JSX reads from — a content-model change, not a CMS-config one — and
+hasn't happened. `CONTRIBUTING.md`'s CMS section was corrected accordingly
+(it previously claimed club-page editing would be supported).
+
+`docs-internal/decap-cms-auth-todo.md` (new, outside `docs/` — not part of
+the Docusaurus build) finishes the CP5 deliverable the build plan called
+for: capturing why the GitHub+OAuth-proxy vs. git-gateway+Netlify-Identity
+choice is genuinely blocked on a **hosting** decision, not just unmade —
+Option A works with the current GitHub Pages plan (needs a small
+always-on OAuth-proxy service); Option B fits non-technical editors better
+but effectively requires moving hosting to Netlify, which is a bigger
+architectural change than picking a CMS backend. Documents what concretely
+unblocks each path. The footer's commented-out Decap CMS link stays
+commented out — re-enabling it is explicitly listed as a follow-up step in
+that doc, once auth actually works, not before.
+
+Verified: `npm run build` clean with the new `static/admin/` files present
+in `build/admin/`; full `npm run test:e2e` (57/57) re-run afterward to
+confirm the CMS scaffold didn't change anything the suite checks (the "no
+Decap CMS link yet" footer test still correctly passes — that link is
+still commented out, on purpose).
+
+Not yet committed or pushed — see the note at the end of every entry above
+this one this session.

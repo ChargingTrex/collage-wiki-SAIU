@@ -1,0 +1,8 @@
+{
+  "label": "Resources",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "Shared resources across all clubs and fests: the event archive and the library."
+  }
+}

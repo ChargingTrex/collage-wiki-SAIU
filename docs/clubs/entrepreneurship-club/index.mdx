@@ -1,0 +1,23 @@
+---
+title: Entrepreneurship Club
+description: Fostering startup culture and business innovation at Sai University.
+hide_title: true
+sidebar_custom_props:
+  icon: Lightbulb
+---
+
+import { EntrepreneurshipHero } from '@site/src/components/clubs/EntrepreneurshipHero';
+import { ClubContact } from '@site/src/components/ClubContact';
+import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+
+<EntrepreneurshipHero />
+
+The Entrepreneurship Club runs pitch competitions, founder talks, and startup
+incubation support for students turning ideas into ventures.
+
+## Contact
+
+<ClubContact
+  clubSlug="entrepreneurship-club"
+  {...CLUB_CONTACTS['entrepreneurship-club']}
+/>

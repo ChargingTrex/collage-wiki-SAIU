@@ -1,0 +1,34 @@
+/**
+ * Copied from @docusaurus/theme-classic unchanged, plus .linkIcon for the
+ * per-doc sidebar icon (see index.js).
+ */
+
+.menuExternalLink {
+  align-items: center;
+}
+
+.linkLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.linkText {
+  overflow: hidden;
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.linkIcon {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  color: var(--accent-light);
+  opacity: 0.85;
+}
+
+:global([data-theme='dark']) .linkIcon {
+  color: var(--accent-dark);
+}

@@ -355,3 +355,167 @@
 .tech-club h6 {
   letter-spacing: -0.01em;
 }
+
+/* =====================================================================
+   GitHub repo badge — navbar pill (see github-badge-guide.md).
+   Deliberately hardcoded to GitHub's own UI palette rather than the
+   --ds- or --club-accent tokens — keeping it visually recognizable as an
+   authentic GitHub badge was the explicit call here, and these are
+   GitHub's own production color values (already WCAG-vetted by GitHub).
+   ===================================================================== */
+.github-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 9999px;
+  padding: 4px 12px 4px 10px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #8b949e;
+  text-decoration: none;
+  transition: border-color 0.15s ease;
+  white-space: nowrap;
+  line-height: 1;
+  height: 28px;
+  box-sizing: border-box;
+}
+.github-badge:hover { border-color: #484f58; text-decoration: none; }
+.github-badge__icon { flex-shrink: 0; color: #e6edf3; }
+.github-badge__repo { color: #e6edf3; font-weight: 600; }
+.github-badge__sep { width: 1px; height: 14px; background: #30363d; flex-shrink: 0; }
+.github-badge__tag-icon,
+.github-badge__label,
+.github-badge__stat-icon { color: #8b949e; flex-shrink: 0; }
+.github-badge__count { color: #e6edf3; font-weight: 600; }
+
+[data-theme='light'] .github-badge { background: #f6f8fa; border-color: #d0d7de; }
+[data-theme='light'] .github-badge:hover { border-color: #afb8c1; }
+[data-theme='light'] .github-badge__icon,
+[data-theme='light'] .github-badge__repo,
+[data-theme='light'] .github-badge__count { color: #1f2328; }
+[data-theme='light'] .github-badge__sep { background: #d0d7de; }
+[data-theme='light'] .github-badge__tag-icon,
+[data-theme='light'] .github-badge__label,
+[data-theme='light'] .github-badge__stat-icon { color: #656d76; }
+
+/* =====================================================================
+   Footer contact icon bar — swizzled Footer wrapper
+   (src/theme/Footer/index.js). Sits below the standard Infima footer.
+   ===================================================================== */
+.footer-contact-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1rem 0 1.5rem;
+  background: var(--ifm-footer-background-color);
+}
+.footer-contact-bar__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ifm-footer-color, #ebedf0);
+  opacity: 0.75;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.footer-contact-bar__link:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+  color: var(--ifm-footer-link-hover-color, #ffffff);
+}
+.footer-contact-bar__icon {
+  display: block;
+}
+
+/* =====================================================================
+   Footer — follow the site's light/dark toggle instead of Infima's static
+   footer.style option (which was 'dark' always, regardless of the theme
+   the reader picked). Fixed hex values, deliberately NOT --ds-neutral-*
+   tokens — that scale is inverted per-theme (§ [data-theme='dark'] above,
+   "neutral-900" flips to a light value) for text/surface use elsewhere,
+   which made the footer background pick up the wrong end of the ramp in
+   dark mode instead of actually going dark.
+   ===================================================================== */
+[data-theme='dark'] {
+  --ifm-footer-background-color: #15181f;
+  --ifm-footer-color: #a8b0c5;
+  --ifm-footer-link-color: #ff9d38;
+  --ifm-footer-link-hover-color: #ffc070;
+  --ifm-footer-title-color: #ffffff;
+}
+[data-theme='light'] {
+  --ifm-footer-background-color: #f0f2f7;
+  --ifm-footer-color: #4d546b;
+  --ifm-footer-link-color: #b54607;
+  --ifm-footer-link-hover-color: #93360d;
+  --ifm-footer-title-color: #232836;
+}
+
+/* =====================================================================
+   Mini-hero cards — homepage/clubs-directory grid (MiniHeroCard.jsx).
+   Card is sized to exactly match its scaled-down hero (560px source width,
+   0.68 scale = ~381x131px) so the grid lays out normal fixed-size cards.
+   (Was 0.58/~325x112px — read as too zoomed-out in the directory grid.)
+   ===================================================================== */
+.mini-hero-card {
+  display: block;
+  position: relative;
+  width: 381px;
+  height: 131px;
+  overflow: hidden;
+  border-radius: var(--ds-radius-lg);
+  box-shadow: var(--ds-shadow-sm);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.mini-hero-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--ds-shadow-md);
+  text-decoration: none;
+}
+.mini-hero-card__scale-wrap {
+  transform-origin: top left;
+  pointer-events: none; /* the card itself is the click target, not the hero's own replay toggle */
+}
+.mini-hero-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+/* Explore page's non-hero cards (Blog, Archive) — same footprint as
+   .mini-hero-card so they sit flush in a mixed grid, but content is an
+   icon + label instead of a scaled hero. */
+.explore-icon-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 381px;
+  height: 131px;
+  border-radius: var(--ds-radius-lg);
+  box-shadow: var(--ds-shadow-sm);
+  background: var(--ifm-card-background-color);
+  border: 1px solid var(--ifm-color-emphasis-300);
+  color: var(--ifm-font-color-base);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.explore-icon-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--ds-shadow-md);
+  text-decoration: none;
+  color: var(--ifm-font-color-base);
+}
+.explore-icon-card svg {
+  /* Not tied to any single club, so use the site accent rather than
+     --club-accent (which is only ever set inline by useClubAccent, on a
+     per-hero basis — it has no meaningful value out here). */
+  color: var(--ifm-color-primary);
+}
+.explore-icon-card__label {
+  font-weight: 600;
+}

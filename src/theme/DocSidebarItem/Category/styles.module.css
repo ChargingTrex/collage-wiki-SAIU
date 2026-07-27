@@ -1,0 +1,33 @@
+.categoryLink {
+  overflow: hidden;
+}
+
+/*
+TODO merge this logic back in Infima?
+ */
+:global(.menu__link--sublist-caret)::after {
+  margin-left: var(--ifm-menu-link-padding-vertical);
+}
+
+.categoryLinkLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  overflow: hidden;
+}
+
+.categoryLinkText {
+  overflow: hidden;
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.categoryIcon {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  opacity: 0.7;
+}

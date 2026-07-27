@@ -1,13 +1,16 @@
 // src/components/LibraryHero.jsx
 //
-// Campus Library — the collection assembling itself.
+// Student Voices — the Blog hero: the shelf that's still being filled.
 //
 // Books drop into the shelf one after another and their spine titles fade in
-// just after each lands. The layout and the settle live in the Book/Shelf
-// primitive; this file only describes WHICH books.
+// just after each lands — individual students adding their own writing over
+// time. The layout and the settle live in the Book/Shelf primitive; this file
+// only describes WHICH books.
 //
-// Companion piece: ArchivesHero (books flowing past) is separate. One shelf
-// metaphor per component.
+// Companion piece: ArchivesHero (books flowing past, a completed collection)
+// is the Archive hero — a different page, a different thing (the full club/
+// fest event history, not individual student writing). Same shelf motif,
+// deliberately, since both are "kept writing" — but separate heroes.
 
 import React from 'react';
 import { Shelf } from './primitives/Book';
@@ -16,17 +19,17 @@ import { useIntroMotion } from './useIntroMotion';
 // Varying heights and widths so it reads as a real collection rather than a
 // bar chart. The last one leans — a perfectly aligned shelf looks like stock art.
 const SHELF_BOOKS = [
-  { title: 'ARCHIVE',   width: 22, height: 84, tone: 'amber' },
+  { title: 'ESSAYS',    width: 22, height: 84, tone: 'amber' },
   { title: 'JOURNALS',  width: 16, height: 96, tone: 'rose' },
-  { title: 'THESES',    width: 26, height: 74, tone: 'emerald' },
-  { title: 'PERIODICA', width: 18, height: 90, tone: 'slate', lean: 8 },
+  { title: 'PROJECTS',  width: 26, height: 74, tone: 'emerald' },
+  { title: 'REFLECT',   width: 18, height: 90, tone: 'slate', lean: 8 },
 ];
 
 const BASELINE = 118;
 
 export function LibraryHero({
-  title = 'Campus Library Archive',
-  subtitle = 'Four hundred events, catalogued and searchable.',
+  title = 'Student Voices',
+  subtitle = 'Writing, projects, and reflections — published by students, for themselves.',
 }) {
   const { isPlaying, isReplaying, hoverProps } = useIntroMotion();
 

@@ -1,0 +1,85 @@
+# Decap CMS config — structural scaffold only, auth NOT wired yet.
+#
+# See `docs-internal/decap-cms-auth-todo.md` for why (GitHub+OAuth-proxy vs
+# git-gateway+Netlify Identity is unresolved until hosting is finalized) and
+# what has to happen before this actually works. Until then, `/admin` loads
+# the CMS UI but cannot authenticate or save anything.
+backend:
+  name: git-gateway
+  branch: main
+
+# Only the "Events" collection is wired up. Club and fest pages
+# (docs/clubs/<slug>/index.mdx, docs/fests/<slug>.mdx) are deliberately left
+# out for now — they're MDX with hero-component imports and a <ClubContact>
+# embed, not plain prose. Decap CMS collections replace a file's *entire*
+# frontmatter + body with only what's represented in `fields:`; a
+# non-technical editor saving a partial edit through a generic body widget
+# would silently strip those imports and break the page. Exposing club/fest
+# editing safely needs the prose pulled out into plain frontmatter fields
+# the JSX reads from, not freehand MDX body access — that's a content-model
+# change, not a CMS-config change, and hasn't happened yet.
+collections:
+  - name: events
+    label: Events
+    label_singular: Event
+    description: >-
+      Club and fest event write-ups. Tag with the club/fest it belongs to
+      (see blog/tags.yml for the full list) so it shows up on that club's
+      own Events page automatically — no other linking needed.
+    folder: blog
+    create: true
+    slug: '{{slug}}'
+    path: '{{year}}-{{month}}-{{day}}-{{slug}}/index'
+    extension: md
+    format: frontmatter
+    # Uploaded images land in the SAME folder as the post they belong to
+    # (not a shared static/img/ directory) — required so the post stays
+    # self-contained and its images compress/move correctly as the archive
+    # grows. See CONTRIBUTING.md's "Adding a new event post" section.
+    media_folder: ''
+    public_folder: ''
+    fields:
+      - {label: Title, name: title, widget: string}
+      - {label: Date, name: date, widget: datetime}
+      - label: Tags
+        name: tags
+        widget: select
+        multiple: true
+        min: 1
+        hint: >-
+          At least one club/fest tag, plus an event-type tag if it fits.
+          Use "student-voices" instead of a club tag for an individual
+          student's own post. Keep this list in sync with blog/tags.yml —
+          Decap can't read that file directly.
+        options:
+          - literary-club
+          - art-club
+          - dance-club
+          - gardening-club
+          - astronomy-club
+          - theatre-club
+          - photography-club
+          - gaming-club
+          - oratory-club
+          - entrepreneurship-club
+          - fashion-club
+          - science-society
+          - music-club
+          - film-society
+          - turingites-computer-science-society
+          - animal-welfare-society
+          - martial-arts-club
+          - foss-club
+          - tech-fest
+          - general-fest
+          - cultural-fest
+          - workshop
+          - competition
+          - talk
+          - screening
+          - exhibition
+          - performance
+          - hackathon
+          - student-voices
+      - {label: Description, name: description, widget: string, required: false, hint: 'Optional — shown as the post preview/excerpt.'}
+      - {label: Body, name: body, widget: markdown}
