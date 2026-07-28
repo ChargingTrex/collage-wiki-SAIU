@@ -1,0 +1,64 @@
+---
+title: Adding a Feature Image to a Post
+description: A plain-language guide for club leads — no coding experience needed — on adding a thumbnail image to an event write-up.
+sidebar_custom_props:
+  icon: Image
+---
+
+This page is for anyone writing up a club event — no coding background
+needed. If you're a developer, see `CONTRIBUTING.md`'s "Adding a feature
+image (card thumbnail) to a post" section instead; this page is the
+plain-language version.
+
+## What this is (and isn't)
+
+A **feature image** is a single thumbnail shown wherever your post appears
+as a small preview card — the homepage's Recent Activity section, your
+club's own Events page, and the sitewide Events/Blog feed.
+
+This is different from a photo you add **inside** your write-up, which
+shows up when someone actually opens and reads the post — see [Adding
+Photos to an Event Post](/docs/resources/adding-photos) for that. A post
+can have a feature image, in-body photos, both, or neither. It's entirely
+optional — a post with no feature image still works fine, it just shows
+as a plain text card.
+
+## How to actually add one
+
+Right now, there are two ways to do this:
+
+**Option A — ask a developer to add it for you.** Send them the photo you
+want used. Landscape photos work best (wider than they are tall) — the
+card thumbnail is a small, wide rectangle, so a tall/portrait photo will
+get cropped at the sides.
+
+**Option B — add it yourself, using GitHub's built-in editor.** Every page
+on this wiki has a small pencil icon at the bottom that says **"Edit this
+page."** Clicking it opens your web browser's page-editing view — no
+software to install, no coding knowledge needed, just copying and
+replacing text. Once you're there:
+
+1. Near the top of the post, find the section between the two `---` lines
+   (this is called the frontmatter).
+2. Add one line: `image: ./your-photo-filename.jpg`, matching the name of
+   a photo already uploaded next to your post (ask a developer if you're
+   not sure how to upload one).
+3. Don't change anything else in that section.
+
+```md
+---
+title: Stargazing Night — March Meetup
+tags: [astronomy-club, talk]
+image: ./cover.jpg
+---
+```
+
+## A couple of things worth knowing
+
+- If the thumbnail doesn't show up, the most common cause is the filename
+  after `image:` not matching the actual uploaded file exactly, including
+  the file extension (`.jpg` vs `.png`) — double-check that first.
+- A future update to this wiki's admin panel (`/admin`) will let you
+  upload a feature image directly through a form, the same way you already
+  can with photos and text — that isn't finished yet, so Option A/B above
+  are the ways to do it for now.

@@ -2,6 +2,7 @@
 title: Stop Asking AI for Answers. Start Using It to Think Better.
 authors: [arunbalaji]
 tags: [student-voices]
+image: ./blind-reliance-vs-active-dialogue.png
 ---
 
 The most powerful thing you can do with an AI isn't get answers from it —

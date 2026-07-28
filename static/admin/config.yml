@@ -82,4 +82,14 @@ collections:
           - hackathon
           - student-voices
       - {label: Description, name: description, widget: string, required: false, hint: 'Optional — shown as the post preview/excerpt.'}
+      - label: Feature Image
+        name: image
+        widget: image
+        required: false
+        hint: >-
+          Optional. Shown as the card thumbnail on the homepage Recent
+          Activity section, this club's Events page, and the sitewide
+          Events/Blog feed. Landscape photos (roughly 3:2 or 16:9) work
+          best — card thumbnails are small and wide, not tall. Uploads
+          land in this post's own folder, same as body images.
       - {label: Body, name: body, widget: markdown}

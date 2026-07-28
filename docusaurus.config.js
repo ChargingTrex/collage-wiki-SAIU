@@ -37,7 +37,14 @@ const config = {
   projectName: 'collage-wiki-SAIU', // GitHub repo name.
   deploymentBranch: 'gh-pages',
 
-  plugins: [tailwindPlugin, clubEventsPlugin],
+  plugins: [
+    tailwindPlugin,
+    clubEventsPlugin,
+    // Auto-optimizes markdown images in docs/blog (responsive + lazy-load +
+    // blur placeholder) with zero content changes — see
+    // feature-images-recent-activity-plan.md.
+    '@docusaurus/plugin-ideal-image',
+  ],
 
   scripts: [
     { src: '/collage-wiki-SAIU/js/github-badge.js', async: true },

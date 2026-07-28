@@ -29,7 +29,12 @@ collection wired up:
 
 - **Events** — add a new dated event write-up (text + tags + images,
   through a form) under `blog/`. Tag it with the relevant club/fest so it
-  shows up on that club's own Events page automatically.
+  shows up on that club's own Events page automatically. The optional
+  **Feature Image** field sets the thumbnail shown on the homepage Recent
+  Activity section, this club's Events page, and the sitewide Events/Blog
+  feed — see the live [Adding a Feature
+  Image](/docs/resources/feature-images) guide; that's separate from any
+  photo added inside the post body itself.
 
 **Club and fest pages (`docs/clubs/*`, `docs/fests/*`) are NOT editable via
 the CMS** — those are MDX files with hero-component imports and a
@@ -120,7 +125,9 @@ src/
     useClubAccent.js          shared per-club accent-color hook
     clubAccents.js            the accent color for every club, one place
     useLoadMore.js            generic client-side "load more" pagination hook
-    EventCard.jsx             one event's summary card (date/title/description)
+    EventCard.jsx             one event's summary card (date/title/description
+                              + an optional feature-image thumbnail, rendered
+                              via @theme/IdealImage)
     ClubEventsList.jsx        renders a club's Events page — paginated list
                               of that club's tagged posts + a link to its
                               full tag-page timeline
@@ -170,6 +177,10 @@ docs/
   fests/
   resources/
     archives.mdx                the Archives hero's doc page
+    adding-photos.mdx           plain-language guide to in-body photos and
+                              the 3 carousel components, for club leads
+    feature-images.mdx           plain-language guide to the optional card-
+                              thumbnail image, for club leads (new)
 blog/
   YYYY-MM-DD-<event-slug>/    one folder per event, images co-located inside
 static/
@@ -329,6 +340,36 @@ This works in plain `.md` blog posts, not just `.mdx` — Docusaurus's blog
 plugin processes both as MDX by default, so `import` statements and JSX
 work either way; you don't need to rename the file.
 
+### Adding a feature image (card thumbnail) to a post
+
+Separate from any photo inside the post body: an optional `image:`
+frontmatter field sets the thumbnail shown wherever the post appears as a
+*card* — the homepage Recent Activity section, that club's Events page,
+and the sitewide Events/Blog feed. All three share one component,
+`EventCard.jsx`, so setting this one field is all that's needed.
+
+```md
+---
+title: Stargazing Night — March Meetup
+tags: [astronomy-club, talk]
+image: ./cover.jpg
+---
+```
+
+Same co-located-file convention as any other post image — `cover.jpg`
+lives directly in the post's own folder, next to `index.md`, never an
+absolute `/img/...` path. Landscape photos (roughly 3:2/16:9) work best;
+card thumbnails are small and wide, not tall. No feature image is required
+— a post without one just renders as a plain text card, same as before
+this existed. See the live [Adding a Feature
+Image](/docs/resources/feature-images) guide for the non-technical,
+CMS-first walkthrough.
+
+Unlike `ImageCarousel`/`CoverflowCarousel`/`StackCarousel` above, this
+path does **not** need an `import` statement — `club-events-plugin.js`
+reads the frontmatter path directly and copies the file into
+`static/img/_event-thumbnails/` itself at build time.
+
 ### Adding or editing a club page
 
 Each club's page lives at `docs/clubs/<slug>/index.mdx` — a folder, not a
@@ -430,6 +471,8 @@ reuse as-is.
 - [ ] Blog images are co-located, not referenced by absolute path; images
       passed to `ImageCarousel` (or any component) are `import`ed, not
       passed as bare relative-path strings
+- [ ] A post's feature `image:` frontmatter (if set) is a co-located
+      relative path, same rule as body images
 - [ ] New club added: `docs/clubs/<slug>/` has `index.mdx`, `_category_.json`,
       and `events.mdx` (copy an existing club's folder as a template)
 - [ ] No new audio autoplays — audio is click-to-play only

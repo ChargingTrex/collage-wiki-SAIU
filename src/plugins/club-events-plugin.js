@@ -34,6 +34,14 @@ import {
 // from config — not worth the complexity for a single-blog-instance site.
 const BLOG_ROUTE_BASE_PATH = 'blog';
 
+// Where co-located `image:` frontmatter files get copied so they're
+// reachable by URL from anywhere on the site (homepage, other clubs' Events
+// pages), not just the post's own route. This plugin reads raw frontmatter
+// directly off disk — unlike @docusaurus/plugin-content-blog, it doesn't run
+// through webpack's asset pipeline, so a relative path like `./cover.jpg`
+// has no URL of its own until we copy it out here.
+const THUMBNAIL_DIR_NAME = '_event-thumbnails';
+
 const DATE_FILENAME_REGEX =
   /^(?<folder>.*)(?<date>\d{4}[-/]\d{1,2}[-/]\d{1,2})[-/]?(?<text>.*?)(?:\/index)?\.mdx?$/;
 
@@ -52,6 +60,41 @@ function parseBlogFileName(relativePath) {
 
 export default function clubEventsPlugin(context) {
   const blogDir = path.join(context.siteDir, 'blog');
+  const staticThumbDir = path.join(
+    context.siteDir,
+    'static',
+    'img',
+    THUMBNAIL_DIR_NAME,
+  );
+
+  // Resolves a post's `image:` frontmatter value into a URL any page can
+  // use. `http(s)://` passes through as-is; a leading `/` is treated as
+  // already-static (author placed the file under `static/` themselves);
+  // anything else is the co-located-with-the-post convention, so we copy
+  // the file into `static/img/_event-thumbnails/<post-folder>/` and point
+  // at it there.
+  async function resolveImage(rawImage, postRelativePath) {
+    if (!rawImage) return null;
+    if (/^https?:\/\//.test(rawImage)) return rawImage;
+    if (rawImage.startsWith('/')) {
+      return normalizeUrl([context.siteConfig.baseUrl, rawImage]);
+    }
+
+    const postDir = path.dirname(postRelativePath);
+    const imageFileName = path.basename(rawImage);
+    const sourcePath = path.join(blogDir, postDir, rawImage);
+    const destDir = path.join(staticThumbDir, postDir);
+    await fs.mkdir(destDir, {recursive: true});
+    await fs.copyFile(sourcePath, path.join(destDir, imageFileName));
+
+    return normalizeUrl([
+      context.siteConfig.baseUrl,
+      'img',
+      THUMBNAIL_DIR_NAME,
+      postDir,
+      imageFileName,
+    ]);
+  }
 
   return {
     name: 'club-events-plugin',
@@ -112,6 +155,8 @@ export default function clubEventsPlugin(context) {
           ]),
         }));
 
+        const image = await resolveImage(frontMatter.image, relativePath);
+
         posts.push({
           id: permalink,
           title,
@@ -119,6 +164,7 @@ export default function clubEventsPlugin(context) {
           permalink,
           description,
           tags,
+          image,
         });
       }
 
