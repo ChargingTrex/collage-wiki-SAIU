@@ -132,6 +132,9 @@ src/
                               (all tags) via its `tagIds` prop
     MiniHeroCard.jsx          scales a real hero down for a directory grid
                               card (used by /clubs and /explore)
+    ImageCarousel.jsx         prev/next + dot-nav photo carousel for blog/
+                              event posts with more than one image — see
+                              "Adding photos to an event post" below
     LibraryHero.jsx           the Blog hero (student writing — a shelf still
                               being filled). Shares a shelf-of-books motif
                               with ArchivesHero but is a separate hero for a
@@ -235,6 +238,60 @@ on both. Posts with tags that aren't in `blog/tags.yml` at all (e.g. the
 leftover Docusaurus tutorial posts) never appear on either — that's the
 filter working as intended, not a bug.
 
+### Adding photos to an event post
+
+**A single photo** — plain Markdown image syntax works exactly as you'd
+expect, with a relative path to the co-located file:
+
+```md
+![Attendees setting up telescopes on the observatory roof](./telescope-setup.jpg)
+```
+
+Docusaurus finds and compresses this automatically because it's a real
+Markdown image node, not a string.
+
+**More than one photo** — use `ImageCarousel`
+(`src/components/ImageCarousel.jsx`), a small Framer Motion component built
+for exactly this: prev/next buttons, dot navigation, and an animated slide
+transition between photos (it respects `prefers-reduced-motion` the same
+way every hero does — the slide still changes on click, it just doesn't
+animate).
+
+**Important — images must be `import`ed, not passed as bare path strings.**
+The single-photo case above works because Docusaurus's Markdown processor
+recognizes `![]()`/`<img>` syntax and rewrites the path for you. A custom
+component like `ImageCarousel` just receives whatever you hand it as a
+prop — a literal string like `'./photo.jpg'` is **not** resolved or copied
+by the build and will 404. Import each image as a real ES module instead,
+the same way you'd import an image in any other React file:
+
+```md
+---
+title: Stargazing Night — March Meetup
+tags: [astronomy-club, talk]
+---
+
+import photo1 from './telescope-setup.jpg';
+import photo2 from './crowd-watching.jpg';
+import photo3 from './saturn-through-the-lens.jpg';
+import { ImageCarousel } from '@site/src/components/ImageCarousel';
+
+<ImageCarousel images={[
+  {src: photo1, alt: 'Setting up the telescopes on the observatory roof', caption: 'Setup, just after sunset'},
+  {src: photo2, alt: 'A crowd gathered around the main telescope', caption: 'Queue for a look at Saturn'},
+  {src: photo3, alt: 'Saturn and its rings, visible through the eyepiece'},
+]} />
+
+The Astronomy Club hosted...
+```
+
+`caption` is optional per image; `alt` isn't — always describe the photo
+for screen readers, same as any other image on the web.
+
+This works in plain `.md` blog posts, not just `.mdx` — Docusaurus's blog
+plugin processes both as MDX by default, so `import` statements and JSX
+work either way; you don't need to rename the file.
+
 ### Adding or editing a club page
 
 Each club's page lives at `docs/clubs/<slug>/index.mdx` — a folder, not a
@@ -333,7 +390,9 @@ reuse as-is.
       `GeneralFestHero.jsx`'s `mulberry32` for the pattern.
 - [ ] New colors are `--ds-*` tokens, not hardcoded hex, and meet the
       contrast rules above
-- [ ] Blog images are co-located, not referenced by absolute path
+- [ ] Blog images are co-located, not referenced by absolute path; images
+      passed to `ImageCarousel` (or any component) are `import`ed, not
+      passed as bare relative-path strings
 - [ ] New club added: `docs/clubs/<slug>/` has `index.mdx`, `_category_.json`,
       and `events.mdx` (copy an existing club's folder as a template)
 - [ ] No new audio autoplays — audio is click-to-play only

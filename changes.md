@@ -1292,3 +1292,61 @@ drives both, same as clubs.
 Verified: `npm run build` clean, full e2e suite (63/63), and a real-browser
 screenshot of both category pages confirming all icons render with zero
 console errors.
+
+## 2026-07-28 — ImageCarousel component + "adding photos" tutorial
+
+Files: `src/components/ImageCarousel.jsx` (new), `src/css/custom.css`,
+`CONTRIBUTING.md`
+
+Requested: a way to add multiple photos to a blog/event post using Framer
+Motion, plus a tutorial. No carousel/gallery component existed in the
+codebase before this (checked first — nothing under `src/components/`
+matched; a code comment in `CulturalFestHero.jsx` mentioning "slideshow"
+was prose explaining why that hero *avoids* one, not a reusable
+component).
+
+**`ImageCarousel.jsx`** (new): prev/next buttons, dot navigation, and a
+Framer Motion slide transition (`AnimatePresence` + `motion.figure`,
+`x`/`opacity`) between images. Respects `prefers-reduced-motion` the same
+way every hero in this project does — a click still advances the slide
+(deliberate user action, not ambient motion), it just snaps instead of
+animating (`transition: {duration: 0}`). Props: `images` (array of
+`{src, alt, caption?}`), optional `className`.
+
+**Real technical gotcha caught while verifying this, before it shipped
+wrong**: images passed to a custom component **must** be `import`ed as ES
+modules, not passed as bare relative-path strings. Docusaurus's Markdown
+processor only rewrites/resolves paths inside actual `![]()`/`<img>`
+syntax nodes — a string literal like `images={['./photo.jpg']}` is just a
+plain JS value to the bundler and never gets resolved, giving a 404 at
+runtime. Confirmed this failure mode directly: a first test pass used
+`.svg` test fixtures and got `img src: null` with three 404s in the
+console; switching to real `.jpg`/`.png` test images (matching what actual
+event photos will be) and using proper `import photo from './photo.jpg'`
+statements fixed it completely — confirmed via Playwright (correct
+`data:image/png;...` src, working next/prev/dot navigation with correct
+wraparound, zero console errors) and a screenshot. The `.svg`-first attempt
+wasn't a red herring to note and move past — it's the exact mistake a
+future contributor would make copying old habits from a plain-Markdown
+image, so the tutorial leads with this as the one thing to get right.
+
+**`CONTRIBUTING.md`**: new "Adding photos to an event post" section (right
+after the existing tags guidance, before "Adding or editing a club page")
+covering both cases — single photo via plain Markdown image syntax
+(already documented, unchanged), multiple photos via `ImageCarousel` with
+a full worked example (import statements, the component call, `alt`
+required/`caption` optional). Notes this works in plain `.md` posts, not
+just `.mdx` — Docusaurus's blog plugin MDX-processes both by default.
+Added `ImageCarousel.jsx` to the "Where things live" component list and a
+PR-checklist line about the import-not-string-path requirement.
+
+Verified: built and served a temporary local test post (co-located real
+`.jpg`/`.png` images, not committed — deleted after verification) to
+confirm the whole documented pattern actually works end-to-end before
+writing it up, not just that the component compiles. Full e2e suite
+re-run afterward (63/63) to confirm nothing else regressed. No dedicated
+Playwright test added for `ImageCarousel` itself — doing so would mean
+committing permanent fixture images purely for testing a fairly simple,
+self-contained component with no complex integration surface; judged not
+worth the repo clutter given the thorough manual verification already
+done. Noting the tradeoff here rather than silently skipping it.
