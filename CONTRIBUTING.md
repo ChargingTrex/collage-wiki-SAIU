@@ -104,7 +104,8 @@ src/
                               default Footer; adds the LinkedIn/Instagram/
                               mail/GitHub/report-an-issue icon row, AND the
                               hidden 🦖 dino easter egg (in-flow at the
-                              very bottom — see saiu-collage-wiki-easter-egg.md).
+                              very bottom — see
+                              docs-internal/archive/saiu-collage-wiki-easter-egg.md).
                               Tints via `mix-blend-mode: color` on a solid
                               overlay div, not a CSS `filter` — filter
                               flattened the whole grayscale canvas to one

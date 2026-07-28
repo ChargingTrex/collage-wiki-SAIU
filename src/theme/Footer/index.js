@@ -51,7 +51,7 @@ const CONTACT_LINKS = [
   {Icon: Bug, href: `${WIKI_REPO_URL}/issues`, label: 'Report an issue with this wiki'},
 ];
 
-// Hidden dino easter egg (saiu-collage-wiki-easter-egg.md). Locked
+// Hidden dino easter egg (docs-internal/archive/saiu-collage-wiki-easter-egg.md). Locked
 // decisions per CLAUDE.md: in-flow at the bottom of the page (only found by
 // scrolling all the way down, not a floating corner icon that's always
 // visible), "charging trex..." tooltip kept, dino recolors to the unified

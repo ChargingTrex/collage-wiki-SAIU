@@ -28,7 +28,8 @@ Read in order. Where they conflict, the earlier one wins.
    verification checklist (Appendix B) that shaped it.
 2. **`scholar-design-system-hybrid (1).md`** — the chosen design system
    (`--ds-*` tokens). Map onto Infima in `custom.css`. **Palette is decided.**
-3. **`saiu-collage-wiki-easter-egg.md`** — the hidden footer Chrome-dino game.
+3. **`docs-internal/archive/saiu-collage-wiki-easter-egg.md`** — the hidden
+   footer Chrome-dino game. Build is complete; kept for the spec that shaped it.
 4. **`docs-internal/animation-caveats.md`** — authoritative open-issues log;
    consult when any motion decision needs detail.
 
@@ -220,7 +221,7 @@ audio — recognizable tracks on a public site are a licensing risk.
 
 ## Footer easter egg
 
-Build per `saiu-collage-wiki-easter-egg.md` (authoritative). A 🦖 icon opens the
+Build per `docs-internal/archive/saiu-collage-wiki-easter-egg.md` (authoritative). A 🦖 icon opens the
 classic Chrome dino runner in a full-screen overlay (click anywhere to close).
 Confirmed decisions:
 - **Placement:** in-flow at the **bottom of each page** (hidden — only found on

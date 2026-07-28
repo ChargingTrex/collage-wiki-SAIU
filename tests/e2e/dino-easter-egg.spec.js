@@ -1,4 +1,4 @@
-// The hidden footer dino easter egg (CP6, saiu-collage-wiki-easter-egg.md).
+// The hidden footer dino easter egg (CP6, docs-internal/archive/saiu-collage-wiki-easter-egg.md).
 // Locked decisions: in-flow at the bottom of the page (not a floating
 // corner icon), "charging trex..." tooltip, click opens a full-screen
 // overlay, click anywhere on the overlay closes it, dino tints green by
