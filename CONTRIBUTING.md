@@ -252,10 +252,13 @@ Markdown image node, not a string.
 
 **More than one photo** — use `ImageCarousel`
 (`src/components/ImageCarousel.jsx`), a small Framer Motion component built
-for exactly this: prev/next buttons, dot navigation, and an animated slide
-transition between photos (it respects `prefers-reduced-motion` the same
-way every hero does — the slide still changes on click, it just doesn't
-animate).
+for exactly this: prev/next buttons, dot navigation, drag-to-swipe, and an
+animated slide transition between photos. Swipe uses Framer Motion's own
+built-in drag gesture system (`drag`, `dragConstraints`, `onDragEnd`'s
+velocity/offset) rather than hand-rolled touch listeners — this is the
+pattern Framer Motion's own docs demonstrate for swipeable carousels. It
+respects `prefers-reduced-motion` the same way every hero does — the slide
+still changes on click/swipe, it just doesn't animate.
 
 **Important — images must be `import`ed, not passed as bare path strings.**
 The single-photo case above works because Docusaurus's Markdown processor

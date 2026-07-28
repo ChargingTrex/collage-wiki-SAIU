@@ -1350,3 +1350,60 @@ committing permanent fixture images purely for testing a fairly simple,
 self-contained component with no complex integration surface; judged not
 worth the repo clutter given the thorough manual verification already
 done. Noting the tradeoff here rather than silently skipping it.
+
+## 2026-07-28 — ImageCarousel gains drag-to-swipe; a missed source doc
+
+After the entry above shipped, the requester pointed out `src/
+components/fests/CulturalFestHero.jsx`'s "not a slideshow" comment isn't
+the only carousel-related thing in this repo — `sai-uni-wiki-motion-guide.md`
+(one of `CLAUDE.md`'s own listed source-of-truth docs) has a full §5,
+"Event Gallery Carousels (3D Coverflow & Autoplay)," proposing a
+`CoverflowCarousel`: multiple images visible at once, tilted/scaled/faded
+by distance from center (`rotateY`, `scale`, spring physics), autoplaying
+every 3.5s with a play/pause toggle. This should have been checked before
+building `ImageCarousel` from scratch — it wasn't; only `src/components/`
+itself was searched for an existing *built* component, not the planning
+docs for an existing *spec*.
+
+Surfaced the gap and the tradeoffs directly (3D coverflow + autoplay vs.
+the simpler version already shipped vs. a coverflow-look/no-autoplay
+hybrid) rather than silently picking one. Requester's actual answer:
+"uses framer motion pre built componesnts where ever possibel" — i.e. lean
+on Framer Motion's own built-in capabilities rather than hand-rolling
+things it already solves. Framer Motion doesn't ship a prebuilt `Carousel`
+component (it's a primitives library, not a UI kit), but it does have a
+first-class **drag gesture system** (`drag`, `dragConstraints`,
+`dragElastic`, `onDragEnd` with velocity/offset) that's exactly the
+pattern Framer Motion's own docs use for swipeable carousels — that's
+what was missing from the first version (click/dot navigation only, no
+gesture support at all).
+
+**Added drag-to-swipe** to `ImageCarousel.jsx`: `drag="x"` on the sliding
+`motion.figure`, `dragConstraints={{left:0, right:0}}` +
+`dragElastic={0.2}` for a rubber-band snap-back feel, `onDragEnd` checking
+both `info.offset.x` and `info.velocity.x` against thresholds (50px /
+500px per second) so a real swipe advances the slide but a small
+accidental drag snaps back without navigating. `draggable={false}` on the
+`<img>` itself to stop the browser's native "drag image to save/open in
+new tab" affordance from competing with Framer's pointer-based drag.
+`cursor: grab`/`grabbing` added for visual affordance.
+
+Verified directly with simulated `page.mouse` drag sequences (not just
+button clicks): swipe-left advances, swipe-right goes back, and — the
+actual regression case worth checking — a small drag *below* the
+threshold correctly does nothing rather than falsely triggering
+navigation. Also re-confirmed button/dot navigation still works
+unchanged (one test-script bug of my own along the way: forgot a wait
+after a click before reading the resulting caption, which looked like a
+navigation regression until the same check with a wait proved otherwise —
+not a real bug, just an impatient test). Full e2e suite re-run (63/63).
+
+Decided **not** to adopt the motion guide's full 3D-coverflow-with-autoplay
+version: `CLAUDE.md` marks that whole doc as "largely superseded by the
+Framer rebuild, kept for rebuild rationale," not a locked spec the way the
+design-system doc is, and autoplaying carousels are a known accessibility/
+UX concern (moving content the reader didn't ask to move) even with a
+pause control. The drag addition is the part of that spec that's both
+genuinely "a Framer Motion built-in" and uncontroversial to add; the 3D
+coverflow visual and autoplay remain a deliberate, disclosed choice not
+to build, not an oversight.

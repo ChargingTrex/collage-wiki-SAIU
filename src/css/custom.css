@@ -532,6 +532,10 @@
 }
 .image-carousel__figure {
   margin: 0;
+  cursor: grab;
+}
+.image-carousel__figure:active {
+  cursor: grabbing;
 }
 .image-carousel__img {
   display: block;
