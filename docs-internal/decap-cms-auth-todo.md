@@ -1,7 +1,11 @@
 # Decap CMS auth backend — decision needed once hosting is finalized
 
-**Status: unresolved, deliberately deferred. Not a CP5 blocker — see
-`CLAUDE.md`'s locked decisions and the CP0–CP8 build plan.**
+**Status: hosting is now decided (CP8, `github-pages-hosting-plan.md`) —
+the repo is public and live on GitHub Pages
+(`https://chargingtrex.github.io/collage-wiki-SAIU/`) via GitHub Actions.
+That resolves the "which hosting?" fork below in favor of Option A. The
+OAuth-proxy service itself is still not built — that's the remaining work,
+tracked as step 2 below.**
 
 ## What's already done
 
@@ -54,36 +58,26 @@ all.
   service alongside GitHub Pages hosting, which isn't how Netlify designed
   it to work (Identity is tied to a Netlify-hosted site).
 
-## Why this is genuinely blocked on a hosting decision, not just unmade
+## Why this was genuinely blocked on a hosting decision, not just unmade
 
-Option A works with the current GitHub Pages plan as-is (needs an extra
-small proxy service, but the site itself stays on GitHub Pages). Option B
-is the better fit for the actual editors (non-technical club leads) but
-effectively requires moving hosting to Netlify, which is a real
-architectural change beyond "pick a CMS auth backend" — it would mean
-revisiting `CLAUDE.md`'s locked GitHub Pages decision, not just this file.
+Option A works with the GitHub Pages plan as-is (needs an extra small
+proxy service, but the site itself stays on GitHub Pages) — this is the
+path now confirmed. Option B was the better fit for the actual editors
+(non-technical club leads) but would have meant moving hosting to Netlify,
+a real architectural change beyond "pick a CMS auth backend." CP8 settled
+this by deploying to GitHub Pages, so Option B is no longer on the table
+unless hosting is deliberately revisited later.
 
-**This can't be resolved from inside the CMS config** — it needs an
-explicit choice: stay on GitHub Pages and accept Option A's higher bar for
-editors (or find/host a lightweight OAuth-proxy under someone's control), or
-move hosting to Netlify for Option B's easier editor experience. Revisit
-once that hosting conversation happens; don't default to either silently.
+## What actually has to happen to unblock this (Option A, now the confirmed path)
 
-## What actually has to happen to unblock this (either path)
-
-1. Decide GitHub Pages (stays) vs. Netlify (hosting changes) — a project
-   decision, not a code change.
-2. **If Option A**: stand up an OAuth-proxy (e.g. Cloudflare Worker, Vercel
-   function, or a small always-on Node service) implementing Decap's OAuth
-   handshake; add `base_url`/`auth_endpoint` to `config.yml`'s `backend:`
-   block pointing at it.
-3. **If Option B**: move hosting to Netlify (or add a Netlify site solely
-   for Identity/Git Gateway, pointed at this same GitHub repo — possible,
-   but means running/paying for two hosting surfaces for one site); enable
-   Identity + Git Gateway in the Netlify dashboard; invite each club lead
-   via Netlify Identity.
-4. Either way: update `static/admin/config.yml`'s `backend:` block for the
-   chosen option, remove this file's "unresolved" framing, and re-enable the
+1. ~~Decide GitHub Pages vs. Netlify~~ — done, CP8: GitHub Pages via
+   GitHub Actions (`.github/workflows/deploy.yml`).
+2. **Remaining work**: stand up an OAuth-proxy (e.g. Cloudflare Worker,
+   Vercel function, or a small always-on Node service) implementing
+   Decap's OAuth handshake; add `base_url`/`auth_endpoint` to
+   `config.yml`'s `backend:` block pointing at it.
+3. Once that's live: update `static/admin/config.yml`'s `backend:` block
+   accordingly, remove this file's "not built" framing, and re-enable the
    commented-out Decap CMS link in `docusaurus.config.js`'s footer.
-5. Once auth actually works, revisit the club/fest MDX-editing gap noted
+4. Once auth actually works, revisit the club/fest MDX-editing gap noted
    above — separately, since it's not an auth problem.

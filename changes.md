@@ -1149,3 +1149,92 @@ diff). Full suite: 63/63 passing.
 `CONTRIBUTING.md` updated — the `Footer/index.js` entry and the
 `TEST_REPORT.md` coverage summary both previously said the dino easter egg
 was "planned, not built yet."
+
+## 2026-07-28 — CP8: repo made public, GitHub Pages live via GitHub Actions
+
+Files: `.github/workflows/deploy.yml` (new), `.gitignore`, plus the doc
+moves already covered in the previous two dated entries. Followed
+`github-pages-hosting-plan.md` (Parts A–E) — a plan written up in an
+earlier session specifically so this could be picked up without
+re-deriving anything.
+
+**Part A — private backup.** Created `ChargingTrex/collage-wiki-SAIU-archive`
+(private) and mirror-pushed the source repo's full history into it
+(`git clone --mirror` + `git push --mirror`) *before* any cleanup or
+visibility changes. Verified identical: all 6 commit SHAs matched exactly
+between source and archive, and root file counts matched (45/45).
+
+**Part B — cleanup**, done as originally scoped in the plan: deleted two
+files with zero project value (a broken-filename duplicate of
+`sai-uni-wiki-motion-guide.md`, and a generic AI-prompting template
+unrelated to the project); archived superseded session snapshots and
+acted-on content drafts (`HANDOFF-1/2/3.md`, the numbered
+`animation-caveats (1)/(2).md` drafts, `club homepage.md`,
+`homepage-content.md`, the theme-toggle decision doc) into
+`docs-internal/archive/`; renamed `animation-caveats (3).md` →
+`docs-internal/animation-caveats.md` (`CLAUDE.md`/`BUILD-BRIEF`/`PROMPT.md`
+already referred to the unnumbered name as if it were real — this makes
+more existing references correct than it breaks); updated the actual
+path-dependent references (`README.md`'s link, `CONTRIBUTING.md`,
+`changes.md`, `FashionHero.jsx`'s code comment). Verified: `npm run build`
+clean, full e2e suite (63/63), `git grep` clean for every moved/renamed
+filename.
+
+**Follow-up during Part B, after discussion**: initially left
+`docs-internal/archive/` as *tracked* files (matching the plan's original
+wording — "keep for history, just out of root clutter"), then reconsidered
+per a direct ask not to have them visible in the public repo at all. Since
+removing files from the current commit doesn't erase them from git
+history (anyone can still browse an old commit once the repo is public),
+this raised a real fork: squash/reset history entirely, surgically strip
+just these files from every past commit (`git filter-repo`), or leave
+history as-is since none of this is actually secret. Explicitly decided:
+**leave history as-is** — these are planning docs, not secrets, and a
+history rewrite (force-push, SHA changes) was judged not worth it for
+that. Untracked `docs-internal/archive/` going forward instead
+(`git rm -r --cached`, added `/docs-internal/archive/` to `.gitignore`) —
+files stay on local disk, just stop appearing in *future* commits.
+`docs-internal/animation-caveats.md` and `docs-internal/decap-cms-auth-todo.md`
+stay tracked; they're actively cited from `CLAUDE.md`/`CONTRIBUTING.md` and
+a fresh clone needs them. (Real gap caught in review: the `.gitignore` edit
+was made but not staged in the commit that did the `git rm --cached` —
+caught before the next push, folded into the following commit instead of
+left silently uncommitted.)
+
+**Part C — made public.** Confirmed via `gh repo view`
+(`isPrivate: false`) after the change.
+
+**Part D — GitHub Actions deploy.** `.github/workflows/deploy.yml`: the
+modern `actions/upload-pages-artifact` + `actions/deploy-pages` method
+(not the classic `docusaurus deploy`-to-`gh-pages`-branch approach still
+sitting in `package.json`'s `deploy` script) — needs no stored git
+credentials, no branch, auto-adds `.nojekyll`. Triggers on push to `main`
+plus manual `workflow_dispatch`; build job matches `package.json`'s
+`engines.node` (20); `concurrency: {group: "pages", cancel-in-progress:
+false}` avoids overlapping deploys racing. Repo's Pages source set to
+"GitHub Actions" via `gh api -X POST repos/.../pages -f
+build_type=workflow`, confirmed the returned `html_url` matches
+`docusaurus.config.js`'s configured `url`/`baseUrl` exactly.
+
+**Part E — first deploy, verified.** Pushed, watched the Action run
+end-to-end (`gh run watch`) — build (46s) and deploy (10s) both green.
+Live-site checks: `/`, `/blog`, `/clubs`, `/fests`, `/explore`, `/events`,
+`/student-voices` all `200`; a direct deep link
+(`/docs/clubs/art-club/events`) resolves correctly on a hard load (not
+just client-side nav — confirms GitHub Pages' static routing actually
+works, not only Docusaurus's own SPA router); an unknown path correctly
+serves the generated 404 page (`Page Not Found` title). Real-browser pass
+(not just status codes) confirmed the homepage's Recent Activity section
+renders and zero unexpected console/page errors. Bonus
+confirmation the visibility flip took effect: the navbar GitHub badge,
+previously stuck on `—`/`—` placeholders because the private repo 404'd
+unauthenticated API requests, now shows real star/fork counts (`0`/`0` —
+correct for a brand-new public repo).
+
+Live at `https://chargingtrex.github.io/collage-wiki-SAIU/`.
+
+Not yet done, flagged by the plan itself as a natural follow-up rather
+than in-scope here: standing up the Decap CMS OAuth-proxy — going public
+on GitHub Pages resolves the "which hosting?" question in
+`docs-internal/decap-cms-auth-todo.md` in favor of Option A (GitHub
+backend + OAuth-proxy), but the proxy service itself is separate work.
