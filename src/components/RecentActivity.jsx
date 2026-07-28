@@ -26,9 +26,9 @@ export function RecentActivity() {
         Recent Activity
       </Heading>
       <div className="row">
-        <div className="col col--8 col--offset-2 flex flex-col gap-3">
+        <div className="col col--10 col--offset-1 flex flex-col gap-5">
           {recent.map((post) => (
-            <EventCard key={post.id} {...post} />
+            <EventCard key={post.id} {...post} size="lg" />
           ))}
         </div>
       </div>
