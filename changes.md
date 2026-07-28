@@ -1,5 +1,65 @@
 # Changes
 
+## 2026-07-28 — Resources: alphabetical card order + navbar/footer link
+
+Files: `docs/resources/*.mdx`, `docusaurus.config.js`, `CONTRIBUTING.md`,
+`README.md`
+
+All four `docs/resources/` pages (`adding-photos`, `archives`,
+`feature-images`, `team-photos`) already lived in the right place with
+`sidebar_custom_props.icon` set — happened to sort alphabetically already
+since none had an explicit `sidebar_position`. Made that intentional: added
+`sidebar_position: 1–4` in alphabetical order, so the category's card grid
+stays alphabetical even if a doc gets renamed later, instead of relying on
+filename ordering as an accident.
+
+**Added a "Resources" link to the navbar and footer** — there wasn't one
+before; reaching these guides meant going through Docs → sidebar. First
+attempt pointed both links at `/docs/resources`, which doesn't exist — the
+category's `generated-index` page actually resolves to
+`/docs/category/resources` (caught immediately by `onBrokenLinks: 'throw'`
+during `npm run build`, across every page since navbar/footer are sitewide).
+Fixed both to the real path, verified icons/order and the rendered `href`s
+directly in the built HTML before treating this as done.
+
+**Added an "Archive" link to the navbar and footer too**, pointing at the
+existing `docs/resources/archives.mdx` (Event Archives / `ArchivesHero`)
+page at `/docs/resources/archives` — same discoverability gap, now fixed
+alongside Resources rather than as a separate pass.
+
+## 2026-07-28 — EventCard: image beside title, size variant for homepage
+
+Files: `src/components/EventCard.jsx`, `src/components/RecentActivity.jsx`
+
+Reported bug turned out not to be one: asked to check "every club's contact
+shows FOSS Club's info." Checked `src/data/clubContacts.js`, every club's
+`docs/clubs/<slug>/index.mdx` invocation, and `ClubContact.jsx` itself —
+all correctly scoped per club. Verified live against the actual running dev
+server (Playwright against `localhost:3000`, not just static source
+reading): `art-club`/`astronomy-club`/`oratory-club` each show their own
+`<slug>@example.com` placeholder; only `foss-club` shows its real contact
+info, which is correct — that's the one club with real data on file. Most
+likely explanation is a stale view from before the concurrent session's
+contact/team refactor (`ClubContact`/`TeamSection`/`contactIcons.jsx`/
+`src/data/teams/*.mjs`) landed. No code changed for this — flagged back to
+the requester to confirm which page/field they were actually seeing it on.
+
+**`EventCard.jsx` layout changed from image-above-title to image-beside-
+title**, per explicit request: image is now a fixed-size thumbnail to the
+left (`h-20 w-20`, `sm:h-24 sm:w-24`), text content (date/title/description)
+in a flex column to its right, instead of a full-width image stacked above
+a padded text block. `overflow-hidden` dropped from the card wrapper since
+the image no longer sits flush against the card edges.
+
+**Added a `size` prop** (`"sm"` default, `"lg"`) so the homepage's
+`RecentActivity` can render bigger cards (bigger thumbnail, more padding,
+larger title/date/description text) without affecting `ClubEventsList`'s
+compact default — a club's Events page can list many more of these at once,
+so it keeps the smaller size. `RecentActivity.jsx` passes `size="lg"` and
+widened its column (`col--8/offset-2` → `col--10/offset-1`) and card gap
+(`gap-3` → `gap-5`) to give the larger cards room. Verified both changes
+live via Playwright screenshot against the running dev server.
+
 ## 2026-07-28 — Per-club Events pages, homepage Recent Activity, club-events-plugin
 
 Files: `src/plugins/club-events-plugin.js` (new), `docusaurus.config.js`,

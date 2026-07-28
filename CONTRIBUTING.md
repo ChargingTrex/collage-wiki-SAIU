@@ -127,7 +127,11 @@ src/
     useLoadMore.js            generic client-side "load more" pagination hook
     EventCard.jsx             one event's summary card (date/title/description
                               + an optional feature-image thumbnail, rendered
-                              via @theme/IdealImage)
+                              via @theme/IdealImage). `size="lg"` (used by
+                              RecentActivity on the homepage) renders a
+                              bigger image/padding/text; everything else
+                              (e.g. ClubEventsList) uses the compact default
+                              (`size="sm"`)
     ClubEventsList.jsx        renders a club's Events page — paginated list
                               of that club's tagged posts + a link to its
                               full tag-page timeline
@@ -192,15 +196,18 @@ docs/
                                                    same data as index.mdx's
                                                    own inline Contact section
   fests/
-  resources/
-    archives.mdx                the Archives hero's doc page
+  resources/                  linked from the navbar/footer as "Resources";
+                              cards ordered alphabetically via each doc's
+                              `sidebar_position` (matches the list below)
     adding-photos.mdx           plain-language guide to in-body photos and
                               the 3 carousel components, for club leads
+    archives.mdx                the Archives hero's doc page; also linked
+                              directly from the navbar/footer as "Archive"
     feature-images.mdx           plain-language guide to the optional card-
-                              thumbnail image, for club leads (new)
+                              thumbnail image, for club leads
     team-photos.mdx               plain-language guide to replacing a team
                               member's placeholder photo with a real one,
-                              for club leads (new)
+                              for club leads
   archive/<slug>/               one folder per club/fest that has ever been
                               rolled over: _category_.json + one
                               <year>-board.mdx or <year>-committee.mdx per

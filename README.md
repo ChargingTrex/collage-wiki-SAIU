@@ -19,7 +19,10 @@ docs/
   intro.mdx               the "Docs" landing page
   clubs/<slug>/            one folder per club: page, category config, events list
   fests/                   the 3 annual fest pages
-  resources/               shared guides (adding photos, feature images, the archive)
+  resources/               shared guides (adding photos, feature images, team
+                          photos, the archive) — alphabetically ordered,
+                          linked from the navbar/footer as "Resources" (and
+                          "Archive" links straight to the archives page)
 
 blog/                      event write-ups + individual student posts, images
                           co-located next to each post so they never break

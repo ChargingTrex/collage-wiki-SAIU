@@ -109,6 +109,8 @@ const config = {
           {to: '/clubs', label: 'Clubs', position: 'left'},
           {to: '/fests', label: 'Fests', position: 'left'},
           {to: '/docs/intro', label: 'Docs', position: 'left'},
+          {to: '/docs/category/resources', label: 'Resources', position: 'left'},
+          {to: '/docs/resources/archives', label: 'Archive', position: 'left'},
           // "Blog" is distinct from "Events": Events is the full archive
           // (fests, clubs, general posts); Blog is only posts an individual
           // student wrote on their own. Both point at custom pages, not
@@ -159,6 +161,14 @@ const config = {
               {
                 label: 'Docs',
                 to: '/docs/intro',
+              },
+              {
+                label: 'Resources',
+                to: '/docs/category/resources',
+              },
+              {
+                label: 'Archive',
+                to: '/docs/resources/archives',
               },
               {
                 label: 'Events',
