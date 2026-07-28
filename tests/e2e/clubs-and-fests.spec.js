@@ -57,9 +57,14 @@ test.describe('Club contact pages', () => {
     );
   });
 
-  test("a club with no contact info yet shows the fallback message, not a blank page", async ({page}) => {
+  test('a club with placeholder contact info shows all 3 icons (email/Instagram/LinkedIn)', async ({page}) => {
     await page.goto('docs/clubs/astronomy-club/contact');
-    await expect(page.getByText('No contact info published yet')).toBeVisible();
+    await expect(page.locator('article').getByRole('link', {name: 'astronomy-club@example.com'})).toHaveAttribute(
+      'href',
+      'mailto:astronomy-club@example.com'
+    );
+    await expect(page.locator('article').getByRole('link', {name: 'Instagram', exact: true})).toBeVisible();
+    await expect(page.locator('article').getByRole('link', {name: 'LinkedIn', exact: true})).toBeVisible();
   });
 });
 

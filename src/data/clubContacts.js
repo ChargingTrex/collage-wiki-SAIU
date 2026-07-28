@@ -2,32 +2,102 @@
 //
 // One entry per club, consumed by <ClubContact /> on each club's doc page.
 // `null` fields render nothing (see ClubContact.jsx) rather than a broken
-// link — fill each club in as real contact info comes in.
+// link.
 //
 // FOSS Club's entry is real, sourced from that club's own published contact
 // page (github.com/y-bow/saiufosswiki, a sibling Sai University club wiki
 // for the same real-world FOSS Club). Every other club below is a
-// placeholder — replace with that club's actual email/social links before
-// publishing its contact section.
+// PLACEHOLDER (href: '#', same convention as src/theme/Footer/index.js's
+// PLACEHOLDER_* constants — grep "PLACEHOLDER" to find every one of these)
+// — replace with that club's actual email/social links before publishing
+// its contact section for real.
 
 export const CLUB_CONTACTS = {
-  'literary-club': { email: null, instagram: null, linkedin: null },
-  'art-club': { email: null, instagram: null, linkedin: null },
-  'dance-club': { email: null, instagram: null, linkedin: null },
-  'gardening-club': { email: null, instagram: null, linkedin: null },
-  'astronomy-club': { email: null, instagram: null, linkedin: null },
-  'theatre-club': { email: null, instagram: null, linkedin: null },
-  'photography-club': { email: null, instagram: null, linkedin: null },
-  'gaming-club': { email: null, instagram: null, linkedin: null },
-  'oratory-club': { email: null, instagram: null, linkedin: null },
-  'entrepreneurship-club': { email: null, instagram: null, linkedin: null },
-  'fashion-club': { email: null, instagram: null, linkedin: null },
-  'science-society': { email: null, instagram: null, linkedin: null },
-  'music-club': { email: null, instagram: null, linkedin: null },
-  'film-society': { email: null, instagram: null, linkedin: null },
-  'turingites-computer-science-society': { email: null, instagram: null, linkedin: null },
-  'animal-welfare-society': { email: null, instagram: null, linkedin: null },
-  'martial-arts-club': { email: null, instagram: null, linkedin: null },
+  'literary-club': {
+    email: 'literary-club@example.com',
+    instagram: { url: '#', label: 'Instagram' },
+    linkedin: { url: '#', label: 'LinkedIn' },
+  },
+  'art-club': {
+    email: 'art-club@example.com',
+    instagram: { url: '#', label: 'Instagram' },
+    linkedin: { url: '#', label: 'LinkedIn' },
+  },
+  'dance-club': {
+    email: 'dance-club@example.com',
+    instagram: { url: '#', label: 'Instagram' },
+    linkedin: { url: '#', label: 'LinkedIn' },
+  },
+  'gardening-club': {
+    email: 'gardening-club@example.com',
+    instagram: { url: '#', label: 'Instagram' },
+    linkedin: { url: '#', label: 'LinkedIn' },
+  },
+  'astronomy-club': {
+    email: 'astronomy-club@example.com',
+    instagram: { url: '#', label: 'Instagram' },
+    linkedin: { url: '#', label: 'LinkedIn' },
+  },
+  'theatre-club': {
+    email: 'theatre-club@example.com',
+    instagram: { url: '#', label: 'Instagram' },
+    linkedin: { url: '#', label: 'LinkedIn' },
+  },
+  'photography-club': {
+    email: 'photography-club@example.com',
+    instagram: { url: '#', label: 'Instagram' },
+    linkedin: { url: '#', label: 'LinkedIn' },
+  },
+  'gaming-club': {
+    email: 'gaming-club@example.com',
+    instagram: { url: '#', label: 'Instagram' },
+    linkedin: { url: '#', label: 'LinkedIn' },
+  },
+  'oratory-club': {
+    email: 'oratory-club@example.com',
+    instagram: { url: '#', label: 'Instagram' },
+    linkedin: { url: '#', label: 'LinkedIn' },
+  },
+  'entrepreneurship-club': {
+    email: 'entrepreneurship-club@example.com',
+    instagram: { url: '#', label: 'Instagram' },
+    linkedin: { url: '#', label: 'LinkedIn' },
+  },
+  'fashion-club': {
+    email: 'fashion-club@example.com',
+    instagram: { url: '#', label: 'Instagram' },
+    linkedin: { url: '#', label: 'LinkedIn' },
+  },
+  'science-society': {
+    email: 'science-society@example.com',
+    instagram: { url: '#', label: 'Instagram' },
+    linkedin: { url: '#', label: 'LinkedIn' },
+  },
+  'music-club': {
+    email: 'music-club@example.com',
+    instagram: { url: '#', label: 'Instagram' },
+    linkedin: { url: '#', label: 'LinkedIn' },
+  },
+  'film-society': {
+    email: 'film-society@example.com',
+    instagram: { url: '#', label: 'Instagram' },
+    linkedin: { url: '#', label: 'LinkedIn' },
+  },
+  'turingites-computer-science-society': {
+    email: 'turingites-computer-science-society@example.com',
+    instagram: { url: '#', label: 'Instagram' },
+    linkedin: { url: '#', label: 'LinkedIn' },
+  },
+  'animal-welfare-society': {
+    email: 'animal-welfare-society@example.com',
+    instagram: { url: '#', label: 'Instagram' },
+    linkedin: { url: '#', label: 'LinkedIn' },
+  },
+  'martial-arts-club': {
+    email: 'martial-arts-club@example.com',
+    instagram: { url: '#', label: 'Instagram' },
+    linkedin: { url: '#', label: 'LinkedIn' },
+  },
 
   'foss-club': {
     email: 'fossclub@saiuniversity.edu.in',
