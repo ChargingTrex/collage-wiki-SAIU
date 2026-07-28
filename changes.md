@@ -1408,6 +1408,90 @@ genuinely "a Framer Motion built-in" and uncontroversial to add; the 3D
 coverflow visual and autoplay remain a deliberate, disclosed choice not
 to build, not an oversight.
 
+## 2026-07-28 — Feature-image card thumbnails, `@docusaurus/plugin-ideal-image`
+
+Files: `docusaurus.config.js`, `package.json`/`package-lock.json` (new
+`@docusaurus/plugin-ideal-image` dependency, pinned to `3.10.2` to match
+`@docusaurus/core`), `static/admin/config.yml`,
+`src/plugins/club-events-plugin.js`, `src/components/EventCard.jsx`,
+`docs/resources/feature-images.mdx` (new),
+`blog/2026-07-28-stop-asking-ai-for-answers/index.md`
+
+Requested: a thumbnail image on the homepage's Recent Activity cards.
+Audited first and confirmed **zero** image support existed anywhere in this
+path: `EventCard.jsx` rendered only date/title/description,
+`club-events-plugin.js`'s `loadContent()` never read `frontMatter.image`
+at all, and `static/admin/config.yml`'s Events collection had no image
+field for it either. Separately confirmed in-body post images (plain
+markdown `![]()`) already worked fine and needed nothing — this is
+specifically about the *card* thumbnail, a different thing from an
+in-body photo or the `ImageCarousel`/`CoverflowCarousel`/`StackCarousel`
+gallery components above.
+
+**Installed `@docusaurus/plugin-ideal-image`**, registered in
+`docusaurus.config.js`. This transparently upgrades every existing
+in-body markdown image to responsive/lazy-loaded/blur-placeholder
+versions with zero content changes — confirmed via a production build:
+the existing body image in `stop-asking-ai-for-answers` now compiles
+through the plugin's `responsive-loader`/`sharp` chain into a hashed
+`/assets/images/...` asset, same post, no markdown edit.
+
+**Card thumbnails needed a different path than body images, and this took
+reading the plugin's own source to get right.** `club-events-plugin.js`
+reads blog frontmatter directly off disk (`parseMarkdownFile`) rather than
+through Docusaurus's own blog-plugin asset pipeline, so a relative
+`image: ./cover.jpg` frontmatter value has no webpack-resolved URL the way
+an in-body `![]()` does — forwarding it as-is would have been a broken
+relative path on every page except the post's own. Fixed by having
+`loadContent()` copy any co-located `image:` file into
+`static/img/_event-thumbnails/<post-folder>/` and return the resulting
+base-URL-prefixed path (`http(s)://` and already-absolute `/...` paths
+pass through untouched, no copy needed). `EventCard.jsx` renders it via
+`@theme/IdealImage`'s `<Image>` component — read its actual source first
+rather than assuming the API: passing a plain string (not a webpack-
+`require()`d module) hits a documented fallback branch that renders a
+plain `<img>`, so this degrades safely without the responsive/blur
+treatment (that part only applies to statically-imported images, which a
+runtime frontmatter path can never be).
+
+**`static/admin/config.yml`** gained an optional `Feature Image` field
+(Decap `image` widget) on the Events collection, alongside the existing
+title/date/tags/description/body fields — still can't actually be *saved*
+through `/admin` until the CMS auth-proxy work happens, same limitation as
+every other field on that form right now.
+
+**New tutorial doc**, `docs/resources/feature-images.mdx` — club-lead-
+facing: the CMS steps, the hand-edit-frontmatter fallback, and an explicit
+"this is different from an in-body image" section so the two don't get
+confused with each other or with the carousel components.
+
+**Tested on real content**: added
+`image: ./blind-reliance-vs-active-dialogue.png` to the one genuine
+authored post (`stop-asking-ai-for-answers`) as a live, real example
+rather than a throwaway test post. `npm run build` confirmed: the file
+copies to both `static/` and `build/img/_event-thumbnails/...`, the
+homepage's rendered HTML contains the correct
+`<img src="/collage-wiki-SAIU/img/_event-thumbnails/.../blind-reliance-vs-active-dialogue.png">`,
+and the existing in-body image on the same post now resolves through the
+ideal-image asset pipeline too. **Not yet re-run against the Playwright
+suite** — `npm run test:e2e` should be run before this is considered fully
+verified, since `TEST_REPORT.md`'s existing coverage predates card
+thumbnails entirely.
+
+**Update, same day: tutorial doc rewritten to match `adding-photos.mdx`'s
+established convention.** The first version of `feature-images.mdx` led
+with `/admin` as if it could save an upload today, which isn't true for
+any CMS field yet (auth still isn't wired — see CP5 status above); it
+also skipped the "ask a developer / use GitHub's edit-this-page pencil
+icon" two-option structure and "no coding background needed" framing that
+`adding-photos.mdx` already established as the house style for these
+club-lead-facing pages. Rewritten to match: Option A/B structure, a
+forward-looking note that `/admin` will do this once CMS auth exists
+rather than claiming it does now, and a `sidebar_custom_props.icon: Image`
+(added to `SIDEBAR_ICONS` in `src/data/sidebarIcons.js`, distinct from
+`adding-photos.mdx`'s existing `Images` plural icon so the two don't look
+identical on the Resources category page).
+
 ## 2026-07-28 — Autoplay added; the 3D coverflow becomes a real component; a 3rd carousel type; docs for both audiences
 
 Files: `src/components/useCarouselAutoplay.js` (new),
@@ -1514,3 +1598,40 @@ Noticed in passing, not touched: a concurrent session added
 Image" field to `static/admin/config.yml` (per a new
 `feature-images-recent-activity-plan.md`), and a third Resources page,
 "Adding a Feature Image to a Post" — unrelated to this work, left alone.
+
+## 2026-07-28 — Doc sync (HANDOFF-4, tutorial cross-links) + combined-tree verification
+
+Files: `HANDOFF-4.md`, `docs/resources/adding-photos.mdx`
+
+Requested: bring `HANDOFF-4.md`, this file, `CONTRIBUTING.md`, and the
+non-technical tutorial doc back in sync now that two sessions' work
+(carousels + feature images) has landed in the same working tree.
+`CONTRIBUTING.md` and this file were already current — the concurrent
+session had kept both up to date for their own feature-image work, cross-
+referencing the carousel section correctly. The two gaps found and fixed:
+
+1. **`HANDOFF-4.md`'s "Current State"/"Next Steps" sections were stale** —
+   still described card-thumbnails work as "most recent" and the carousel
+   work wasn't mentioned as committed at all, even though the carousel
+   commit (`40610a3`) landed and was pushed after that snapshot was
+   written. Rewritten to reflect the actual, current git state: carousels
+   committed/pushed, feature-images still uncommitted (a concurrent
+   session's in-progress work, correctly left alone rather than bundled
+   into a commit here).
+2. **`docs/resources/adding-photos.mdx` and `docs/resources/
+   feature-images.mdx` didn't link to each other** — two genuinely easy-
+   to-confuse concepts ("photo inside the post" vs. "the one thumbnail
+   used for the post's card"), each written by a different
+   session/timeframe, with no way for a club lead who landed on the wrong
+   one to find the right one. Added a short cross-reference at the top of
+   each.
+
+**Also re-verified the combined working tree** (carousels + the
+concurrent session's still-uncommitted feature-image work together): full
+`npm run build` and the complete Playwright suite (`npx playwright test`)
+both run clean, 63/63 — closing out the "not yet re-run against
+Playwright" gap the other session's own changes.md entry had flagged for
+the feature-image work. This was a verification pass only; no new spec
+was authored for feature-images (not this session's feature to test), and
+the feature-image files themselves remain uncommitted, left for whoever
+is driving that work to commit when ready.
