@@ -208,7 +208,7 @@ const config = {
               },
               {
                 label: 'Content License (CC BY-NC-SA 4.0)',
-                href: 'https://github.com/ChargingTrex/collage-wiki-SAIU/blob/main/LICENSE-CONTENT.md',
+                href: 'https://github.com/ChargingTrex/collage-wiki-SAIU/blob/main/LICENSE-CREATIVE-COMMONS.md',
               },
             ],
           },
@@ -219,7 +219,7 @@ const config = {
         // each license name links straight to its file — same targets as
         // the "Code License"/"Content License" links above, just surfaced
         // here too where every visitor actually sees it.
-        copyright: `Sai University Wiki &middot; Content <a href="https://github.com/ChargingTrex/collage-wiki-SAIU/blob/main/LICENSE-CONTENT.md">CC BY-NC-SA 4.0</a> &middot; Code <a href="https://github.com/ChargingTrex/collage-wiki-SAIU/blob/main/LICENSE">GPL-3.0</a> Licensed`,
+        copyright: `Sai University Wiki &middot; Content <a href="https://github.com/ChargingTrex/collage-wiki-SAIU/blob/main/LICENSE-CREATIVE-COMMONS.md">CC BY-NC-SA 4.0</a> &middot; Code <a href="https://github.com/ChargingTrex/collage-wiki-SAIU/blob/main/LICENSE">GPL-3.0</a> Licensed`,
       },
       prism: {
         theme: prismThemes.github,

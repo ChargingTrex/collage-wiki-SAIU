@@ -1,24 +1,3 @@
-# Content License
-
-Everything under `docs/`, `blog/`, `static/img/`, and `static/audio/` — the
-club pages, event write-ups, student posts, and media — is licensed under
-**Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-(CC BY-NC-SA 4.0)**.
-
-Deed (human-readable summary): <https://creativecommons.org/licenses/by-nc-sa/4.0/>
-
-Code (everything under `src/`, `tests/`, and configuration files) is
-licensed separately — see [`LICENSE`](LICENSE).
-
-Content: Sai University Club & Event Wiki
-
-Licensor: ChargingTrex
-
-The full legal text of the license follows, fetched verbatim from
-<https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.txt>.
-
-------------------------------------------------------------------------
-
 Attribution-NonCommercial-ShareAlike 4.0 International
 
 =======================================================================

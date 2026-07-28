@@ -122,8 +122,11 @@ This project uses a dual license:
   two files rather than one combined document so GitHub's automatic license
   detector can still recognize the base `LICENSE` file as GPL-3.0.
 - **Content** (`docs/`, `blog/`, `static/img/`, `static/audio/`) —
-  [CC BY-NC-SA 4.0](LICENSE-CONTENT.md) — free to share and adapt
-  non-commercially, with attribution, under the same license.
+  [Creative Commons BY-NC-SA 4.0](LICENSE-CREATIVE-COMMONS.md) — free to
+  share and adapt non-commercially, with attribution, under the same
+  license. See [`CONTENT-LICENSE-NOTE.md`](CONTENT-LICENSE-NOTE.md) for
+  scope and attribution; split from the legal text itself for the same
+  GitHub-detection reason as the code license above.
 
 ## Acknowledgements
 

@@ -1,5 +1,34 @@
 # Changes
 
+## 2026-07-29 — Fix GitHub license-name detection for the content license too
+
+Files: `LICENSE-CREATIVE-COMMONS.md` (renamed from `LICENSE-CONTENT.md`),
+`CONTENT-LICENSE-NOTE.md` (new), `README.md`, `docusaurus.config.js`
+
+GitHub's "Licenses found" popover was showing two entries: `GPL-3.0` (from
+`LICENSE`, correctly detected) and a second, generic `License` pointing at
+`LICENSE-CONTENT.md` — not specifically named as CC BY-NC-SA-4.0. Same root
+cause as the earlier GPL-3.0 detection fix: the file had our own scope-note
+and attribution text (`Content: ...` / `Licensor: ChargingTrex`) sitting
+*before* the actual CC legal text, dropping the fuzzy-match confidence
+below whatever threshold gives a specific SPDX name instead of a generic
+"License" label.
+
+Applied the identical fix used for `LICENSE`/`COMMONS-CLAUSE.md`: renamed
+the file to `LICENSE-CREATIVE-COMMONS.md` and trimmed it to *only* the
+official CC BY-NC-SA 4.0 legal text (re-verified byte-identical against a
+fresh fetch of `creativecommons.org/licenses/by-nc-sa/4.0/legalcode.txt`
+before and after the edit). The scope note and `Content:`/`Licensor:`
+attribution moved into a new `CONTENT-LICENSE-NOTE.md`, mirroring
+`COMMONS-CLAUSE.md`'s role for the code side. Updated the two places that
+linked the old filename (`README.md`'s License section, the footer's
+"Content License" link and copyright-bar text in `docusaurus.config.js`)
+to point at the new one. Also clarified in passing that "Commons Clause"
+(commonsclause.com, the code-license restriction) and "Creative Commons"
+(creativecommons.org, the content license) are unrelated organizations
+that only happen to share a word — a mix-up worth heading off given how
+similar the file names now look side by side.
+
 ## 2026-07-29 — Compact footer credit line, FOSS Club footer contact, horizontal footer links
 
 Files: `docusaurus.config.js`, `src/theme/Footer/index.js`, `src/css/custom.css`
