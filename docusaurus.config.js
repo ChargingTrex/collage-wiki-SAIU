@@ -181,6 +181,14 @@ const config = {
               //   label: 'Decap CMS',
               //   to: '/admin',
               // },
+              {
+                label: 'Code License (GPL-3.0 + Commons Clause)',
+                href: 'https://github.com/ChargingTrex/collage-wiki-SAIU/blob/main/LICENSE',
+              },
+              {
+                label: 'Content License (CC BY-NC-SA 4.0)',
+                href: 'https://github.com/ChargingTrex/collage-wiki-SAIU/blob/main/LICENSE-CONTENT.md',
+              },
             ],
           },
         ],
