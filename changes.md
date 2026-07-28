@@ -1,5 +1,44 @@
 # Changes
 
+## 2026-07-29 — Compact footer credit line, FOSS Club footer contact, horizontal footer links
+
+Files: `docusaurus.config.js`, `src/theme/Footer/index.js`, `src/css/custom.css`
+
+**Footer copyright line replaced with a compact credit line**, styled after
+the sibling FOSS Club wiki (github.com/y-bow/saiufosswiki, which renders
+`SaiU FOSS Club · Content CC BY-SA 4.0 · MIT Licensed`). Adapted with this
+project's actual facts, not copied verbatim — the reference's licenses
+don't apply here (this project is CC BY-NC-SA content / GPL-3.0 code, not
+CC BY-SA / MIT):
+
+```
+Sai University Wiki · Content CC BY-NC-SA 4.0 · Code GPL-3.0 Licensed
+```
+
+`copyright` is rendered as raw HTML by Docusaurus, so "CC BY-NC-SA 4.0" and
+"GPL-3.0" are live links to `LICENSE-CONTENT.md`/`LICENSE` — same targets as
+the existing "Code License"/"Content License" links in the footer's "More"
+column, just surfaced in the one line every visitor actually reads instead
+of only in a link list.
+
+**Added a "Maintained by SaiU FOSS Club" credit** below the existing footer
+icon bar, with FOSS Club's own email/LinkedIn/Instagram — same reference
+site's pattern, reusing FOSS's real contact info (`src/data/clubContacts.js
+['foss-club']`, the one club with real, verified data on file) rather than
+duplicating it, so updating that one entry keeps this credit in sync too.
+
+**Footer link columns ("Wiki"/"More") now wrap horizontally instead of
+stacking one link per line.** With 8 links in "Wiki" and 5 in "More", the
+vertical list was making the footer noticeably tall for how little content
+it held. `.footer__items` switched from Infima's default block list to
+`display: flex; flex-wrap: wrap`, so each column now wraps into 2-3 lines
+instead of 5-8. Pure CSS change — hot-reloaded without a dev-server restart,
+unlike the `docusaurus.config.js` edits above (config changes never
+hot-reload; those needed a manual restart to verify live each time).
+
+Verified all three end-to-end via Playwright screenshots against the
+running dev server, plus a full `npm run build` for the config changes.
+
 ## 2026-07-29 — Name ChargingTrex as copyright holder in LICENSE
 
 Files: `LICENSE`

@@ -402,6 +402,20 @@
 [data-theme='light'] .github-badge__stat-icon { color: #656d76; }
 
 /* =====================================================================
+   Footer link columns ("Wiki"/"More") wrap horizontally instead of
+   stacking one link per line — the vertical list was making the footer
+   too tall for how few links each column actually has.
+   ===================================================================== */
+.footer__items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.25rem;
+}
+.footer__item {
+  margin: 0;
+}
+
+/* =====================================================================
    Footer contact icon bar — swizzled Footer wrapper
    (src/theme/Footer/index.js). Sits below the standard Infima footer.
    ===================================================================== */
@@ -428,6 +442,27 @@
 }
 .footer-contact-bar__icon {
   display: block;
+}
+
+.footer-foss-credit {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0 1rem;
+  background: var(--ifm-footer-background-color);
+  color: var(--ifm-footer-color, #ebedf0);
+  opacity: 0.6;
+  font-size: 0.8rem;
+}
+.footer-foss-credit__links {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.footer-foss-credit .footer-contact-bar__icon {
+  width: 16px;
+  height: 16px;
 }
 
 /* =====================================================================

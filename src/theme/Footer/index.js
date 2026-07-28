@@ -4,6 +4,7 @@ import {Mail, Bug} from 'lucide-react';
 import ChromeDinoGame from 'react-chrome-dino';
 import 'react-chrome-dino/build/index.css';
 import {useAccentMode} from '../../components/useClubAccent';
+import {CLUB_CONTACTS} from '../../data/clubContacts';
 
 // Lucide is a generic icon set and doesn't include brand logos — GitHub,
 // LinkedIn, and Instagram are hand-embedded SVG paths instead, same
@@ -50,6 +51,48 @@ const CONTACT_LINKS = [
   {Icon: GithubIcon, href: WIKI_REPO_URL, label: 'Wiki source on GitHub'},
   {Icon: Bug, href: `${WIKI_REPO_URL}/issues`, label: 'Report an issue with this wiki'},
 ];
+
+// FOSS Club is the one club with real, verified contact info on file (see
+// src/data/clubContacts.js's own header comment) — reused here rather than
+// duplicated, so updating that one entry keeps this credit in sync too.
+// Same pattern as the reference wiki this project borrows the footer style
+// from (github.com/y-bow/saiufosswiki), which credits itself the same way.
+const FOSS_CONTACT = CLUB_CONTACTS['foss-club'];
+
+function FossClubCredit() {
+  return (
+    <div className="footer-foss-credit">
+      <span>Maintained by SaiU FOSS Club</span>
+      <div className="footer-foss-credit__links">
+        <a
+          href={`mailto:${FOSS_CONTACT.email}`}
+          aria-label="Email SaiU FOSS Club"
+          title="Email SaiU FOSS Club"
+          className="footer-contact-bar__link">
+          <Mail className="footer-contact-bar__icon" width={16} height={16} />
+        </a>
+        <a
+          href={FOSS_CONTACT.linkedin.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={FOSS_CONTACT.linkedin.label}
+          title={FOSS_CONTACT.linkedin.label}
+          className="footer-contact-bar__link">
+          <LinkedinIcon className="footer-contact-bar__icon" width={16} height={16} />
+        </a>
+        <a
+          href={FOSS_CONTACT.instagram.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={FOSS_CONTACT.instagram.label}
+          title={FOSS_CONTACT.instagram.label}
+          className="footer-contact-bar__link">
+          <InstagramIcon className="footer-contact-bar__icon" width={16} height={16} />
+        </a>
+      </div>
+    </div>
+  );
+}
 
 // Hidden dino easter egg (docs-internal/archive/saiu-collage-wiki-easter-egg.md). Locked
 // decisions per CLAUDE.md: in-flow at the bottom of the page (only found by
@@ -125,6 +168,7 @@ export default function FooterWrapper(props) {
           </a>
         ))}
       </div>
+      <FossClubCredit />
       <DinoEasterEgg />
     </>
   );
