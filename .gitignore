@@ -22,3 +22,9 @@ graphify-out/
 /test-results/
 /playwright-report/
 /playwright/.cache/
+
+# Superseded session snapshots and content drafts — kept locally for
+# history, not published once this repo goes public. docs-internal/'s
+# other files (animation-caveats.md, decap-cms-auth-todo.md) stay tracked;
+# they're actively cited from CLAUDE.md/CONTRIBUTING.md.
+/docs-internal/archive/
