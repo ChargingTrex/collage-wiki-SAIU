@@ -20,7 +20,7 @@ needed — it ships for free, already correctly wired, already accessible.
 
 The only thing the custom version adds on top is a decorative sky/cloud/star
 animation. Given the open WCAG/animation backlog elsewhere in this project
-(see `animation-caveats (3).md`), that's not judged worth the added code
+(see `docs-internal/animation-caveats.md`), that's not judged worth the added code
 surface right now.
 
 ## Original idea (as given)

@@ -277,7 +277,7 @@ const { accentStyle, accentName, isUnified } = useClubAccent('astronomy-club');
   (`IntersectionObserver`) is not implemented yet** — heroes that loop
   (`repeat: Infinity` while `isPlaying`) keep animating even when scrolled
   out of view; this is deferred until after the homepage mini-hero cards
-  land (see `animation-caveats (3).md` §9 and `changes.md`).
+  land (see `docs-internal/animation-caveats.md` §9 and `changes.md`).
 - `useClubAccent` — resolves the club's accent color, or the unified site
   color if the visitor has switched accent mode. Renders `per-club` on first
   paint to avoid a hydration mismatch.

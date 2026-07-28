@@ -22,7 +22,7 @@ import { useClubAccent } from '../useClubAccent';
 //
 // PLACEHOLDER (CP3): swapped for a standard, symmetric garment outline per the
 // locked plan decision — the original hand-authored paths were the roughest
-// drawings in the set (see animation-caveats (3).md §11/§14 for the earlier
+// drawings in the set (see docs-internal/animation-caveats.md §11/§14 for the earlier
 // note; a proper traced garment path is still needed here in the future,
 // same workflow as traced-handwriting-guide.md).
 const DRESS =

@@ -27,9 +27,10 @@ Read in this order:
    prose).
 4. **[`saiu-collage-wiki-easter-egg.md`](saiu-collage-wiki-easter-egg.md)** — the
    hidden footer Chrome-dino easter egg spec.
-5. **[`animation-caveats (3).md`](<animation-caveats (3).md>)** — current,
-   authoritative open-issues log for the hero animations (supersedes `(1)` and
-   `(2)`, kept alongside for history).
+5. **[`docs-internal/animation-caveats.md`](docs-internal/animation-caveats.md)** —
+   current, authoritative open-issues log for the hero animations (supersedes
+   the numbered `(1)`/`(2)` drafts, archived in `docs-internal/archive/` for
+   history).
 
 ## Build checkpoints
 

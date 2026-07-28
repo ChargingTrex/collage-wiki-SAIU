@@ -250,7 +250,7 @@ Science, Music, Film Society, Turingites, Animal Welfare, Martial Arts, FOSS.
 
 Fashion's garment paths were swapped for a standard, symmetric outline per
 the locked plan decision (original hand-authored paths were the roughest in
-the set); a note is in `animation-caveats (3).md` §14 flagging the future
+the set); a note is in `docs-internal/animation-caveats.md` §14 flagging the future
 traced-path upgrade.
 
 ### Playback model changed: hover-to-replay → click-to-play

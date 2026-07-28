@@ -34,9 +34,9 @@ Plan file: `/Users/it/.claude/plans/push-to-https-github-com-chargingtrex-co-spi
 - **All 23 heroes confirmed to exist** (5 were briefly thought missing —
   Dance/Theatre/Photography/Oratory/Martial Arts — all located; Dance was
   sitting in `~/Documents/` one level up, now moved in).
-- **`animation-caveats (3).md`** is canonical (supersedes `(1)`/`(2)`).
+- **`docs-internal/animation-caveats.md`** is canonical (supersedes `(1)`/`(2)`).
 - Fashion hero: garment paths get swapped for a standard/simple outline (not
-  full retrace) at CP3, plus a note added to `animation-caveats (3).md`
+  full retrace) at CP3, plus a note added to `docs-internal/animation-caveats.md`
   flagging a proper hand-drawn path is needed in future.
 - 6 heroes loop forever with no off-screen pause yet: **Science, Gaming, Art,
   Music, Dance, Oratory, Film Society**. Off-screen `IntersectionObserver`
@@ -176,7 +176,7 @@ utility classes) and a fresh dev-server run showing `Rspack 1.7.12` active.
 2. **CP3** (per plan): integrate remaining 22 heroes into `src/components/
    clubs|fests/`, build all 18 `docs/clubs/<slug>.mdx` pages (slugs table is
    in project `CLAUDE.md`). While integrating `FashionHero.jsx`, swap its
-   garment paths for a standard outline + note in `animation-caveats (3).md`.
+   garment paths for a standard outline + note in `docs-internal/animation-caveats.md`.
    Give `ArchivesHero.jsx` the same `initial={false}` review as Astronomy got
    (same key-remount hover pattern) — verify with a *correct* selector this
    time, not assume it's broken.
