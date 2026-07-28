@@ -1,0 +1,12 @@
+{
+  "label": "Art Club Archive",
+  "description": "Past boards for the Art Club, one file per year.",
+  "customProps": {
+    "icon": "Palette"
+  },
+  "link": {
+    "type": "generated-index",
+    "slug": "/archive/art-club",
+    "description": "Past boards for the Art Club, one file per year."
+  }
+}

@@ -9,12 +9,20 @@ sidebar_custom_props:
 import { ScienceHero } from '@site/src/components/clubs/ScienceHero';
 import { ClubContact } from '@site/src/components/ClubContact';
 import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+import { TeamSection } from '@site/src/components/TeamSection';
+import { CURRENT_TEAM } from '@site/src/data/teams/science-society.mjs';
 
 <ScienceHero />
 
 The Science Society runs experiments, lab demos, and speaker sessions across
 physics, chemistry, and biology, open to anyone curious about how things
 work.
+
+## Current Board
+
+<TeamSection clubSlug="science-society" members={CURRENT_TEAM} />
+
+Looking for a past board? See the [Archive](/docs/archive).
 
 ## Contact
 

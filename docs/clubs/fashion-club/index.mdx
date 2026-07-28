@@ -9,11 +9,19 @@ sidebar_custom_props:
 import { FashionHero } from '@site/src/components/clubs/FashionHero';
 import { ClubContact } from '@site/src/components/ClubContact';
 import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+import { TeamSection } from '@site/src/components/TeamSection';
+import { CURRENT_TEAM } from '@site/src/data/teams/fashion-club.mjs';
 
 <FashionHero />
 
 The Fashion Club hosts design showcases, styling workshops, and campus fashion
 shows, giving student designers a platform to present original collections.
+
+## Current Board
+
+<TeamSection clubSlug="fashion-club" members={CURRENT_TEAM} />
+
+Looking for a past board? See the [Archive](/docs/archive).
 
 ## Contact
 

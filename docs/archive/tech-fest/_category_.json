@@ -1,0 +1,12 @@
+{
+  "label": "Innovision Archive",
+  "description": "Past organisation committees for Innovision, one file per year.",
+  "customProps": {
+    "icon": "Rocket"
+  },
+  "link": {
+    "type": "generated-index",
+    "slug": "/archive/tech-fest",
+    "description": "Past organisation committees for Innovision, one file per year."
+  }
+}

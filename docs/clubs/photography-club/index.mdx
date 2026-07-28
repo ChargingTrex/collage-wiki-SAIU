@@ -9,12 +9,20 @@ sidebar_custom_props:
 import { PhotographyHero } from '@site/src/components/clubs/PhotographyHero';
 import { ClubContact } from '@site/src/components/ClubContact';
 import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+import { TeamSection } from '@site/src/components/TeamSection';
+import { CURRENT_TEAM } from '@site/src/data/teams/photography-club.mjs';
 
 <PhotographyHero />
 
 The Photography Club runs photo walks, gear workshops, and themed shoots
 around campus, with member work regularly featured across the wiki's event
 archive.
+
+## Current Board
+
+<TeamSection clubSlug="photography-club" members={CURRENT_TEAM} />
+
+Looking for a past board? See the [Archive](/docs/archive).
 
 ## Contact
 

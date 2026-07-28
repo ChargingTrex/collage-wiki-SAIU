@@ -9,11 +9,19 @@ sidebar_custom_props:
 import { EntrepreneurshipHero } from '@site/src/components/clubs/EntrepreneurshipHero';
 import { ClubContact } from '@site/src/components/ClubContact';
 import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+import { TeamSection } from '@site/src/components/TeamSection';
+import { CURRENT_TEAM } from '@site/src/data/teams/entrepreneurship-club.mjs';
 
 <EntrepreneurshipHero />
 
 The Entrepreneurship Club runs pitch competitions, founder talks, and startup
 incubation support for students turning ideas into ventures.
+
+## Current Board
+
+<TeamSection clubSlug="entrepreneurship-club" members={CURRENT_TEAM} />
+
+Looking for a past board? See the [Archive](/docs/archive).
 
 ## Contact
 

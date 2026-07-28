@@ -7,9 +7,17 @@ sidebar_custom_props:
 ---
 
 import { TechFestHero } from '@site/src/components/fests/TechFestHero';
+import { TeamSection } from '@site/src/components/TeamSection';
+import { CURRENT_TEAM } from '@site/src/data/teams/tech-fest.mjs';
 
 <TechFestHero audioSrc="/collage-wiki-SAIU/audio/innovision-theme.mp3" />
 
 Innovision is Sai University's flagship technical fest — a 48-hour build
 event bringing together hackathons, project showcases, and tech talks from
 across the university's clubs and societies.
+
+## Current Organisation Committee
+
+<TeamSection clubSlug="tech-fest" members={CURRENT_TEAM} />
+
+Looking for a past committee? See the [Archive](/docs/archive).

@@ -9,11 +9,19 @@ sidebar_custom_props:
 import { AnimalWelfareHero } from '@site/src/components/clubs/AnimalWelfareHero';
 import { ClubContact } from '@site/src/components/ClubContact';
 import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+import { TeamSection } from '@site/src/components/TeamSection';
+import { CURRENT_TEAM } from '@site/src/data/teams/animal-welfare-society.mjs';
 
 <AnimalWelfareHero />
 
 The Animal Welfare Society looks after campus strays, runs feeding drives,
 and organizes adoption and vaccination camps with local shelters.
+
+## Current Board
+
+<TeamSection clubSlug="animal-welfare-society" members={CURRENT_TEAM} />
+
+Looking for a past board? See the [Archive](/docs/archive).
 
 ## Contact
 

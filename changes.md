@@ -1635,3 +1635,135 @@ the feature-image work. This was a verification pass only; no new spec
 was authored for feature-images (not this session's feature to test), and
 the feature-image files themselves remain uncommitted, left for whoever
 is driving that work to commit when ready.
+
+## 2026-07-28 — Leadership rollover: `TeamSection`, 21 team-data files, `scripts/rollover.mjs`, archive tree
+
+Files: `src/components/TeamSection.jsx` (new), `src/components/contactIcons.jsx`
+(new, extracted from `ClubContact.jsx`), `src/data/teams/*.mjs` (21 new),
+`src/data/festMeta.mjs` (new), `scripts/rollover.mjs` (new), `package.json`
+(new `rollover` script), `docs/archive/_category_.json` (new) +
+`docs/archive/art-club/`, `docs/archive/tech-fest/` (new, real worked
+examples), all 18 `docs/clubs/<slug>/index.mdx` + all 3 `docs/fests/<slug>.mdx`
+(wiring), `src/pages/clubs.js`, `tests/e2e/clubs-and-fests.spec.js`,
+`tests/e2e/leadership-rollover.spec.js` (new, 9 tests), `CONTRIBUTING.md`,
+`docs/resources/team-photos.mdx` (new), `docs-internal/leadership-rollover.md`
+(new), `static/img/team/placeholder-avatar.svg` (new),
+`leadership-rollover-plan.md` / `archive planning.md` (status headers)
+
+Implemented `leadership-rollover-plan.md` in full (and, with it, `archive
+planning.md`'s §2/§3) — the mechanism for snapshotting an outgoing club
+board / fest organisation committee into a permanent archive page, then
+resetting the live page for the incoming team. Requested with an explicit
+instruction to ask clarifying questions and reach full context before
+writing any code; four were asked and answered before starting: run the
+rollover script for real (verified first against 2 disposable throwaway
+slugs, cleaned up, then run for real against art-club/tech-fest as the
+shipped worked examples — not a hand-scaffolded fake), generate an actual
+placeholder avatar image rather than leave a 404 in the demo data, add
+Playwright coverage (matching this repo's established convention), and
+commit + push once everything passes.
+
+**Deviated from the written plan in two places, both discovered while
+implementing, not guessed at:**
+1. Fest sidebar icons already existed (`Rocket`/`PartyPopper`/`Music`,
+   added by other work between the plan being written and this session),
+   not the plan's placeholder guess of `Sparkles` for Cultural Fest.
+   `festMeta.mjs` was written to match the live icons instead of adding a
+   fresh, conflicting choice.
+2. **The plan's own per-club archive links (`/docs/archive/<slug>`) would
+   have hard-failed the build.** Only a slug that has actually been rolled
+   over gets a `docs/archive/<slug>/` folder — Docusaurus doesn't generate
+   a route for an empty category, confirmed directly (a first `npm run
+   build` attempt with all 21 pages linking to their own `/docs/archive/<slug>`
+   failed with 21 broken-link errors, since only 2 of 21 slugs had actually
+   been rolled over at that point). Fixed by pointing all 21 pages at the
+   generic `/docs/archive` top-level index instead — always resolves, and
+   naturally starts listing each club/fest's own sub-page the first time
+   it's actually rolled over.
+
+**`TeamSection.jsx`** renders `{name, role, photo?, contact?}[]` — no
+heading of its own (same convention as `ClubContact`), so the `.mdx` author
+supplies "Board" vs. "Organisation Committee" wording. No photo → a generic
+`UserRound` icon in a `--club-accent`-tinted circle. Photo path resolution
+uses `useBaseUrl()` (default options, not `forcePrependBaseUrl`) — checked
+Docusaurus's own source first to confirm the default behavior already
+skips re-adding the prefix for a path that already has it, so team-data
+authors can write a normal `/img/team/<slug>/x.jpg` path without hardcoding
+this deployment's `/collage-wiki-SAIU/` prefix, and nothing double-prefixes.
+
+**`contactIcons.jsx`** — `ContactLink`/`InstagramIcon`/`LinkedinIcon` moved
+out of `ClubContact.jsx` (which now imports them) so `TeamSection` doesn't
+duplicate them.
+
+**`scripts/rollover.mjs`** — standalone `node` script (`.mjs`, not `.js`,
+since `package.json` has no `"type": "module"` and bare `.js` would parse
+as CommonJS and throw on `export const` in the team-data files it
+`import()`s). Validates `type`/`slug`/`year`, refuses to overwrite an
+existing snapshot, bootstraps a slug's `docs/archive/<slug>/_category_.json`
+the first time (label/icon sourced from the club's own `_category_.json` or
+`FEST_META`), writes the year snapshot, and resets `src/data/teams/<slug>.mjs`
+to a fresh placeholder. `--dry-run` and `--force` flags. Verified end to
+end: dry-run against a real slug, then a real run (with `--force`) against
+2 disposable throwaway slugs (one club-type using a temporary
+`docs/clubs/test-club-zzz/_category_.json`, one fest-type using a temporary
+`FEST_META` entry) to prove both code paths, confirmed re-running the same
+slug/year refuses rather than clobbering, then deleted every trace of the
+throwaway slugs before running it for real against art-club/tech-fest.
+
+**Mid-session incident, caught and recovered, not silently worked around:**
+partway through wiring the 21 pages, the entire working tree got reset to a
+clean `git status` — all of this session's new/modified files (plus,
+separately, several gitignored planning docs that should have stayed on
+disk per their own `.gitignore` comments) disappeared. Traced via `git
+reflog`: a concurrent session had taken a full working-tree safety-backup
+commit (explicitly labeled as such, including "untracked WIP") onto a
+now-deleted local branch before doing its own commit/cleanup work on
+`main` — recovered every file from that still-reachable (if branch-less)
+commit via `git checkout <sha> -- <paths>`, re-deleted the 2 disposable
+test-slug files that the snapshot had happened to catch mid-test, and
+continued from exactly where the session left off. No data was actually
+lost; flagging this because it's a real, reproducible risk of concurrent
+sessions sharing one working tree, not because anything here needs fixing
+retroactively.
+
+**Test coverage** — `tests/e2e/leadership-rollover.spec.js` (new, 9 tests):
+Current Board/Committee sections render with placeholder data, no-photo
+fallback renders no broken `<img>`, the demo photo+contact member renders
+both, the `/clubs` Archive link navigates correctly, the top-level archive
+index lists both rolled-over slugs, a per-club archive category lists its
+snapshot, and both snapshot pages render under their own year heading. Hit
+(and fixed) the exact kind of test-locator strictness issue this repo's own
+`TEST_REPORT.md` debugging trail already warned about: a bare role/name
+query for "Art Club Archive" or "2025-26 Board" matched 3 elements each
+(sidebar menu link, generated-index card, "Next" pagination link) — fixed
+by scoping to `.theme-doc-card-container`; a bare heading-name query for
+"2025-26 Board" also matched the page's own `<h1>` title (which contains it
+as a substring) — fixed with `{level: 2}`. Also updated
+`clubs-and-fests.spec.js`'s pre-existing "Archives mention" test, since
+this work intentionally changes both the link text ("Archives page" →
+"Archive") and target (`/docs/resources/archives` → `/docs/archive`).
+
+Verified end to end: `npm run build` clean, full `npm run test:e2e`
+72/72 (63 pre-existing + 9 new).
+
+**Update, same day: split the tutorial doc, and moved the one about
+running the script itself out of the public site.** Originally wrote one
+combined tutorial (`docs/resources/leadership-rollover.mdx`) covering both
+running `scripts/rollover.mjs` and replacing a team member's photo.
+Corrected per explicit direction into two separate concerns with different
+audiences: **running the rollover script is maintainer-only** — it needs
+repo/terminal access, so it has no business being a public
+`docs/resources/` page every site visitor can find in the sidebar. Moved
+to `docs-internal/leadership-rollover.md` (a plain `.md` file,
+deliberately outside `docs/` so Docusaurus never builds it into a route —
+confirmed via `find build -iname "*leadership-rollover*"` returning
+nothing after rebuilding). **Adding a team member's photo, by contrast,
+needs no script or repo tooling beyond editing one line and uploading a
+file** — kept as a public, plain-language page,
+`docs/resources/team-photos.mdx`, matching `adding-photos.mdx`'s and
+`feature-images.mdx`'s existing club-lead-facing convention (Option
+A/ask-a-developer, Option B/GitHub's edit-this-page flow). Removed the
+`Users` sidebar icon from `sidebarIcons.js` (only used by the
+now-non-public rollover page); kept `UserRound` (still used by the public
+`team-photos.mdx`). Re-verified: `npm run build` clean, full
+`npm run test:e2e` 72/72 unaffected by the split.

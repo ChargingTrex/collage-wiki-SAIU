@@ -9,12 +9,20 @@ sidebar_custom_props:
 import { TheatreHero } from '@site/src/components/clubs/TheatreHero';
 import { ClubContact } from '@site/src/components/ClubContact';
 import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+import { TeamSection } from '@site/src/components/TeamSection';
+import { CURRENT_TEAM } from '@site/src/data/teams/theatre-club.mjs';
 
 <TheatreHero />
 
 The Theatre Club stages original and adapted productions each semester,
 running auditions, rehearsals, and backstage crews open to actors and
 technicians alike.
+
+## Current Board
+
+<TeamSection clubSlug="theatre-club" members={CURRENT_TEAM} />
+
+Looking for a past board? See the [Archive](/docs/archive).
 
 ## Contact
 

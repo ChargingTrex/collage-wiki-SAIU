@@ -9,6 +9,8 @@ sidebar_custom_props:
 import { AstronomyHero } from '@site/src/components/clubs/AstronomyHero';
 import { ClubContact } from '@site/src/components/ClubContact';
 import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+import { TeamSection } from '@site/src/components/TeamSection';
+import { CURRENT_TEAM } from '@site/src/data/teams/astronomy-club.mjs';
 
 <AstronomyHero />
 
@@ -19,6 +21,12 @@ current astronomical events for the Sai University community.
   CP2 smoke test only. Constitution/exec-board/directory content for this
   club lands in CP3 alongside the other 17 club pages.
 */}
+
+## Current Board
+
+<TeamSection clubSlug="astronomy-club" members={CURRENT_TEAM} />
+
+Looking for a past board? See the [Archive](/docs/archive).
 
 ## Contact
 

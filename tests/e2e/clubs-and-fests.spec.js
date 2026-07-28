@@ -18,11 +18,11 @@ test.describe('/clubs directory', () => {
     expect(errors).toEqual([]);
   });
 
-  test('Archives mention links to the real Archives page', async ({page}) => {
+  test('Archive mention links to the leadership archive, not the event archive', async ({page}) => {
     await page.goto('clubs');
-    await expect(page.getByRole('link', {name: 'Archives page'})).toHaveAttribute(
+    await expect(page.getByRole('link', {name: 'Archive', exact: true})).toHaveAttribute(
       'href',
-      /\/docs\/resources\/archives$/
+      /\/docs\/archive$/
     );
   });
 

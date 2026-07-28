@@ -9,11 +9,19 @@ sidebar_custom_props:
 import { MusicHero } from '@site/src/components/clubs/MusicHero';
 import { ClubContact } from '@site/src/components/ClubContact';
 import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+import { TeamSection } from '@site/src/components/TeamSection';
+import { CURRENT_TEAM } from '@site/src/data/teams/music-club.mjs';
 
 <MusicHero />
 
 The Music Club brings together vocalists and instrumentalists for open jams,
 band rehearsals, and campus performances across genres.
+
+## Current Board
+
+<TeamSection clubSlug="music-club" members={CURRENT_TEAM} />
+
+Looking for a past board? See the [Archive](/docs/archive).
 
 ## Contact
 

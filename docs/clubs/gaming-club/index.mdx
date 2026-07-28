@@ -9,12 +9,20 @@ sidebar_custom_props:
 import { GamingHero } from '@site/src/components/clubs/GamingHero';
 import { ClubContact } from '@site/src/components/ClubContact';
 import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+import { TeamSection } from '@site/src/components/TeamSection';
+import { CURRENT_TEAM } from '@site/src/data/teams/gaming-club.mjs';
 
 <GamingHero />
 
 The Gaming Club runs regular casual meetups alongside competitive teams
 across several titles, organizing LAN nights and representing Sai University
 at inter-college esports events.
+
+## Current Board
+
+<TeamSection clubSlug="gaming-club" members={CURRENT_TEAM} />
+
+Looking for a past board? See the [Archive](/docs/archive).
 
 ## Contact
 

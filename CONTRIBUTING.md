@@ -154,9 +154,22 @@ src/
                               separate page — don't conflate the two
     ArchivesHero.jsx          the Archives hero (the completed event
                               history) — lives on docs/resources/archives.mdx
+    TeamSection.jsx           renders a club/fest's current board/committee
+                              (name/role/photo?/contact?) — used on live
+                              pages and permanent docs/archive/ snapshots
+    contactIcons.jsx          ContactLink/InstagramIcon/LinkedinIcon shared
+                              by ClubContact and TeamSection
     primitives/Book.jsx       shared visual primitive
     clubs/                    18 club hero components
     fests/                    fest hero components + FestSound
+  data/
+    teams/<slug>.mjs          one file per club/fest — CURRENT_TEAM array
+                              consumed by TeamSection on that club/fest's
+                              live page. `.mjs`, not `.js` — see "Leadership
+                              rollover" below for why
+    festMeta.mjs              per-fest label/description/icon, read only by
+                              scripts/rollover.mjs when bootstrapping a
+                              fest's first archive category
   pages/
     index.js                  homepage
     clubs.js                  /clubs — 18 club mini-hero cards
@@ -181,6 +194,14 @@ docs/
                               the 3 carousel components, for club leads
     feature-images.mdx           plain-language guide to the optional card-
                               thumbnail image, for club leads (new)
+    team-photos.mdx               plain-language guide to replacing a team
+                              member's placeholder photo with a real one,
+                              for club leads (new)
+  archive/<slug>/               one folder per club/fest that has ever been
+                              rolled over: _category_.json + one
+                              <year>-board.mdx or <year>-committee.mdx per
+                              year. Never edited after creation. Bootstrapped
+                              by scripts/rollover.mjs, not by hand
 blog/
   YYYY-MM-DD-<event-slug>/    one folder per event, images co-located inside
 static/
@@ -202,6 +223,13 @@ tutorial-reference/           the stock Docusaurus classic-template tutorial
 docs-internal/                 planning/decision docs about the project,
                               not site content — not part of the Docusaurus
                               build at all (outside docs/)
+  leadership-rollover.md        maintainer-only rollover walkthrough —
+                              deliberately not a public docs/resources/
+                              page; running the script needs repo access
+scripts/
+  rollover.mjs                  snapshots an outgoing board/committee into
+                              docs/archive/, resets src/data/teams/<slug>.mjs
+                              — see "Leadership rollover" below
 tests/e2e/                     Playwright suite — see TEST_REPORT.md and
                               this doc's "Developer setup" section
 playwright.config.js
@@ -390,6 +418,56 @@ keeping them in sync:
 See the club table in the root `CLAUDE.md` for the correct slug and accent
 name for each club.
 
+### Leadership rollover (clubs & fests)
+
+A club exec board or fest organisation committee changes every year. Unlike
+event posts (permanently dated once published), a club/fest's live page
+shows the *current* team — editing it in place for the new year would
+silently destroy the previous team's record unless something snapshots it
+first. The fix: snapshot the outgoing team into a permanent
+`docs/archive/<slug>/<year>-board.mdx` (fests: `-committee.mdx`) file, then
+reset `src/data/teams/<slug>.mjs` for the incoming team. Archive files are
+never edited after creation.
+
+**Using the script (preferred):**
+
+```bash
+npm run rollover -- club art-club 2025-26
+npm run rollover -- fest tech-fest 2025-26
+npm run rollover -- club art-club 2025-26 --dry-run   # preview, no writes
+```
+
+It validates the team data, refuses to overwrite an existing snapshot,
+bootstraps `docs/archive/<slug>/_category_.json` the first time a slug is
+rolled over, writes the year's snapshot `.mdx`, and resets
+`src/data/teams/<slug>.mjs` to a fresh placeholder. See
+`docs-internal/leadership-rollover.md` for the fuller walkthrough —
+maintainer-only, not a public `docs/resources/` page, since running the
+script needs repo access anyway.
+
+**Manual fallback**, if the script isn't available or won't run:
+
+1. Create `docs/archive/<slug>/<year>-board.mdx` (or `-committee.mdx` for a
+   fest) by hand, frontmatter + a `<TeamSection clubSlug="<slug>" members={...} />`
+   under a `## <year> Board` (or `Organisation Committee`) heading — copy an
+   existing snapshot under `docs/archive/` as a template.
+2. If `docs/archive/<slug>/` doesn't exist yet, also add a
+   `_category_.json` (label/description/icon — copy the pattern from an
+   existing one, e.g. `docs/archive/art-club/_category_.json`).
+3. Replace `src/data/teams/<slug>.mjs`'s `CURRENT_TEAM` with the incoming
+   team's real names — copy another team file's placeholder shape
+   (`name`/`role` mandatory, `photo`/`contact` optional) as a template. See
+   the live [Adding a Team Member's Photo](/docs/resources/team-photos)
+   guide for the photo field specifically.
+4. `npm run build` to confirm nothing broke.
+
+Why `.mjs`, not `.js`, for `src/data/teams/*.mjs`: the script is a
+standalone `node scripts/rollover.mjs` process (not run through
+Docusaurus's config loader), using Node's native `import()`. This
+`package.json` has no `"type": "module"`, so plain `.js` is parsed as
+CommonJS by default and throws on `export const` — `.mjs` is
+unconditionally ESM regardless.
+
 ---
 
 ## 4. Working with the two shared systems
@@ -479,6 +557,9 @@ reuse as-is.
 - [ ] No new audio autoplays — audio is click-to-play only
 - [ ] `/admin` still loads, if you touched CMS config (it can't save yet —
       see §1 — so there's no "test edit" to try until auth is wired up)
+- [ ] If this was a leadership rollover, the outgoing team's data is in
+      `docs/archive/<slug>/`, not still sitting in
+      `src/data/teams/<slug>.mjs`
 
 ## 7. What requires explicit sign-off
 

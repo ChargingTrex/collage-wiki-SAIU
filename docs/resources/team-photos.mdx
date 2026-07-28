@@ -1,0 +1,72 @@
+---
+title: Adding a Team Member's Photo
+description: A plain-language guide for club leads — no coding experience needed — on replacing a placeholder photo with a real one in the Current Board/Committee section.
+sidebar_custom_props:
+  icon: UserRound
+---
+
+This page is for anyone updating their club or fest's board/committee
+section — no coding background needed.
+
+## What you'll see before adding a real photo
+
+Every team member on the "Current Board" / "Current Organisation
+Committee" section starts out one of two ways:
+
+- **A generic silhouette icon** — most members, by default.
+- **A placeholder headshot image** — one demo member per team, just to
+  show what a real photo will look like once added.
+
+Neither is a real photo. Both are meant to be replaced as real photos
+become available — there's no rush, and a member with no photo yet still
+looks correct, not broken.
+
+## How to add a real photo
+
+Right now, there are two ways to do this:
+
+**Option A — ask a developer to add it for you.** Send them the person's
+photo. A square-ish headshot works best — it's displayed as a circle, so a
+very wide or very tall photo will get cropped at the edges.
+
+**Option B — add it yourself, using GitHub's built-in editor.** Every page
+on this wiki has a small pencil icon at the bottom that says **"Edit this
+page."** Clicking it opens your web browser's page-editing view — no
+software to install, no coding knowledge needed, just copying and
+replacing text. For a team photo specifically, you'll need to touch two
+things instead of one (a photo file, plus the data file that points at
+it) — ask a developer to walk you through it the first time if that
+sounds unfamiliar:
+
+1. Upload the photo file into the `static/img/team/<your-club-slug>/`
+   folder (create it if it doesn't exist yet).
+2. Open `src/data/teams/<your-club-slug>.mjs` and find that member's entry.
+   Add a line pointing at the photo you just uploaded:
+   ```js
+   photo: '/img/team/<your-club-slug>/<the-filename>.jpg',
+   ```
+3. Save. The photo appears automatically, cropped to a circle, on that
+   club/fest's live page.
+
+## Removing a photo
+
+Delete the `photo:` line from that member's entry entirely (or set it to
+`photo: null`). They'll show the generic silhouette icon instead — this is
+the same, correct, unbroken state every member without a photo is already
+in, not an error state.
+
+## Troubleshooting
+
+- **Blank box instead of a photo?** The filename after `photo:` almost
+  certainly doesn't match the actual uploaded file exactly, including the
+  file extension (`.jpg` vs `.png`) — double-check that first.
+- **Photo looks oddly cropped?** Photos are cropped to a circle at a fixed
+  size — a very rectangular photo (much wider or taller than it is
+  square) will lose its edges. Re-crop closer to square before uploading
+  if that happens.
+
+## Related
+
+- [Adding Photos to an Event Post](/docs/resources/adding-photos) — a
+  different kind of photo (inside an event write-up, not a team member's
+  headshot).

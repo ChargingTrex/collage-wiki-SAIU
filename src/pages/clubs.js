@@ -19,7 +19,7 @@ export default function ClubsDirectory() {
             </p>
             <p>
               Every club page lists its current team. Past members and past
-              teams are kept on a separate <Link to="/docs/resources/archives">Archives page</Link> —
+              teams are kept on a separate <Link to="/docs/archive">Archive</Link> —
               nothing gets overwritten, it just moves there when a new team
               takes over.
             </p>

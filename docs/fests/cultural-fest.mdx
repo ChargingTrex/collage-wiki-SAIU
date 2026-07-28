@@ -7,8 +7,16 @@ sidebar_custom_props:
 ---
 
 import { CulturalFestHero } from '@site/src/components/fests/CulturalFestHero';
+import { TeamSection } from '@site/src/components/TeamSection';
+import { CURRENT_TEAM } from '@site/src/data/teams/cultural-fest.mjs';
 
 <CulturalFestHero audioSrc="/collage-wiki-SAIU/audio/vibrance-anthem.mp3" />
 
 MoSAIc is Sai University's cultural fest, bringing together music, dance,
 vocals, gaming, chess, and boardgames into one campus-wide celebration.
+
+## Current Organisation Committee
+
+<TeamSection clubSlug="cultural-fest" members={CURRENT_TEAM} />
+
+Looking for a past committee? See the [Archive](/docs/archive).

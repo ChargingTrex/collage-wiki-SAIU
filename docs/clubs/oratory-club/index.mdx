@@ -9,12 +9,20 @@ sidebar_custom_props:
 import { OratoryHero } from '@site/src/components/clubs/OratoryHero';
 import { ClubContact } from '@site/src/components/ClubContact';
 import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+import { TeamSection } from '@site/src/components/TeamSection';
+import { CURRENT_TEAM } from '@site/src/data/teams/oratory-club.mjs';
 
 <OratoryHero />
 
 The Oratory Club trains students in public speaking, parliamentary and
 British Parliamentary debate, and rhetoric, competing at inter-college
 tournaments throughout the year.
+
+## Current Board
+
+<TeamSection clubSlug="oratory-club" members={CURRENT_TEAM} />
+
+Looking for a past board? See the [Archive](/docs/archive).
 
 ## Contact
 

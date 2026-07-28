@@ -7,9 +7,17 @@ sidebar_custom_props:
 ---
 
 import { GeneralFestHero } from '@site/src/components/fests/GeneralFestHero';
+import { TeamSection } from '@site/src/components/TeamSection';
+import { CURRENT_TEAM } from '@site/src/data/teams/general-fest.mjs';
 
 <GeneralFestHero audioSrc="/collage-wiki-SAIU/audio/fest-fanfare.mp3" />
 
 The Annual College Fest is Sai University's biggest all-club celebration,
 bringing every society together for a week of competitions, showcases, and
 performances across campus.
+
+## Current Organisation Committee
+
+<TeamSection clubSlug="general-fest" members={CURRENT_TEAM} />
+
+Looking for a past committee? See the [Archive](/docs/archive).

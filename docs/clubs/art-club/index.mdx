@@ -9,12 +9,20 @@ sidebar_custom_props:
 import { ArtHero } from '@site/src/components/clubs/ArtHero';
 import { ClubContact } from '@site/src/components/ClubContact';
 import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+import { TeamSection } from '@site/src/components/TeamSection';
+import { CURRENT_TEAM } from '@site/src/data/teams/art-club.mjs';
 
 <ArtHero />
 
 The Art Club brings together students who paint, sketch, and experiment with
 visual media, hosting open studio sessions, exhibitions, and workshops across
 the year.
+
+## Current Board
+
+<TeamSection clubSlug="art-club" members={CURRENT_TEAM} />
+
+Looking for a past board? See the [Archive](/docs/archive).
 
 ## Contact
 

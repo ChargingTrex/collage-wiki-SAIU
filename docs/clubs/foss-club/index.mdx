@@ -9,11 +9,19 @@ sidebar_custom_props:
 import { FossHero } from '@site/src/components/clubs/FossHero';
 import { ClubContact } from '@site/src/components/ClubContact';
 import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+import { TeamSection } from '@site/src/components/TeamSection';
+import { CURRENT_TEAM } from '@site/src/data/teams/foss-club.mjs';
 
 <FossHero />
 
 The FOSS Club promotes free and open-source software through contribution
 sprints, Linux install fests, and talks on open development practices.
+
+## Current Board
+
+<TeamSection clubSlug="foss-club" members={CURRENT_TEAM} />
+
+Looking for a past board? See the [Archive](/docs/archive).
 
 ## Contact
 

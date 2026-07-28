@@ -9,12 +9,20 @@ sidebar_custom_props:
 import { TuringitesHero } from '@site/src/components/clubs/TuringitesHero';
 import { ClubContact } from '@site/src/components/ClubContact';
 import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+import { TeamSection } from '@site/src/components/TeamSection';
+import { CURRENT_TEAM } from '@site/src/data/teams/turingites-computer-science-society.mjs';
 
 <TuringitesHero />
 
 The Turingites Computer Science Society runs coding workshops, competitive
 programming practice, and hackathons for students across all levels of
 experience.
+
+## Current Board
+
+<TeamSection clubSlug="turingites-computer-science-society" members={CURRENT_TEAM} />
+
+Looking for a past board? See the [Archive](/docs/archive).
 
 ## Contact
 

@@ -1,0 +1,9 @@
+{
+  "label": "Archive",
+  "position": 5,
+  "link": {
+    "type": "generated-index",
+    "slug": "/archive",
+    "description": "Past boards and organisation committees, one permanent file per club/fest per year. Live pages always show the current team — this is where the previous ones go."
+  }
+}

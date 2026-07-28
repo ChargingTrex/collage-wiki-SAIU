@@ -9,12 +9,20 @@ sidebar_custom_props:
 import { DanceHero } from '@site/src/components/clubs/DanceHero';
 import { ClubContact } from '@site/src/components/ClubContact';
 import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+import { TeamSection } from '@site/src/components/TeamSection';
+import { CURRENT_TEAM } from '@site/src/data/teams/dance-club.mjs';
 
 <DanceHero />
 
 The Dance Club welcomes students of every style and skill level, running
 regular practice sessions, choreography workshops, and performances at campus
 events and fests.
+
+## Current Board
+
+<TeamSection clubSlug="dance-club" members={CURRENT_TEAM} />
+
+Looking for a past board? See the [Archive](/docs/archive).
 
 ## Contact
 

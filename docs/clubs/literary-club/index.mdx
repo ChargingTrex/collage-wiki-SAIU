@@ -9,11 +9,19 @@ sidebar_custom_props:
 import { LiteraryHero } from '@site/src/components/clubs/LiteraryHero';
 import { ClubContact } from '@site/src/components/ClubContact';
 import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+import { TeamSection } from '@site/src/components/TeamSection';
+import { CURRENT_TEAM } from '@site/src/data/teams/literary-club.mjs';
 
 <LiteraryHero />
 
 The Literary Club hosts poetry slams, book discussions, and writing
 workshops, giving student writers and readers a regular venue to share work.
+
+## Current Board
+
+<TeamSection clubSlug="literary-club" members={CURRENT_TEAM} />
+
+Looking for a past board? See the [Archive](/docs/archive).
 
 ## Contact
 
