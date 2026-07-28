@@ -448,12 +448,17 @@ script needs repo access anyway.
 **Manual fallback**, if the script isn't available or won't run:
 
 1. Create `docs/archive/<slug>/<year>-board.mdx` (or `-committee.mdx` for a
-   fest) by hand, frontmatter + a `<TeamSection clubSlug="<slug>" members={...} />`
-   under a `## <year> Board` (or `Organisation Committee`) heading — copy an
+   fest) by hand, frontmatter (**including an explicit `slug: <year>-board`/
+   `-committee` field** — Docusaurus strips a leading `NNNN-word` pattern
+   from a doc's default slug otherwise, silently dropping the year from the
+   URL for a single-year `<year>` like `2026`; a year-range like `2025-26`
+   is protected from this, but set `slug:` either way for safety) + a
+   `<TeamSection clubSlug="<slug>" members={...} />` under a
+   `## <year> Board` (or `Organisation Committee`) heading — copy an
    existing snapshot under `docs/archive/` as a template.
 2. If `docs/archive/<slug>/` doesn't exist yet, also add a
    `_category_.json` (label/description/icon — copy the pattern from an
-   existing one, e.g. `docs/archive/art-club/_category_.json`).
+   existing one, e.g. `docs/archive/cultural-fest/_category_.json`).
 3. Replace `src/data/teams/<slug>.mjs`'s `CURRENT_TEAM` with the incoming
    team's real names — copy another team file's placeholder shape
    (`name`/`role` mandatory, `photo`/`contact` optional) as a template. See

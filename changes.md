@@ -1767,3 +1767,64 @@ A/ask-a-developer, Option B/GitHub's edit-this-page flow). Removed the
 now-non-public rollover page); kept `UserRound` (still used by the public
 `team-photos.mdx`). Re-verified: `npm run build` clean, full
 `npm run test:e2e` 72/72 unaffected by the split.
+
+**Update, same day: the art-club/tech-fest worked examples were removed
+entirely, and replaced with one real one — MoSAIc's actual 2026
+Organising Committee.** Requested directly: showing fake
+`PLACEHOLDER_NAME_*` data as if it were real archived history for two
+specific, real, named clubs read as misleading on a public site, even
+though the intent was always "mechanism only, placeholder data."
+
+Deleting both examples left `docs/archive/` with zero children, and
+Docusaurus's `generated-index` doesn't produce a route at all for an
+empty category (confirmed directly — `npm run build` failed with 21
+broken-link errors, one per club/fest page's "See the Archive" link,
+the moment both were removed). Tried a hand-authored
+`docs/archive/index.mdx` (`link: {type: 'doc'}`) as a stopgap so
+`/docs/archive` would keep resolving with an honest "nothing archived
+yet" message regardless of children count — then replaced *that* too,
+once real content existed, with the simpler `generated-index` again
+(safe now that MoSAIc's entry is real and permanent, so the category can
+never be empty again).
+
+**Real content, sourced directly from the fest's own Instagram
+(`@mosaic.2026`)'s "Meet the Core Committee" post**, confirmed by the
+wiki maintainer (WebFetch converts pages to text and can't OCR names
+baked into a photo, so the actual 7 names + the "all use the same
+generic role" decision came from the maintainer directly, not scraped) —
+7 real people, `role: 'Organising Committee Member'` for all (no
+per-person title available), no `photo`/`contact` fabricated for real
+people with no actual source for either. `src/data/teams/cultural-fest.mjs`
+→ `scripts/rollover.mjs -- fest cultural-fest 2026` →
+`docs/archive/cultural-fest/2026-committee.mdx`.
+
+**Real bug found and fixed while doing this, would have affected any
+future single-year rollover, not just this one:** the resulting page's
+URL silently dropped the year — `2026-committee.mdx` resolved at
+`/docs/archive/cultural-fest/committee`, not `.../2026-committee`.
+Traced to Docusaurus's own `numberPrefix.ts`: it strips a leading
+`NNNN-word` pattern from a doc's default slug (for manual-ordering
+filenames like `01-intro.md`), but its `ignoredPrefixPattern` only
+protects `NNNN-NN-word` shapes as date/version-like — `2025-26-board`
+(year-range) was safe, `2026-committee` (single year) wasn't. Worse than
+just an ugly URL: two single-year rollovers for the same slug in
+different years would have collided on the identical stripped slug.
+Fixed by having the script set an explicit `slug:` frontmatter field
+(`slug: <year>-<suffix>`) on every snapshot it writes, for both formats,
+not just the one that broke — verified via `find build/docs/archive`
+showing the correct `2026-committee` directory after the fix.
+`CONTRIBUTING.md`'s manual-fallback steps updated with the same
+requirement, plus its worked-example file reference repointed from the
+deleted `docs/archive/art-club/_category_.json` to the real
+`docs/archive/cultural-fest/_category_.json`. Also relaxed the script's
+year-format validation (`/^\d{4}-\d{2}$/` → `/^\d{4}(-\d{2})?$/`) to
+accept a bare year like `2026`, matching how MoSAIc is actually branded,
+alongside the existing `2025-26` year-range style.
+
+`tests/e2e/leadership-rollover.spec.js`'s archive-section tests rewritten
+to match: the Archive index lists "MoSAIc Archive", the category lists
+the "2026 Organisation Committee" snapshot, the snapshot itself renders
+all 7 real names under its own year heading, and cultural-fest's *live*
+page correctly shows placeholder data again (not the archived committee)
+post-rollover. Verified end to end: `npm run build` clean, full
+`npm run test:e2e` 72/72.

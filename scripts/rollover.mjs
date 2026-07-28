@@ -51,8 +51,8 @@ if (type !== 'club' && type !== 'fest') {
 if (!slug) {
   fail('Missing <slug> argument.');
 }
-if (!outgoingYear || !/^\d{4}-\d{2}$/.test(outgoingYear)) {
-  fail(`<outgoingYear> must look like "2025-26" (got: ${outgoingYear ?? '(none)'}).`);
+if (!outgoingYear || !/^\d{4}(-\d{2})?$/.test(outgoingYear)) {
+  fail(`<outgoingYear> must look like "2025-26" or a single year like "2026" (got: ${outgoingYear ?? '(none)'}).`);
 }
 
 // Step 2 — validate slug via the filesystem, not by importing clubDirectory.js/
@@ -148,9 +148,19 @@ async function main() {
       ? JSON.parse(fs.readFileSync(path.join(ROOT, 'docs', 'clubs', slug, '_category_.json'), 'utf-8')).label
       : (await import(pathToFileURL(festMetaPath))).FEST_META[slug].title;
 
+  // Explicit `slug:` — Docusaurus strips a leading NNNN-word pattern from a
+  // doc's default slug (meant for manual-ordering filenames like
+  // "01-intro.md"), but only *protects* NNNN-NN-word patterns as
+  // date/version-like (confirmed in its own numberPrefix.ts source). A
+  // year-range outgoingYear like "2025-26" is protected; a single-year one
+  // like "2026" is not, and would silently lose the year from the URL
+  // (worse: two single-year rollovers for the same slug would collide on
+  // the same stripped slug). Setting `slug:` explicitly sidesteps this
+  // entirely, for both formats.
   const snapshotContent = `---
 title: ${title} — ${outgoingYear} ${heading}
 description: Archived ${title} ${heading.toLowerCase()} for ${outgoingYear}.
+slug: ${outgoingYear}-${suffix}
 ---
 
 import { TeamSection } from '@site/src/components/TeamSection';

@@ -1,8 +1,8 @@
 // src/data/teams/cultural-fest.mjs
 //
-// Current MoSAIc Organisation Committee. Snapshotted into docs/archive/cultural-fest/ at
-// rollover (see scripts/rollover.mjs), then reset to this same placeholder
-// shape for the incoming organisation committee — see CONTRIBUTING.md's
+// Current MoSAIc organisation committee. Snapshotted into
+// docs/archive/cultural-fest/ at rollover (see scripts/rollover.mjs), then reset to
+// this same placeholder shape for the incoming team — see CONTRIBUTING.md's
 // "Leadership rollover" section.
 //
 // name + role are mandatory; photo + contact are optional. PLACEHOLDER_*

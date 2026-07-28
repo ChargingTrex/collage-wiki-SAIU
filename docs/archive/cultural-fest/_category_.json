@@ -1,0 +1,12 @@
+{
+  "label": "MoSAIc Archive",
+  "description": "Past organisation committees for MoSAIc, one file per year.",
+  "customProps": {
+    "icon": "Music"
+  },
+  "link": {
+    "type": "generated-index",
+    "slug": "/archive/cultural-fest",
+    "description": "Past organisation committees for MoSAIc, one file per year."
+  }
+}

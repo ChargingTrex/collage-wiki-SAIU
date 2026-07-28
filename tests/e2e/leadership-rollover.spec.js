@@ -53,49 +53,55 @@ test.describe('Current Board / Organisation Committee sections', () => {
 });
 
 test.describe('Leadership archive (docs/archive)', () => {
-  // Scoped to the generated-index cards specifically (`.theme-doc-card-container`)
-  // rather than a bare role/name query — the same link also appears in the
-  // sidebar menu and the page's "Next" pagination footer, which would
-  // otherwise resolve to 3 matching elements (a strict-mode violation).
-  test('the top-level Archive index lists at least the rolled-over slugs', async ({page}) => {
+  // MoSAIc (cultural-fest) is the one real worked example on the live
+  // site — its actual 2026 Organising Committee (7 real names, sourced
+  // from @mosaic.2026's own "Meet the Core Committee" post, confirmed by
+  // the wiki maintainer), not fabricated placeholder data. `docs/archive/`
+  // uses Docusaurus's generated-index again (not a hand-authored index
+  // page) — safe now that it has at least one permanent child category,
+  // which a `generated-index` needs to produce a route at all (confirmed
+  // directly: it produced zero routes while the folder was empty).
+  test('the Archive index lists MoSAIc', async ({page}) => {
     const errors = trackConsoleErrors(page);
     await page.goto('docs/archive');
     await page.waitForLoadState('networkidle');
 
-    const cards = page.locator('.theme-doc-card-container');
-    await expect(cards.filter({hasText: 'Art Club Archive'})).toBeVisible();
-    await expect(cards.filter({hasText: 'Innovision Archive'})).toBeVisible();
+    await expect(
+      page.locator('.theme-doc-card-container').filter({hasText: 'MoSAIc Archive'})
+    ).toBeVisible();
 
     expect(errors).toEqual([]);
   });
 
-  test('a per-club archive category lists its year snapshot', async ({page}) => {
-    await page.goto('docs/archive/art-club');
+  test('the MoSAIc archive category lists its 2026 snapshot', async ({page}) => {
+    await page.goto('docs/archive/cultural-fest');
     await page.waitForLoadState('networkidle');
     await expect(
-      page.locator('.theme-doc-card-container').filter({hasText: '2025-26 Board'})
+      page.locator('.theme-doc-card-container').filter({hasText: '2026 Organisation Committee'})
     ).toBeVisible();
   });
 
-  // Heading queries use `level: 2` — the page's own `<h1>` title ("Art Club —
-  // 2025-26 Board") contains "2025-26 Board" as a substring too, and would
-  // otherwise also match.
-  test('an archived year snapshot renders the frozen team, under its own year heading', async ({page}) => {
+  // Heading query uses `level: 2` — the page's own `<h1>` title ("MoSAIc —
+  // 2026 Organisation Committee") contains this text as a substring too.
+  test('the 2026 snapshot renders all 7 real committee members', async ({page}) => {
     const errors = trackConsoleErrors(page);
-    await page.goto('docs/archive/art-club/2025-26-board');
+    await page.goto('docs/archive/cultural-fest/2026-committee');
     await page.waitForLoadState('networkidle');
 
-    await expect(page.getByRole('heading', {level: 2, name: /2025-26 Board/})).toBeVisible();
-    await expect(page.getByText('PLACEHOLDER_NAME_1')).toBeVisible();
+    await expect(
+      page.getByRole('heading', {level: 2, name: /2026 Organisation Committee/})
+    ).toBeVisible();
+    for (const name of ['Arun S', 'Mirudula J', 'Viniya Ravi', 'Joshua John', 'Vishalini Oviya', 'Shishir Silveru', 'Anish P']) {
+      await expect(page.getByText(name, {exact: true})).toBeVisible();
+    }
 
     expect(errors).toEqual([]);
   });
 
-  test('a fest committee snapshot renders under its own year heading', async ({page}) => {
-    await page.goto('docs/archive/tech-fest/2025-26-committee');
+  test("cultural-fest's live page shows placeholder data again, not the archived committee", async ({page}) => {
+    await page.goto('docs/fests/cultural-fest');
     await page.waitForLoadState('networkidle');
-    await expect(
-      page.getByRole('heading', {level: 2, name: /2025-26 Organisation Committee/})
-    ).toBeVisible();
+    await expect(page.getByText('PLACEHOLDER_NAME_1')).toBeVisible();
+    await expect(page.getByText('Arun S', {exact: true})).toHaveCount(0);
   });
 });
