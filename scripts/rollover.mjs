@@ -161,6 +161,8 @@ async function main() {
 title: ${title} — ${outgoingYear} ${heading}
 description: Archived ${title} ${heading.toLowerCase()} for ${outgoingYear}.
 slug: ${outgoingYear}-${suffix}
+sidebar_custom_props:
+  icon: UserRound
 ---
 
 import { TeamSection } from '@site/src/components/TeamSection';

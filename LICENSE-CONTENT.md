@@ -10,6 +10,10 @@ Deed (human-readable summary): <https://creativecommons.org/licenses/by-nc-sa/4.
 Code (everything under `src/`, `tests/`, and configuration files) is
 licensed separately — see [`LICENSE`](LICENSE).
 
+Content: Sai University Club & Event Wiki
+
+Licensor: ChargingTrex
+
 The full legal text of the license follows, fetched verbatim from
 <https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.txt>.
 

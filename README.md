@@ -116,9 +116,11 @@ push to `main`. Workflow: `.github/workflows/deploy.yml`.
 This project uses a dual license:
 
 - **Code** (`src/`, `tests/`, config files) — [GPL-3.0](LICENSE) with the
-  [Commons Clause](https://commonsclause.com/) — free to use and modify,
-  but not for commercial use, and any distributed modifications must stay
-  open source under the same terms.
+  [Commons Clause](COMMONS-CLAUSE.md) restriction layered on top — free to
+  use and modify, but not for commercial use, and any distributed
+  modifications must stay open source under the same terms. Split across
+  two files rather than one combined document so GitHub's automatic license
+  detector can still recognize the base `LICENSE` file as GPL-3.0.
 - **Content** (`docs/`, `blog/`, `static/img/`, `static/audio/`) —
   [CC BY-NC-SA 4.0](LICENSE-CONTENT.md) — free to share and adapt
   non-commercially, with attribution, under the same license.

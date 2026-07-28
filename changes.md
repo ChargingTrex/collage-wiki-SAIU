@@ -1,5 +1,41 @@
 # Changes
 
+## 2026-07-29 — GitHub license-name detection fixed; missing archive-card icon fixed
+
+Files: `LICENSE`, `COMMONS-CLAUSE.md` (new), `README.md`,
+`docusaurus.config.js`, `docs/archive/cultural-fest/2026-committee.mdx`,
+`scripts/rollover.mjs`
+
+**GitHub showed no license name (`"Other"` / `NOASSERTION`) on the repo
+page.** Root cause, confirmed via `gh api repos/ChargingTrex/collage-wiki-SAIU`:
+`LICENSE` combined the Commons Clause restriction text directly in front of
+the full GPL-3.0 body in one file. GitHub's `licensee` detector fuzzy-matches
+a repo's `LICENSE` file against known SPDX templates; the prepended Commons
+Clause text pushed the match below its confidence threshold, so it couldn't
+recognize the GPL-3.0 body underneath and fell back to "Other." This isn't a
+config bug — a combined "GPL-3.0 + Commons Clause" text genuinely isn't a
+single recognized SPDX license — but it's fixable by *where* the text lives,
+not what it says. Split into two files: `LICENSE` is now the pure,
+byte-for-byte unmodified GPL-3.0 text (so `licensee` reads it cleanly),
+and the Commons Clause condition moved to a new `COMMONS-CLAUSE.md`,
+cross-referenced from both `LICENSE`'s neighbor `README.md` and from itself.
+Same legal terms overall, just no longer sharing one file that defeats
+automatic detection. Updated `README.md`'s License section and the footer's
+"Code License" link (`docusaurus.config.js`) to reference both files
+separately instead of one combined label. Verified: `npm run build` still
+clean after the footer link split.
+
+**A doc card inside the "MoSAIc Archive" page showed a generic default file
+icon instead of something meaningful.** `docs/archive/cultural-fest/
+2026-committee.mdx` had no `sidebar_custom_props.icon` set, unlike every
+club/fest doc elsewhere on the site. Added `icon: UserRound` (already
+available in `sidebarIcons.js`, semantically fits "a team roster snapshot").
+This is a recurring pattern (`scripts/rollover.mjs` generates one such
+snapshot doc per year per club/fest), so the same fix went into the
+script's snapshot-content template too — otherwise every future rollover
+would regenerate the same missing-icon gap. Verified live via the running
+dev server: icon now renders both in the sidebar and on the card.
+
 ## 2026-07-28 — Resources: alphabetical card order + navbar/footer link
 
 Files: `docs/resources/*.mdx`, `docusaurus.config.js`, `CONTRIBUTING.md`,

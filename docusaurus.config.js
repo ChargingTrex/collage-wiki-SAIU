@@ -199,8 +199,12 @@ const config = {
               //   to: '/admin',
               // },
               {
-                label: 'Code License (GPL-3.0 + Commons Clause)',
+                label: 'Code License (GPL-3.0)',
                 href: 'https://github.com/ChargingTrex/collage-wiki-SAIU/blob/main/LICENSE',
+              },
+              {
+                label: 'Commons Clause (commercial use restriction)',
+                href: 'https://github.com/ChargingTrex/collage-wiki-SAIU/blob/main/COMMONS-CLAUSE.md',
               },
               {
                 label: 'Content License (CC BY-NC-SA 4.0)',
