@@ -1063,5 +1063,89 @@ confirm the CMS scaffold didn't change anything the suite checks (the "no
 Decap CMS link yet" footer test still correctly passes — that link is
 still commented out, on purpose).
 
-Not yet committed or pushed — see the note at the end of every entry above
-this one this session.
+Committed and pushed (`2ed6f47`, fast-forward onto `origin/main`) — this
+entry and everything above it in this file, plus the concurrent
+collaborator session's own bundled-in work, landed in that one commit. See
+the commit message for the full attribution split.
+
+## 2026-07-28 — CP6: footer dino easter egg, three real bugs found and fixed
+
+Files: `src/theme/Footer/index.js`, `src/css/custom.css`,
+`tests/e2e/dino-easter-egg.spec.js` (new), `CONTRIBUTING.md`,
+`package.json`/`package-lock.json` (`react-chrome-dino` already installed
+from an earlier session; unchanged here)
+
+Built per `saiu-collage-wiki-easter-egg.md` and CLAUDE.md's locked
+decisions: a 🦖 button added to the bottom of the already-swizzled
+`Footer/index.js` (in-flow, below the existing contact-icon row — not a
+floating corner icon, so it's only found by scrolling all the way down),
+"charging trex..." tooltip on hover, click opens a full-screen overlay with
+`react-chrome-dino`, click anywhere on the overlay background closes it.
+
+**Three real, sequential bugs found and fixed while getting this working
+end-to-end** (each one only surfaced by actually driving it in a real
+browser — none would have been caught by a build check alone):
+
+1. **Hover tooltip made the button permanently un-clickable.** The tooltip
+   and button were flex siblings in a centered row (`justify-content:
+   center`); the tooltip's insertion/removal on hover changed the row's
+   total content width, nudging the button sideways every time it
+   appeared or disappeared. That shift re-triggered `mouseenter`/
+   `mouseleave` in a loop, and Playwright's actionability check (correctly)
+   refused to click a target that kept moving — "element is not stable,"
+   retrying for the full 30s timeout. A real user would have hit the same
+   problem as a flicker/dodge instead of a hard failure, but it's the same
+   underlying bug. Fixed by absolutely positioning the tooltip (`position:
+   absolute; right: 100%`) so it floats without participating in the flex
+   layout at all — the standard, correct way to build a tooltip.
+2. **The game canvas was invisible — 0 width.** `react-chrome-dino` reads
+   its own container's `offsetWidth` once at mount to size its `<canvas>`.
+   The overlay wrapper had no explicit width (a flex column with
+   `align-items: center`, which shrinks to its content — and there was no
+   content yet to shrink to, a chicken-and-egg gap), so that read returned
+   `0` and the canvas never got a visible size. Confirmed directly via
+   `canvas.getBoundingClientRect()` before/after. Fixed by giving
+   `.dino-overlay__game` an explicit `width: 600px` (capped by
+   `max-width: calc(100vw - 2rem)` on small viewports).
+3. **`filter`-based recoloring flattened the whole canvas to one solid
+   block.** The dino sprite is grayscale line art with no color of its
+   own — CLAUDE.md's "dino recolors to the unified accent" requirement
+   needs *some* way to tint it. First attempt used a CSS `filter`
+   (invert/sepia/hue-rotate chain, one hand-tuned recipe per target color);
+   confirmed via screenshot this pushes the whole canvas toward one
+   uniform saturated color, destroying the black/white contrast that makes
+   the dino, ground line, and clouds legible as distinct shapes — it
+   rendered as a flat solid-green (or, for the second recipe, solid
+   *purple*, not even the intended blue) rectangle, no artwork visible at
+   all. Replaced with a `mix-blend-mode: color` overlay instead: a solid
+   div in the target color, blended with `color` mode, which recolors hue
+   while preserving the backdrop's own luminosity — the dino stays visibly
+   distinct as a darker shape against a lighter background, just tinted.
+   Confirmed via screenshot in both states (green default, blue when
+   `sai-wiki-accent-mode` is `unified`).
+
+**Fourth thing found, not a bug**: the game draws nothing at all — not
+even the classic static idle-dino frame — until the first keypress. Real
+Chrome's offline page shows an idle dino immediately; this package
+(`react-chrome-dino@0.1.3`) apparently doesn't draw anything until
+`Runner.instance_.activated` flips true on first input. Confirmed this is
+the package's own behavior (traced into its bundled source: `componentDidMount`
+injects the original Chromium `Runner` class as a literal `<script>` string
+and constructs `new Runner('.interstitial-wrapper')`, which itself gates
+drawing on an `activated` flag) rather than anything wrong in this
+integration. Left as-is — CLAUDE.md's guidance is to swap packages only if
+one throws a *build* error against this stack, which this doesn't; a
+player instinctively pressing space/up on a dino game (the muscle memory
+this whole easter egg is riffing on) will trigger it immediately.
+
+`tests/e2e/dino-easter-egg.spec.js` (new, 6 tests) covers: in-flow
+placement (not `position: fixed`), the tooltip-doesn't-shift-the-button
+regression specifically, overlay open/close (including "click the game
+itself doesn't close it"), canvas actually has a real size (the bug-2
+regression), and the tint color differing between default and unified
+mode (bug-3's regression, read via `getComputedStyle` rather than a visual
+diff). Full suite: 63/63 passing.
+
+`CONTRIBUTING.md` updated — the `Footer/index.js` entry and the
+`TEST_REPORT.md` coverage summary both previously said the dino easter egg
+was "planned, not built yet."

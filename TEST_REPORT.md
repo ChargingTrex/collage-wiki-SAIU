@@ -1,8 +1,9 @@
 # Test Report — Sai University Club & Event Wiki
 
 Generated after building the site's first automated end-to-end test suite
-(Playwright), run before starting the next checkpoint. All 57 tests pass,
-verified stable across 3 consecutive full runs.
+(Playwright). All 63 tests pass, verified stable across repeated runs.
+Originally 57 tests (CP5); 6 more (`dino-easter-egg.spec.js`) added when
+CP6's footer easter egg was built.
 
 ## How to run it
 
@@ -18,7 +19,7 @@ so testing the build is closer to what a real visitor gets and is what
 automatically (`pretest:e2e`); running `npx playwright test` directly
 requires `build/` to already exist.
 
-## Coverage summary (57 tests)
+## Coverage summary (63 tests)
 
 | File | Count | Covers |
 |---|---|---|
@@ -26,6 +27,7 @@ requires `build/` to already exist.
 | `navigation.spec.js` | 10 | Navbar item order/targets, footer "Wiki" column parity, footer GitHub/issue links, no premature Decap CMS link |
 | `misc-routes-and-theme.spec.js` | 7 | All 3 fest doc pages, raw `/blog` still resolves, MoSAIc is the real Cultural Fest name, dark/light theme toggle (site + footer) |
 | `events-and-blog.spec.js` | 6 | `/events` shows only the 28 real club/fest/event-type tags (never `student-voices`, never a student-only post), Clear/Select-all mechanics, `/student-voices` shows all 29 tags and links out correctly |
+| `dino-easter-egg.spec.js` | 6 | The footer 🦖: in-flow placement, tooltip doesn't shift the button, overlay open/close (incl. clicking the game itself doesn't close it), canvas has a real size, tint differs between default and unified accent mode |
 | `clubs-and-fests.spec.js` | 5 | `/clubs` renders all 18 mini-hero cards + working links, `/fests` renders all 3 fest heroes, no autoplaying audio |
 | `hero-playback.spec.js` | 4 | The full `useIntroMotion` contract on Astronomy Club: plays on arrival, stops on scroll, replays on click, `prefers-reduced-motion` respected (and not overridden by a click) |
 | `homepage.spec.js` | 3 | Homepage hero/stats/Recent Activity/Contribute render, CTA targets, no autoplaying audio |
@@ -37,8 +39,8 @@ one already-documented, expected exception — see below).
 
 ## Real bugs found and fixed by this suite
 
-Writing the tests surfaced two genuine site bugs, independent of the test
-code itself:
+Writing the tests surfaced several genuine site bugs, independent of the
+test code itself:
 
 1. **Hydration mismatch on `/fests` and `/explore`** (React error #418).
    `GeneralFestHero.jsx`'s confetti layout (`PIECES`) was generated with
@@ -59,6 +61,26 @@ code itself:
    check the Clear/Select-all buttons' actual checkbox mechanics rather
    than assuming visible content — the empty state is expected here until
    real events get backfilled and tagged.
+3. **The footer dino easter egg's tooltip made its own trigger button
+   permanently un-clickable.** The tooltip and button were flex siblings
+   in a centered row; the tooltip appearing/disappearing on hover shifted
+   the button sideways (the row's total content width changed), which
+   re-triggered `mouseenter`/`mouseleave` in a loop. Fixed by absolutely
+   positioning the tooltip so it doesn't participate in the flex layout.
+4. **The same easter egg's game canvas had 0 width.** `react-chrome-dino`
+   reads its container's `offsetWidth` once at mount to size its
+   `<canvas>`; the overlay wrapper had no explicit width (a flex column
+   with nothing yet to shrink-to-fit), so that read returned 0. Fixed with
+   an explicit `width: 600px` on the container.
+5. **The same easter egg's color-mode recoloring destroyed the artwork.**
+   A CSS `filter` (invert/hue-rotate chain) was the first attempt at
+   tinting the grayscale dino sprite to the site accent color; it actually
+   flattened the whole canvas to one solid saturated block (confirmed via
+   screenshot — no dino/ground visible at all, and the "blue" recipe
+   rendered purple besides). Replaced with a `mix-blend-mode: color`
+   overlay, which recolors hue while preserving the underlying luminosity.
+
+See `changes.md`'s CP6 entry for the full debugging trail on 3–5.
 
 ## Test-infrastructure bugs found and fixed (not site bugs)
 
@@ -111,11 +133,14 @@ to be problems with the test suite itself, not the site:
 
 ## Known, deliberate gaps (not tested — nothing to test yet)
 
-- **Decap CMS** — no `/admin` UI existed when this suite was written.
-  See `changes.md`'s Decap CMS entry for what's scaffolded and what a test
-  should eventually cover.
-- **Footer dino easter egg** — not built yet (`CP6`, still open).
-- **Accent unified-mode toggle** — not built yet (`CP7a`, still open).
+- **Decap CMS auth** — `/admin` loads (structurally scaffolded), but
+  nothing can authenticate or save yet. See `changes.md`'s Decap CMS entry
+  and `docs-internal/decap-cms-auth-todo.md`.
+- **Accent unified-mode toggle UI** — not built yet (`CP7a`, still open).
+  The dino easter egg's tint *does* already respond correctly to unified
+  mode (tested by setting the underlying `localStorage` key directly,
+  since there's no UI control to click yet) — the mode itself works, only
+  the settings toggle to switch it is missing.
 - **Off-screen `IntersectionObserver` pause** — not built yet (`CP7b`,
   still open); no test for it because there's no behavior to assert.
 - Only Astronomy Club is covered by `hero-playback.spec.js`'s detailed

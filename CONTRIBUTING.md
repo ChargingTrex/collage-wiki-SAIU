@@ -75,10 +75,11 @@ is a common way bugs slip through — the e2e suite runs against the
 production build for exactly this reason. See `TEST_REPORT.md` for what's
 covered (navigation, all 18 club pages, all 3 fest pages, the Events/Blog
 tag-filtering split, the full `useIntroMotion` playback contract, theme
-toggling) and what isn't yet (Decap CMS, the footer easter egg, the accent
-unified-mode toggle, off-screen pause — none of those exist yet, so there's
-nothing to test). Tests live in `tests/e2e/`; add one alongside whatever
-you're changing rather than only relying on manual verification.
+toggling, the footer dino easter egg) and what isn't yet (Decap CMS auth,
+the accent unified-mode toggle UI, off-screen pause — none of those exist
+yet, so there's nothing to test). Tests live in `tests/e2e/`; add one
+alongside whatever you're changing rather than only relying on manual
+verification.
 
 ---
 
@@ -95,10 +96,16 @@ src/
                               `usePluginData('club-events-plugin')`
   theme/
     Footer/index.js           swizzled footer — wraps (not replaces) the
-                              default Footer; currently adds the LinkedIn/
-                              Instagram/mail/GitHub/report-an-issue icon row.
-                              The dino easter egg is planned for this same
-                              file (not built yet).
+                              default Footer; adds the LinkedIn/Instagram/
+                              mail/GitHub/report-an-issue icon row, AND the
+                              hidden 🦖 dino easter egg (in-flow at the
+                              very bottom — see saiu-collage-wiki-easter-egg.md).
+                              Tints via `mix-blend-mode: color` on a solid
+                              overlay div, not a CSS `filter` — filter
+                              flattened the whole grayscale canvas to one
+                              solid block; blend-mode preserves the
+                              dino/ground's light/dark contrast while
+                              shifting the hue.
     DocSidebarItem/Link/      swizzled (ejected) — renders a lucide icon
                               before a doc's sidebar label, from that doc's
                               `sidebar_custom_props.icon` frontmatter

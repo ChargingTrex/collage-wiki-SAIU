@@ -1,6 +1,9 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Footer from '@theme-original/Footer';
 import {Mail, Bug} from 'lucide-react';
+import ChromeDinoGame from 'react-chrome-dino';
+import 'react-chrome-dino/build/index.css';
+import {useAccentMode} from '../../components/useClubAccent';
 
 // Lucide is a generic icon set and doesn't include brand logos — GitHub,
 // LinkedIn, and Instagram are hand-embedded SVG paths instead, same
@@ -48,6 +51,62 @@ const CONTACT_LINKS = [
   {Icon: Bug, href: `${WIKI_REPO_URL}/issues`, label: 'Report an issue with this wiki'},
 ];
 
+// Hidden dino easter egg (saiu-collage-wiki-easter-egg.md). Locked
+// decisions per CLAUDE.md: in-flow at the bottom of the page (only found by
+// scrolling all the way down, not a floating corner icon that's always
+// visible), "charging trex..." tooltip kept, dino recolors to the unified
+// site accent when unified accent-mode is on (green by default otherwise).
+//
+// The game draws onto a <canvas> via the Chromium dino sprite sheet
+// (grayscale line art: black shapes on a transparent/white background,
+// no color of its own) — there's no color prop to set. A CSS `filter`
+// (invert/sepia/hue-rotate chain) was the first approach tried, but it
+// pushes the whole canvas toward uniform saturation and washes out the
+// black/white contrast that makes the dino, ground, and clouds legible —
+// confirmed via screenshot, it rendered as a flat solid-color block, no
+// artwork visible at all. A `mix-blend-mode: color` overlay is the correct
+// technique instead: a solid-color layer with that blend mode recolors the
+// hue while preserving the underlying luminance, so the dino/ground stay
+// visibly distinct as darker/lighter shapes, just tinted.
+const DINO_TINT_DEFAULT = 'var(--ds-accent-500)';
+const DINO_TINT_UNIFIED = 'var(--ifm-color-primary)';
+
+function DinoEasterEgg() {
+  const [showGame, setShowGame] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const {mode} = useAccentMode();
+
+  return (
+    <>
+      <div className="footer-dino-trigger">
+        {isHovered && <span className="footer-dino-trigger__tooltip">charging trex...</span>}
+        <button
+          type="button"
+          onClick={() => setShowGame(true)}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          aria-label="secret"
+          className="footer-dino-trigger__button">
+          🦖
+        </button>
+      </div>
+
+      {showGame && (
+        <div className="dino-overlay" onClick={() => setShowGame(false)} role="presentation">
+          <div className="dino-overlay__game" onClick={(e) => e.stopPropagation()}>
+            <ChromeDinoGame />
+            <div
+              className="dino-overlay__tint"
+              style={{backgroundColor: mode === 'unified' ? DINO_TINT_UNIFIED : DINO_TINT_DEFAULT}}
+            />
+          </div>
+          <p className="dino-overlay__hint">click anywhere to close</p>
+        </div>
+      )}
+    </>
+  );
+}
+
 export default function FooterWrapper(props) {
   return (
     <>
@@ -66,6 +125,7 @@ export default function FooterWrapper(props) {
           </a>
         ))}
       </div>
+      <DinoEasterEgg />
     </>
   );
 }

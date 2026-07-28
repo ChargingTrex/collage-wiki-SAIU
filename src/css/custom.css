@@ -431,6 +431,93 @@
 }
 
 /* =====================================================================
+   Hidden dino easter egg — in-flow at the very bottom of the page (not a
+   floating corner icon), so it's only found by scrolling all the way down.
+   ===================================================================== */
+.footer-dino-trigger {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem 0 1.25rem;
+  background: var(--ifm-footer-background-color);
+}
+.footer-dino-trigger__tooltip {
+  /* Absolutely positioned (not a flex sibling) so it never shifts the
+     button itself as it appears/disappears on hover — a real, reproducible
+     bug found via Playwright: with both in a centered flex row, the
+     tooltip's insertion nudged the button sideways, which re-triggered
+     mouseenter/mouseleave in a loop and made the button un-clickable. */
+  position: absolute;
+  right: calc(100% + 0.5rem);
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.75rem;
+  font-style: italic;
+  color: var(--ifm-footer-color, #666);
+  opacity: 0.7;
+  user-select: none;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.footer-dino-trigger__button {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.5;
+  padding: 0.25rem;
+  transition: opacity 0.15s ease;
+}
+.footer-dino-trigger__button:hover {
+  opacity: 1;
+}
+
+.dino-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+.dino-overlay__game {
+  /* Explicit width is load-bearing: react-chrome-dino reads its own
+     container's `offsetWidth` once at mount to size its <canvas> — without
+     a concrete width here (this sits in a flex column with
+     align-items: center, which shrinks to content with nothing to shrink
+     to yet), that read returns 0 and the canvas never gets a visible size. */
+  position: relative;
+  width: 600px;
+  max-width: calc(100vw - 2rem);
+  background: #fff;
+  border-radius: var(--ds-radius-lg, 12px);
+  padding: 1rem;
+  overflow: hidden;
+}
+.dino-overlay__tint {
+  /* Recolors the dino's grayscale canvas via blend mode rather than a CSS
+     `filter` — `color` blending keeps the underlying luminance (so the
+     dino/ground/clouds stay visible as distinct light/dark shapes) and
+     only shifts the hue, instead of flattening everything toward one flat
+     saturated block the way filter(invert/hue-rotate) did. */
+  position: absolute;
+  inset: 1rem;
+  mix-blend-mode: color;
+  pointer-events: none;
+}
+.dino-overlay__hint {
+  color: #fff;
+  font-size: 0.9rem;
+  text-align: center;
+  margin: 0;
+}
+
+/* =====================================================================
    Footer — follow the site's light/dark toggle instead of Infima's static
    footer.style option (which was 'dark' always, regardless of the theme
    the reader picked). Fixed hex values, deliberately NOT --ds-neutral-*
