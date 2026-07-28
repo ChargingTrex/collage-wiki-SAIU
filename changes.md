@@ -1238,3 +1238,42 @@ than in-scope here: standing up the Decap CMS OAuth-proxy — going public
 on GitHub Pages resolves the "which hosting?" question in
 `docs-internal/decap-cms-auth-todo.md` in favor of Option A (GitHub
 backend + OAuth-proxy), but the proxy service itself is separate work.
+
+## 2026-07-28 — Fests/Resources category cards get icons
+
+Files: `src/data/sidebarIcons.js`, `docs/fests/tech-fest.mdx`,
+`docs/fests/general-fest.mdx`, `docs/fests/cultural-fest.mdx`,
+`docs/resources/archives.mdx`
+
+Requested after seeing the live site: `/docs/category/fests` and
+`/docs/category/resources` showed plain generic-file icons on every card,
+unlike `/docs/category/clubs` (each club already had one, via
+`sidebar_custom_props.icon` on its own frontmatter → the ejected
+`DocSidebarItem/Link`/`DocCard/Heading/Icon` components from the earlier
+"Clubs nav/sidebar/card icons" work). Fests and the Archives page are
+flat `.mdx` files rather than folders, but the exact same mechanism
+applies — `sidebar_custom_props.icon` reads identically whether the doc is
+a plain file or a category, since `DocCard/Heading/Icon` just reads
+`item.customProps.icon` regardless of item type.
+
+Added `sidebar_custom_props: {icon: ...}` to all 4 docs, picking icons that
+already match each hero's own visual identity rather than choosing
+arbitrarily: `PartyPopper` for the Annual College Fest (the literal lucide
+icon `GeneralFestHero.jsx` already animates), `Music` for MoSAIc (the first/
+primary icon in `CulturalFestHero`'s cycling ring — Music, Users, Mic2,
+Gamepad2, Crown, Dices), `Rocket` for Innovision (no existing icon in
+`TechFestHero` to match, chosen fresh for the hackathon/build-something-
+real energy), `Archive` for Event Archives (matching the icon already used
+for its card on the `/explore` page). Added the three new icons to
+`SIDEBAR_ICONS` in `sidebarIcons.js` (`Music` was already there for Music
+Club). None of these are club slugs, so `useClubAccent` falls back to the
+unified/site accent color for all four — expected, matches how the
+lookup's own fallback is documented to behave for non-club docs.
+
+Bonus, free from the same mechanism: these four now also show icons in the
+left sidebar, not just their category-index cards — `sidebar_custom_props`
+drives both, same as clubs.
+
+Verified: `npm run build` clean, full e2e suite (63/63), and a real-browser
+screenshot of both category pages confirming all icons render with zero
+console errors.

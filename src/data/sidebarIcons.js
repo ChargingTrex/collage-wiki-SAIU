@@ -24,6 +24,9 @@ import {
   PawPrint,
   Hand,
   Code2,
+  Rocket,
+  PartyPopper,
+  Archive,
 } from 'lucide-react';
 
 export const SIDEBAR_ICONS = {
@@ -45,6 +48,9 @@ export const SIDEBAR_ICONS = {
   PawPrint,
   Hand,
   Code2,
+  Rocket,
+  PartyPopper,
+  Archive,
 };
 
 // Doc routes for club pages are the file's own slug (docs/clubs/art-club.mdx
