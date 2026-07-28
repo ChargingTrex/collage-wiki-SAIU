@@ -1201,6 +1201,21 @@ was made but not staged in the commit that did the `git rm --cached` —
 caught before the next push, folded into the following commit instead of
 left silently uncommitted.)
 
+**Correction, caught by the requester after the fact**: the two "delete"
+items in Part B above (`prompt library.md`, the motion-guide duplicate)
+were removed with plain `git rm`, which deletes from the local working
+directory too, not just from git tracking. The requester never asked for
+anything actually deleted from disk — only for unwanted files to stop
+being tracked/published, exactly the `git rm --cached` + `.gitignore`
+treatment already used for `docs-internal/archive/` just above. Restored
+both files to disk from git history (`git show
+350ad5e^:<path> > <path>`) and added them to `.gitignore` instead. The
+commit that originally deleted them (`350ad5e`) is left as-is per the
+"leave history as-is" decision already made above — only the current
+working tree and going-forward tracking changed. Lesson for next time:
+`git rm --cached`, never plain `git rm`, when the goal is "stop tracking,"
+not "delete."
+
 **Part C — made public.** Confirmed via `gh repo view`
 (`isPrivate: false`) after the change.
 

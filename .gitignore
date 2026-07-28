@@ -28,3 +28,9 @@ graphify-out/
 # other files (animation-caveats.md, decap-cms-auth-todo.md) stay tracked;
 # they're actively cited from CLAUDE.md/CONTRIBUTING.md.
 /docs-internal/archive/
+
+# Not project content — kept locally, never published. (These were
+# mistakenly hard-deleted in an earlier cleanup commit instead of just
+# untracked; restored to disk from git history and moved here instead.)
+/prompt library.md
+/Sai University Wiki_ Motion & Animation GuideThis guide details how to implement modern, fluid animations and expressive typography across your Docusaurus portal using Motion (formerly Framer Motion), Lucide React icons, and custom handwriti.md
