@@ -33,4 +33,13 @@ graphify-out/
 # mistakenly hard-deleted in an earlier cleanup commit instead of just
 # untracked; restored to disk from git history and moved here instead.)
 /prompt library.md
-/Sai University Wiki_ Motion & Animation GuideThis guide details how to implement modern, fluid animations and expressive typography across your Docusaurus portal using Motion (formerly Framer Motion), Lucide React icons, and custom handwriti.md
+
+# Planning docs — working notes for in-progress/future features, not
+# reference material for using or contributing to the repo. Kept locally.
+/archive planning.md
+/feature-images-recent-activity-plan.md
+/github-pages-hosting-plan.md
+/leadership-rollover-plan.md
+
+# Local test run output, not reference material. Kept locally.
+/TEST_REPORT.md

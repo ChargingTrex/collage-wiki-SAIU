@@ -23,20 +23,22 @@ one shared playback rule and one shared accent-color system.
 
 Read in order. Where they conflict, the earlier one wins.
 
-1. **`BUILD-BRIEF (1).md`** — master decisions document. Follow its build order
-   (§5), file inventory (§4), and verification checklist (Appendix B).
+1. **`docs-internal/archive/BUILD-BRIEF (1).md`** — master decisions document.
+   Build is complete; kept for the build order (§5), file inventory (§4), and
+   verification checklist (Appendix B) that shaped it.
 2. **`scholar-design-system-hybrid (1).md`** — the chosen design system
    (`--ds-*` tokens). Map onto Infima in `custom.css`. **Palette is decided.**
 3. **`saiu-collage-wiki-easter-egg.md`** — the hidden footer Chrome-dino game.
-4. **`animation-caveats.md`** — authoritative open-issues log; consult when any
-   motion decision needs detail.
+4. **`docs-internal/animation-caveats.md`** — authoritative open-issues log;
+   consult when any motion decision needs detail.
 
-Reference / context (partly superseded):
-- `sai-uni-wiki-spec.md` — blog + Decap CMS + co-located image pipeline, and the
+Reference / context (partly superseded, archived under `docs-internal/archive/`):
+- `docs-internal/archive/sai-uni-wiki-spec.md` — blog + Decap CMS + co-located image pipeline, and the
   original homepage (`index.js`). Referenced by build order step 10.
-- `sai-uni-wiki-motion-guide.md` — the original motion guide, largely superseded
-  by the Framer rebuild; kept for rebuild rationale.
-- `traced-handwriting-guide.md` — handwriting-font technique for Literary/blog.
+- `docs-internal/archive/sai-uni-wiki-motion-guide.md` — the original motion
+  guide, largely superseded by the Framer rebuild; kept for rebuild rationale.
+- `docs-internal/archive/traced-handwriting-guide.md` — handwriting-font
+  technique for Literary/blog.
 
 If any of docs 1–3 is missing from the handoff, **stop and ask** rather than
 guessing its contents.

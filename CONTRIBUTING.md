@@ -192,7 +192,8 @@ static/
   audio/                      fest/club audio files
   js/github-badge.js          navbar GitHub badge — date label + live star/fork
                               counts, loaded via docusaurus.config.js's
-                              `scripts` array (see github-badge-guide.md)
+                              `scripts` array (see
+                              docs-internal/archive/github-badge-guide.md)
   img/
 tutorial-reference/           the stock Docusaurus classic-template tutorial
                               content, moved out of docs/ so it stops

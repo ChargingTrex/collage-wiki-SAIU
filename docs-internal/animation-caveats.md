@@ -19,7 +19,7 @@ mask that widens as the quill passes. Legible, editable via the `quote` prop,
 no tooling. Tradeoff: the reveal is a left-to-right wipe, not a true pen stroke
 following the letterforms.
 
-**Upgrade path documented** in `traced-handwriting-guide.md` — about 20 minutes
+**Upgrade path documented** in `docs-internal/archive/traced-handwriting-guide.md` — about 20 minutes
 in Figma, and the swap into the component is one prop. Worth doing for the
 Literary hero specifically; not worth doing 18 times.
 
@@ -232,7 +232,7 @@ either accept it, or build reduced/mono variants of these three for unified mode
 The dress and suit croquis in `FashionHero` are legible at hero size but are the
 roughest hand-authored paths across all heroes. If crispness matters, this is
 the one place in the club set worth tracing properly (same workflow as
-`traced-handwriting-guide.md`) rather than leaving hand-authored.
+`docs-internal/archive/traced-handwriting-guide.md`) rather than leaving hand-authored.
 
 ---
 
