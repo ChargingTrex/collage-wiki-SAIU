@@ -187,6 +187,10 @@ docs/
                                                    keep in sync with index.mdx
                                 - events.mdx        thin ClubEventsList wrapper,
                                                    don't hand-edit its content
+                                - contact.mdx       thin ClubContact wrapper —
+                                                   a dedicated Contact page,
+                                                   same data as index.mdx's
+                                                   own inline Contact section
   fests/
   resources/
     archives.mdx                the Archives hero's doc page
@@ -402,7 +406,7 @@ reads the frontmatter path directly and copies the file into
 ### Adding or editing a club page
 
 Each club's page lives at `docs/clubs/<slug>/index.mdx` — a folder, not a
-flat file. The hero component still goes at the top, same as before. Two
+flat file. The hero component still goes at the top, same as before. Three
 sibling files complete the folder and normally don't need touching beyond
 keeping them in sync:
 
@@ -414,6 +418,13 @@ keeping them in sync:
   Don't hand-edit its content; the list it shows comes from tagged blog
   posts (see "Adding a new event post" above), not from anything written
   directly in this file.
+- `contact.mdx` — a thin wrapper (`<ClubContact clubSlug="<slug>" {...CLUB_CONTACTS['<slug>']} />`),
+  giving the club a dedicated Contact page (`/docs/clubs/<slug>/contact`)
+  alongside the same info already shown inline on `index.mdx`. To actually
+  update a club's contact info, edit `src/data/clubContacts.js` — both this
+  page and `index.mdx`'s inline section read from the same entry, so one
+  edit updates both. A club with no `email`/`instagram`/`linkedin` set shows
+  "No contact info published yet" rather than a blank page.
 
 See the club table in the root `CLAUDE.md` for the correct slug and accent
 name for each club.

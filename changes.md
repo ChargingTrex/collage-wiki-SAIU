@@ -1828,3 +1828,42 @@ all 7 real names under its own year heading, and cultural-fest's *live*
 page correctly shows placeholder data again (not the archived committee)
 post-rollover. Verified end to end: `npm run build` clean, full
 `npm run test:e2e` 72/72.
+
+## 2026-07-28 — Dedicated Contact page per club
+
+Files: all 18 `docs/clubs/<slug>/contact.mdx` (new), `src/components/ClubContact.jsx`,
+`CONTRIBUTING.md`, `tests/e2e/clubs-and-fests.spec.js`
+
+Requested: a basic Contact page per club, modeled on
+`y-bow/saiufosswiki/about/contact` (the sibling FOSS Club wiki this
+project already sources FOSS Club's real contact info from). Fetched that
+page first to confirm its actual shape: a plain heading + email/Instagram/
+LinkedIn links, nothing else — matches what `ClubContact.jsx` +
+`clubContacts.js` already model, no new data shape needed.
+
+**`contact.mdx`** added as a third thin-wrapper sibling to every club's
+`index.mdx`/`events.mdx` (same pattern: `title`/`sidebar_label`/
+`description` frontmatter, one import, one component call) — a dedicated
+`/docs/clubs/<slug>/contact` route reading the exact same
+`CLUB_CONTACTS[<slug>]` entry `index.mdx`'s own inline "## Contact"
+section already uses, so there's exactly one place to edit
+(`src/data/clubContacts.js`) for both to update together. Deliberately
+left the inline section on `index.mdx` as well, rather than removing it in
+favor of only the new page — not asked for, and removing it would be a
+bigger, unrequested restructuring.
+
+**Real bug fixed while building this, not introduced by it:**
+`ClubContact` returned `null` when a club had no `email`/`instagram`/
+`linkedin` set (17 of 18 clubs, today) — fine as an inline aside on
+`index.mdx`, but a dedicated Contact page rendering nothing at all reads as
+broken, not "not published yet." Fixed by rendering a
+"No contact info published yet for this club — check back soon." message
+instead, matching `ClubEventsList`'s existing empty-state convention
+("No events recorded yet for this club — check back soon.") rather than
+inventing new wording.
+
+Verified: `npm run build` clean; `tests/e2e/clubs-and-fests.spec.js` gained
+3 new tests (every club's `/contact` loads clean, FOSS Club's page shows
+its real `fossclub@saiuniversity.edu.in`/`@foss.saiu` links, a
+placeholder club shows the new fallback message) — full
+`npm run test:e2e` 75/75 (72 pre-existing + 3 new).

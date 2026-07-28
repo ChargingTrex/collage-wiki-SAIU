@@ -34,6 +34,35 @@ test.describe('/clubs directory', () => {
   });
 });
 
+test.describe('Club contact pages', () => {
+  test('every club has a working /contact page', async ({page}) => {
+    const errors = trackConsoleErrors(page);
+    for (const slug of CLUB_SLUGS) {
+      await page.goto(`docs/clubs/${slug}/contact`);
+      await page.waitForLoadState('networkidle');
+      await expect(page.getByRole('heading', {name: 'Contact', exact: true})).toBeVisible();
+    }
+    expect(errors).toEqual([]);
+  });
+
+  test("FOSS Club's contact page shows its real email/Instagram/LinkedIn", async ({page}) => {
+    await page.goto('docs/clubs/foss-club/contact');
+    await expect(page.getByRole('link', {name: 'fossclub@saiuniversity.edu.in'})).toHaveAttribute(
+      'href',
+      'mailto:fossclub@saiuniversity.edu.in'
+    );
+    await expect(page.getByRole('link', {name: '@foss.saiu'})).toHaveAttribute(
+      'href',
+      'https://www.instagram.com/foss.saiu'
+    );
+  });
+
+  test("a club with no contact info yet shows the fallback message, not a blank page", async ({page}) => {
+    await page.goto('docs/clubs/astronomy-club/contact');
+    await expect(page.getByText('No contact info published yet')).toBeVisible();
+  });
+});
+
 test.describe('/fests directory', () => {
   test('renders all 3 fest heroes with working view-links', async ({page}) => {
     const errors = trackConsoleErrors(page);

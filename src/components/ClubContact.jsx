@@ -21,7 +21,13 @@ import { ContactLink, InstagramIcon, LinkedinIcon } from './contactIcons';
 export function ClubContact({ clubSlug, email, instagram, linkedin }) {
   const { accentStyle } = useClubAccent(clubSlug);
 
-  if (!email && !instagram && !linkedin) return null;
+  if (!email && !instagram && !linkedin) {
+    return (
+      <p className="my-4" style={{ color: 'var(--ds-text-secondary)' }}>
+        No contact info published yet for this club — check back soon.
+      </p>
+    );
+  }
 
   return (
     <div style={accentStyle} className="my-4 flex flex-col gap-4">
