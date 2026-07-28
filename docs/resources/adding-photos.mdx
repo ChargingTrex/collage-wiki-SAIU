@@ -1,0 +1,135 @@
+---
+title: Adding Photos to an Event Post
+description: A plain-language guide for club leads — no coding experience needed — on adding one photo, or a whole gallery, to an event write-up.
+sidebar_custom_props:
+  icon: Images
+---
+
+This page is for anyone writing up a club event — no coding background
+needed. If you're a developer, see `CONTRIBUTING.md`'s "Adding photos to an
+event post" section instead; this page is the plain-language version.
+
+## Just one photo?
+
+You don't need anything on this page. Drop the photo in next to your
+write-up the normal way and it'll show up automatically.
+
+## More than one photo — three gallery styles
+
+If you have several photos from the same event, you can show them as a
+gallery the reader can click (or swipe) through, instead of listing every
+photo down the page one after another. There are three styles to choose
+from:
+
+### 1. Classic Slideshow ("Fade")
+
+One photo at a time, gently fading into the next when you click the arrows.
+The simplest, calmest option — **use this one if you're not sure which to
+pick.**
+
+### 2. Photo Wall ("Coverflow")
+
+Several photos visible at once, tilted like you're flipping through a
+physical stack, with the current one front-and-center. More eye-catching —
+good for a fest recap or a big showcase moment.
+
+### 3. Swipe Deck ("Stack")
+
+A deck of photos you swipe through one at a time, like swiping through
+photos on a phone. Playful and casual — good for an informal event recap.
+
+All three can also **play by themselves** without anyone clicking, if you
+want (see "Making it play by itself" below).
+
+## How to actually add one
+
+Right now, there are two ways to do this:
+
+**Option A — ask a developer to add it for you.** Send them:
+1. The photos, in the order you want them shown.
+2. A short caption for each one (optional, but nice to have).
+3. Which of the three styles you want (Classic Slideshow, Photo Wall, or
+   Swipe Deck).
+4. Whether you want it to play by itself.
+
+That's it — they'll have everything they need.
+
+**Option B — add it yourself, using GitHub's built-in editor.** Every page
+on this wiki has a small pencil icon at the bottom that says **"Edit this
+page."** Clicking it opens your web browser's page-editing view — no
+software to install, no coding knowledge needed, just copying and
+replacing text. Once you're there:
+
+1. Below your write-up, paste one of the three templates below.
+2. Replace `photo1.jpg`, `photo2.jpg`, etc. with your actual photo
+   filenames (the photos need to already be uploaded next to your post —
+   ask a developer if you're not sure how).
+3. Replace each `alt: '...'` and `caption: '...'` text with your own
+   descriptions.
+4. Don't change anything else in the template, and don't remove any
+   punctuation (commas, brackets, quote marks) — copy it exactly and only
+   edit the parts described above.
+
+### Template: Classic Slideshow
+
+```md
+import photo1 from './photo1.jpg';
+import photo2 from './photo2.jpg';
+import { ImageCarousel } from '@site/src/components/ImageCarousel';
+
+<ImageCarousel images={[
+  {src: photo1, alt: 'Describe this photo', caption: 'A short caption'},
+  {src: photo2, alt: 'Describe this photo', caption: 'A short caption'},
+]} />
+```
+
+### Template: Photo Wall
+
+```md
+import photo1 from './photo1.jpg';
+import photo2 from './photo2.jpg';
+import { CoverflowCarousel } from '@site/src/components/CoverflowCarousel';
+
+<CoverflowCarousel images={[
+  {src: photo1, alt: 'Describe this photo', caption: 'A short caption'},
+  {src: photo2, alt: 'Describe this photo', caption: 'A short caption'},
+]} />
+```
+
+### Template: Swipe Deck
+
+```md
+import photo1 from './photo1.jpg';
+import photo2 from './photo2.jpg';
+import { StackCarousel } from '@site/src/components/StackCarousel';
+
+<StackCarousel images={[
+  {src: photo1, alt: 'Describe this photo', caption: 'A short caption'},
+  {src: photo2, alt: 'Describe this photo', caption: 'A short caption'},
+]} />
+```
+
+You can list as many photos as you have — just repeat the `import` line
+and add another `{src: ..., alt: ..., caption: ...}` entry for each one.
+
+## Making it play by itself
+
+Add the word `autoplay` right after the component name in any of the
+templates above, and it'll advance on its own — a pause/play button
+appears automatically so readers can stop it if they want.
+
+```md
+<ImageCarousel autoplay images={[...]} />
+```
+
+## A couple of things worth knowing
+
+- Every photo needs an `alt` description — this is what's read aloud to
+  visitors using a screen reader, so make it a real description of what's
+  in the photo, not just "photo 1."
+- `caption` (the text shown under the photo) is optional — leave it out if
+  you don't want one.
+- If a photo doesn't show up (a blank box instead), the most common cause
+  is the filename in the template not matching the actual uploaded file
+  exactly, including the file extension (`.jpg` vs `.png`) — double-check
+  that first.

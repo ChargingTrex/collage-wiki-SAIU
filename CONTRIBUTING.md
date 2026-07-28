@@ -132,9 +132,15 @@ src/
                               (all tags) via its `tagIds` prop
     MiniHeroCard.jsx          scales a real hero down for a directory grid
                               card (used by /clubs and /explore)
-    ImageCarousel.jsx         prev/next + dot-nav photo carousel for blog/
-                              event posts with more than one image — see
-                              "Adding photos to an event post" below
+    ImageCarousel.jsx         3 photo carousels for blog/event posts with
+    CoverflowCarousel.jsx     more than one image — Fade, Coverflow, Stack
+    StackCarousel.jsx         respectively. See "Adding photos to an event
+                              post" below (technical) or the live
+                              docs/resources/adding-photos.mdx page
+                              (plain-language, for non-technical editors)
+    useCarouselAutoplay.js    shared autoplay/play-pause/reduced-motion/
+                              pause-on-hover logic behind all 3 carousels'
+                              `autoplay` prop — one place, not three
     LibraryHero.jsx           the Blog hero (student writing — a shelf still
                               being filled). Shares a shelf-of-books motif
                               with ArchivesHero but is a separate hero for a
@@ -250,23 +256,48 @@ expect, with a relative path to the co-located file:
 Docusaurus finds and compresses this automatically because it's a real
 Markdown image node, not a string.
 
-**More than one photo** — use `ImageCarousel`
-(`src/components/ImageCarousel.jsx`), a small Framer Motion component built
-for exactly this: prev/next buttons, dot navigation, drag-to-swipe, and an
-animated slide transition between photos. Swipe uses Framer Motion's own
-built-in drag gesture system (`drag`, `dragConstraints`, `onDragEnd`'s
-velocity/offset) rather than hand-rolled touch listeners — this is the
-pattern Framer Motion's own docs demonstrate for swipeable carousels. It
-respects `prefers-reduced-motion` the same way every hero does — the slide
-still changes on click/swipe, it just doesn't animate.
+**More than one photo** — use one of the three carousel components, all in
+`src/components/`. **Not sure which one? See the live
+["Adding Photos" guide](/docs/resources/adding-photos) for a plain-language,
+non-technical walkthrough of each style, written for club leads, not
+developers** — this section is the technical reference.
+
+| Component | Style | Best for |
+|---|---|---|
+| `ImageCarousel` | Fade — one photo at a time, plain crossfade | The default choice; most accessible, least visually busy |
+| `CoverflowCarousel` | Coverflow — several photos visible at once, tilted/scaled by distance from center | A fest recap, a "wall of photos" moment |
+| `StackCarousel` | Stack — a draggable deck, swipe the top photo away to reveal the next | An informal, playful event recap |
+
+All three share the same `images` prop shape (`{src, alt, caption?}[]`),
+the same navigation primitives (prev/next buttons, drag-to-swipe using
+Framer Motion's own built-in drag gesture system — `drag`,
+`dragConstraints`, `onDragEnd`'s velocity/offset — rather than hand-rolled
+touch listeners), and the same `prefers-reduced-motion` behavior: the slide
+still changes on click/swipe (a deliberate user action), it just doesn't
+animate — and autoplay (below) doesn't run at all.
+
+**Autoplay** — pass `autoplay` (and optionally `autoplayInterval`,
+milliseconds, default `4000`) to any of the three:
+
+```jsx
+<ImageCarousel autoplay autoplayInterval={5000} images={[...]} />
+```
+
+This adds a play/pause button automatically — required whenever content
+moves on its own without the reader asking (WCAG 2.2.2, "Pause, Stop,
+Hide"), so don't build a version without one. Autoplay also pauses
+whenever the reader's mouse is over the carousel, and never runs at all
+for `prefers-reduced-motion` visitors regardless of the prop — in that
+case the play/pause button doesn't render either, since it wouldn't do
+anything.
 
 **Important — images must be `import`ed, not passed as bare path strings.**
 The single-photo case above works because Docusaurus's Markdown processor
 recognizes `![]()`/`<img>` syntax and rewrites the path for you. A custom
-component like `ImageCarousel` just receives whatever you hand it as a
-prop — a literal string like `'./photo.jpg'` is **not** resolved or copied
-by the build and will 404. Import each image as a real ES module instead,
-the same way you'd import an image in any other React file:
+component like these just receives whatever you hand it as a prop — a
+literal string like `'./photo.jpg'` is **not** resolved or copied by the
+build and will 404. Import each image as a real ES module instead, the
+same way you'd import an image in any other React file:
 
 ```md
 ---
@@ -279,7 +310,7 @@ import photo2 from './crowd-watching.jpg';
 import photo3 from './saturn-through-the-lens.jpg';
 import { ImageCarousel } from '@site/src/components/ImageCarousel';
 
-<ImageCarousel images={[
+<ImageCarousel autoplay images={[
   {src: photo1, alt: 'Setting up the telescopes on the observatory roof', caption: 'Setup, just after sunset'},
   {src: photo2, alt: 'A crowd gathered around the main telescope', caption: 'Queue for a look at Saturn'},
   {src: photo3, alt: 'Saturn and its rings, visible through the eyepiece'},
@@ -287,6 +318,9 @@ import { ImageCarousel } from '@site/src/components/ImageCarousel';
 
 The Astronomy Club hosted...
 ```
+
+Swap `ImageCarousel` for `CoverflowCarousel` or `StackCarousel` for a
+different style — same `images` prop, same import, same `autoplay` flag.
 
 `caption` is optional per image; `alt` isn't — always describe the photo
 for screen readers, same as any other image on the web.

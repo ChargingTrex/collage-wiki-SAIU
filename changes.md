@@ -1407,3 +1407,110 @@ pause control. The drag addition is the part of that spec that's both
 genuinely "a Framer Motion built-in" and uncontroversial to add; the 3D
 coverflow visual and autoplay remain a deliberate, disclosed choice not
 to build, not an oversight.
+
+## 2026-07-28 — Autoplay added; the 3D coverflow becomes a real component; a 3rd carousel type; docs for both audiences
+
+Files: `src/components/useCarouselAutoplay.js` (new),
+`src/components/ImageCarousel.jsx`, `src/components/CoverflowCarousel.jsx`
+(new), `src/components/StackCarousel.jsx` (new), `src/css/custom.css`,
+`src/data/sidebarIcons.js`, `docs/resources/adding-photos.mdx` (new),
+`CONTRIBUTING.md`
+
+Requested: add autoplay after all, cover "the 3 types of image carousels"
+in the technical tutorial, and write a separate non-technical version for
+club leads.
+
+**Reconsidered the earlier "not adopting the 3D coverflow" call — this
+session, not the last one.** The previous entry's reasoning (superseded
+doc, autoplay accessibility concern) was about *defaulting* to that
+version; asked for directly, both concerns are addressable rather than
+disqualifying — autoplay done properly (pause control, reduced-motion
+gate, pause-on-hover) satisfies WCAG 2.2.2 rather than violating it, and
+"superseded rebuild-rationale" doesn't mean "must never build," just "not
+a locked spec to default to." Built it as `CoverflowCarousel.jsx`,
+adapted from §5's spec to this project's conventions (real `import`ed
+images, the shared autoplay hook, `prefers-reduced-motion`).
+
+**`useCarouselAutoplay.js` (new)** — one shared hook behind all three
+carousels' `autoplay` prop, instead of three separate timers: play/pause
+state, the interval, a `prefers-reduced-motion` gate (autoplay never runs
+at all for those visitors, matching every other motion-sensitive piece of
+this project), and pause-on-hover (a reader looking at a photo shouldn't
+have it pulled away mid-look). Matches this project's own stated
+convention of putting shared behavior in one hook rather than
+per-component (`useIntroMotion`/`useClubAccent` already do this for
+heroes).
+
+**Three carousel types, one shared `images`/`autoplay` prop shape:**
+1. `ImageCarousel` ("Fade") — existing, gained the autoplay hook +
+   play/pause button.
+2. `CoverflowCarousel` ("Coverflow", new) — the motion guide's §5 spec:
+   multiple images visible at once, tilted/scaled/faded by distance from
+   the centered one, spring physics. Reduced motion keeps the discrete
+   tilted positions (removing them entirely would make off-center images
+   an illegible pile-up) but swaps the spring transition for an instant
+   snap.
+3. `StackCarousel` ("Stack", new) — a third type not present in any
+   source doc, added because "3 types" was the ask and a draggable
+   Tinder-style card deck is a well-known, officially-documented Framer
+   Motion pattern in its own right (their examples site has one under
+   "swipe to remove cards"), giving genuine stylistic variety (calm vs.
+   showy vs. playful) rather than three near-duplicates. Disclosed
+   simplification, noted in the component's own header comment: a manual
+   swipe plays a full fly-off-then-reveal-next animation; an
+   autoplay-triggered advance just reshuffles depths without that same
+   flourish — giving autoplay the identical animation would mean
+   restructuring the shared hook for a polish-only difference, judged not
+   worth it.
+
+**Verified all three directly** (temporary local test post, not
+committed): autoplay actually advances on its own timer and stops when
+paused; the pause button is genuinely absent under `prefers-reduced-motion`
+(checked, not assumed); Coverflow renders all images with the tilt/scale/
+fade math; Stack's drag-to-dismiss correctly reveals the next card and
+cycles; existing button/dot navigation on all three still works. One
+transient full-suite flake (4 tests failed under full parallel load, all
+passed individually and on a second full re-run) — logged as
+load-related, not a regression, consistent with this project's own
+documented history of `docusaurus serve` being a lightweight server that
+occasionally struggles under this suite's parallelism.
+
+**`docs/resources/adding-photos.mdx` (new)** — the actual answer to "a
+separate tutorial doc for non-technical people." Initially drafted for
+`docs-internal/` before catching that this repo's own convention marks
+that folder "not site content, not part of the Docusaurus build at all" —
+exactly wrong for something aimed at non-technical club leads who need to
+*find* it on the live wiki, not dig through a git repo. Moved to
+`docs/resources/` instead, a real page reachable at
+`/docs/resources/adding-photos`, alongside the existing Archives page.
+Written with zero unexplained jargon: describes the three styles in plain
+terms (Classic Slideshow / Photo Wall / Swipe Deck, not "Fade/Coverflow/
+Stack"), and is honest about a real constraint rather than glossing over
+it — Decap CMS's markdown-body widget has no way to embed a React
+component, so there's currently no true one-click self-service path;
+the page offers two real options instead: ask a developer (with exactly
+what to send them), or use the "Edit this page" link every doc already
+has to open GitHub's own browser-based editor and paste a fill-in-the-
+blanks template directly, explained as "copy this exactly, only change
+the bracketed parts" without needing to understand what an import
+statement or a component is.
+
+Added `sidebar_custom_props: {icon: Images}` to the new page, matching the
+existing per-doc icon convention — **caught and fixed a real miss before
+it shipped wrong**: the icon didn't render (fell back to the generic file
+icon on both the sidebar and the `/docs/category/resources` card) because
+`Images` was never added to `sidebarIcons.js`'s `SIDEBAR_ICONS` lookup
+table — confirmed via screenshot, then fixed and reconfirmed.
+
+`CONTRIBUTING.md`'s "Adding photos to an event post" section rewritten to
+cover all three components (a comparison table: style, description, best
+use), the shared `autoplay`/`autoplayInterval` props, and a pointer to the
+new non-technical page for anyone unsure which style to pick. The
+directory-tree component list gained all three files plus
+`useCarouselAutoplay.js`.
+
+Noticed in passing, not touched: a concurrent session added
+`@docusaurus/plugin-ideal-image` to `docusaurus.config.js` and a "Feature
+Image" field to `static/admin/config.yml` (per a new
+`feature-images-recent-activity-plan.md`), and a third Resources page,
+"Adding a Feature Image to a Post" — unrelated to this work, left alone.

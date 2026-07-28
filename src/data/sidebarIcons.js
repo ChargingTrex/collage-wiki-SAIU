@@ -27,6 +27,7 @@ import {
   Rocket,
   PartyPopper,
   Archive,
+  Images,
 } from 'lucide-react';
 
 export const SIDEBAR_ICONS = {
@@ -51,6 +52,7 @@ export const SIDEBAR_ICONS = {
   Rocket,
   PartyPopper,
   Archive,
+  Images,
 };
 
 // Doc routes for club pages are the file's own slug (docs/clubs/art-club.mdx

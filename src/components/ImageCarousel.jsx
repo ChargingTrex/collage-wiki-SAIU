@@ -1,12 +1,17 @@
 // src/components/ImageCarousel.jsx
 //
-// A reusable image carousel for blog/event posts with more than one photo —
-// prev/next buttons, dot navigation, drag-to-swipe, and a Framer Motion
-// slide transition between images. Meant to be dropped into a blog post's
-// MDX body (see CONTRIBUTING.md's "Adding photos to an event post" section
-// for the usage pattern — images must be `import`ed, not passed as bare
-// relative-path strings, so Docusaurus's bundler actually resolves/copies
-// them).
+// Type 1 of 3 carousels — "Fade": the plain, most accessible option. One
+// image at a time, a simple crossfade between them. See CoverflowCarousel
+// (Type 2, 3D coverflow) and StackCarousel (Type 3, draggable card stack)
+// for the others — CONTRIBUTING.md's "Adding photos to an event post"
+// section explains when to reach for which.
+//
+// Navigation: prev/next buttons, dot navigation, drag-to-swipe, and
+// optional autoplay (see useCarouselAutoplay.js — shared across all three
+// carousel types). Meant to be dropped into a blog post's MDX body — see
+// CONTRIBUTING.md for the usage pattern. Images must be `import`ed, not
+// passed as bare relative-path strings, so Docusaurus's bundler actually
+// resolves/copies them.
 //
 // Swipe uses Framer Motion's own built-in drag gesture system (`drag`,
 // `dragConstraints`, `onDragEnd`'s velocity/offset) rather than hand-rolled
@@ -18,29 +23,22 @@
 //
 // Respects prefers-reduced-motion the same way every hero in this project
 // does: the slide still changes on click/swipe (that's a deliberate user
-// action, not an ambient animation), it just snaps instead of animating.
+// action, not an ambient animation), it just snaps instead of animating —
+// and autoplay is disabled outright (see useCarouselAutoplay).
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Play, Pause } from 'lucide-react';
+import { useCarouselAutoplay } from './useCarouselAutoplay';
 
 const SWIPE_OFFSET_THRESHOLD = 50; // px
 const SWIPE_VELOCITY_THRESHOLD = 500; // px/s
 
-export function ImageCarousel({ images, className = '' }) {
-  const [index, setIndex] = useState(0);
-  const [reducedMotion, setReducedMotion] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    setReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-  }, []);
+export function ImageCarousel({ images, className = '', autoplay = false, autoplayInterval = 4000 }) {
+  const {index, setIndex, go, isPlaying, togglePlaying, reducedMotion, hoverProps} =
+    useCarouselAutoplay(images?.length ?? 0, {autoplay, interval: autoplayInterval});
 
   if (!images || images.length === 0) return null;
-
-  const go = (delta) => {
-    setIndex((i) => (i + delta + images.length) % images.length);
-  };
 
   const handleDragEnd = (_event, info) => {
     if (info.offset.x < -SWIPE_OFFSET_THRESHOLD || info.velocity.x < -SWIPE_VELOCITY_THRESHOLD) {
@@ -61,7 +59,7 @@ export function ImageCarousel({ images, className = '' }) {
       };
 
   return (
-    <div className={`image-carousel ${className}`}>
+    <div className={`image-carousel ${className}`} {...hoverProps}>
       <div className="image-carousel__viewport">
         <AnimatePresence mode="wait" initial={false}>
           <motion.figure
@@ -101,6 +99,16 @@ export function ImageCarousel({ images, className = '' }) {
               <ChevronRight />
             </button>
           </>
+        )}
+
+        {autoplay && images.length > 1 && !reducedMotion && (
+          <button
+            type="button"
+            className="image-carousel__nav image-carousel__nav--play"
+            onClick={togglePlaying}
+            aria-label={isPlaying ? 'Pause slideshow' : 'Play slideshow'}>
+            {isPlaying ? <Pause /> : <Play />}
+          </button>
         )}
       </div>
 
