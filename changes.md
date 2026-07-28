@@ -1,5 +1,22 @@
 # Changes
 
+## 2026-07-29 — Name ChargingTrex as copyright holder in LICENSE
+
+Files: `LICENSE`
+
+Requested: make sure ChargingTrex's name appears in the GPL-3.0 license
+too, matching `COMMONS-CLAUSE.md` and `LICENSE-CONTENT.md`, both of which
+already name `Licensor: ChargingTrex`. `LICENSE` itself is kept as pure,
+unmodified GPL-3.0 text so GitHub's license detector reads it correctly
+(see the entry below) — adding a new line would diverge from that.
+
+Filled in the two `<year>`/`<name of author>` placeholders already present
+in the license's own "How to Apply These Terms to Your New Programs"
+appendix instead — that's GPL-3.0's designated spot for a work's copyright
+notice, so this stays a fill-in of existing template text rather than an
+addition, and the rest of the file is still byte-identical to the official
+GPL-3.0 text.
+
 ## 2026-07-29 — GitHub license-name detection fixed; missing archive-card icon fixed
 
 Files: `LICENSE`, `COMMONS-CLAUSE.md` (new), `README.md`,
