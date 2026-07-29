@@ -12,8 +12,9 @@ import clubEventsPlugin from './src/plugins/club-events-plugin.js';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Sai University Club & Event Wiki',
-  tagline: 'Clubs, events, and archives at Sai University, Chennai',
+  title: 'Sai University Wiki',
+  tagline:
+    'The Sai University wiki for student clubs, events, and student life at Sai University, Chennai',
   favicon: 'img/favicon.ico',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future

@@ -1,5 +1,42 @@
 # Changes
 
+## 2026-07-29 — Basic SEO: robots.txt, structured data, Google Search Console verification
+
+Files: `static/robots.txt` (new), `static/google07e076faf972a09c.html` (new),
+`docusaurus.config.js`, `src/pages/index.js`
+
+Requested: make the site show up for searches like "sai university wiki",
+"sai university clubs", and "sai university student life"/"events". Ranking
+for "Sai University" alone isn't realistic (that belongs to the university's
+own domain), but these more specific phrases are — nothing was competing for
+them, and the site's actual content is a direct match.
+
+- Added `static/robots.txt`, explicitly allowing crawling and pointing at
+  the sitemap (Docusaurus's classic preset already auto-generates
+  `sitemap.xml`; it just wasn't linked from anywhere crawlers check first).
+- Renamed the site `title` from "Sai University Club & Event Wiki" to
+  "Sai University Wiki" — this suffixes every page's `<title>` tag, so it
+  now matches the "sai university wiki" query on every single page, not
+  just the homepage.
+- Rewrote the homepage's tagline, hero subtitle, about-section copy, and
+  meta description to naturally include "student clubs," "events," and
+  "student life" alongside "Sai University," instead of a single generic
+  sentence that only really hit "clubs."
+- Added JSON-LD structured data (`WebSite` schema, `about` an
+  `EducationalOrganization` named "Sai University") to the homepage via
+  `@docusaurus/Head`, with `alternateName`s covering the target phrases —
+  the clearest direct signal to Google about what this site is and which
+  real institution it documents. Does not claim to *be* Sai University's
+  official site, only names the real institution it's about.
+- Added the Google Search Console verification file
+  (`google07e076faf972a09c.html`, HTML-file method) to `static/` so it
+  serves at the site root and Search Console can confirm ownership.
+
+Verified via `npm run build`: title tag, meta description, and JSON-LD all
+render correctly in `build/index.html`; verification file lands at
+`build/google07e076faf972a09c.html`; `sitemap.xml` confirmed present and
+complete.
+
 ## 2026-07-29 — Fix GitHub license-name detection for the content license too
 
 Files: `LICENSE-CREATIVE-COMMONS.md` (renamed from `LICENSE-CONTENT.md`),

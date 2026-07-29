@@ -1,10 +1,36 @@
 import React from 'react';
 import clsx from 'clsx';
 import Layout from '@theme/Layout';
+import Head from '@docusaurus/Head';
 import Link from '@docusaurus/Link';
 import Heading from '@theme/Heading';
 import {RecentActivity} from '@site/src/components/RecentActivity';
 import styles from './index.module.css';
+
+const SITE_URL = 'https://chargingtrex.github.io/collage-wiki-SAIU/';
+
+// Tells search engines what this site is and what it's about — a WebSite
+// entity (this wiki) whose subject (`about`) is the real-world
+// EducationalOrganization (Sai University). Doesn't claim to *be* the
+// university's official site, just names the real institution it documents.
+const STRUCTURED_DATA = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Sai University Wiki',
+  alternateName: ['Sai University Club Wiki', 'Sai University Clubs', 'Sai University Student Life'],
+  url: SITE_URL,
+  description:
+    'A student-run wiki documenting Sai University’s clubs, events, and student life in Chennai.',
+  about: {
+    '@type': 'EducationalOrganization',
+    name: 'Sai University',
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Chennai',
+      addressCountry: 'IN',
+    },
+  },
+};
 
 function HomepageHeader() {
   return (
@@ -14,8 +40,8 @@ function HomepageHeader() {
           Sai University Wiki
         </Heading>
         <p className="hero__subtitle">
-          The record of Sai University's student clubs — every event,
-          project, and gathering, kept by the people who ran them.
+          The Sai University wiki for student clubs, events, and student
+          life in Chennai — every gathering kept by the people who ran it.
         </p>
         <p className={styles.statRow}>18 clubs · 400+ events archived · Chennai</p>
         <div className={styles.buttons}>
@@ -37,9 +63,10 @@ function AboutSection() {
       <div className="row">
         <div className="col col--8 col--offset-2 text--center">
           <p className={styles.aboutLine}>
-            Clubs at Sai University are student-run, start to finish —
-            students pitch them, students lead them, students write them
-            down. This is where that record lives.
+            Sai University clubs are student-run, start to finish — students
+            pitch them, students lead them, students write them down. This
+            wiki is the record of Sai University student life: clubs,
+            events, and activities, all in one place.
           </p>
         </div>
       </div>
@@ -71,7 +98,10 @@ export default function Home() {
   return (
     <Layout
       title="Sai University Wiki"
-      description="The record of Sai University's student clubs — every event, project, and gathering, kept by the people who ran them.">
+      description="The Sai University wiki for student clubs, events, and student life in Chennai — every gathering kept by the people who ran it.">
+      <Head>
+        <script type="application/ld+json">{JSON.stringify(STRUCTURED_DATA)}</script>
+      </Head>
       <HomepageHeader />
       <main>
         <AboutSection />

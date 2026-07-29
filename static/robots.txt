@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://chargingtrex.github.io/collage-wiki-SAIU/sitemap.xml
