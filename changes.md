@@ -2085,3 +2085,64 @@ Verified: `npm run build` clean; `tests/e2e/clubs-and-fests.spec.js` gained
 its real `fossclub@saiuniversity.edu.in`/`@foss.saiu` links, a
 placeholder club shows the new fallback message) — full
 `npm run test:e2e` 75/75 (72 pre-existing + 3 new).
+
+## 2026-07-29 — Fixed a real crash in the footer dino easter egg
+
+Files: `src/theme/Footer/index.js`, `tests/e2e/dino-easter-egg.spec.js`,
+`CONTRIBUTING.md`, `TEST_REPORT.md`
+
+Reported: the dino game crashes. Every existing `dino-easter-egg.spec.js`
+test opened the overlay but never actually pressed a key to start
+playing — confirmed the crash directly by scripting a real keypress in
+Playwright (`page.keyboard.press('Space')`), which none of the existing
+tests did, exactly why this shipped unnoticed.
+
+**Root cause, traced to the exact line:** `react-chrome-dino`'s bundled
+Runner only runs its `playIntro()` codepath on the game's first keypress.
+That method calls `document.styleSheets[0].insertRule(keyframesRule, 0)`
+to inject a one-off `@-webkit-keyframes intro` rule, assuming index 0 of
+the page's first stylesheet is always a safe place to insert. It isn't
+here: `custom.css` opens with `@import
+url('https://fonts.googleapis.com/...')` for the handwriting fonts, and
+the CSS spec requires `@import` rules to precede every other rule in a
+stylesheet — inserting anything at index 0 (i.e. *before* that `@import`)
+violates that ordering, so the browser throws `HierarchyRequestError`.
+`react-chrome-dino` doesn't catch it, so it kills the whole game the
+instant it tries to start.
+
+**Considered replacing the package** (CLAUDE.md's own standing
+instruction: swap `react-chrome-dino` only if it throws errors against
+this stack, which it now does) — researched actively-maintained
+alternatives first; none exist. Every fork on npm (`react-dino-game`,
+`react-chrome-dino-ts`, `react-dinosaur-game`) vendors the same original
+Chromium Runner source this bug lives inside, so swapping packages would
+most likely just relocate the identical bug, not fix it. `patch-package`
+isn't set up in this repo either, and adding it as a new dependency just
+to patch one method felt like more moving parts than the fix needed.
+
+**Fixed instead with a scoped runtime patch**, in `Footer/index.js`,
+applied once on module load: wraps
+`CSSStyleSheet.prototype.insertRule` so that specifically a
+`HierarchyRequestError` (not any other error) falls back to appending the
+rule at the end of the stylesheet instead of the requested index. This is
+exactly equivalent for a `@keyframes` rule — rule *order* only actually
+matters for `@import`/`@namespace` — so the intro animation still plays
+correctly, just via a valid insertion point. Verified end to end:
+reproduced the exact `HierarchyRequestError` stack trace before the fix
+(via a throwaway repro test, deleted after confirming), confirmed zero
+console/page errors and a real screenshot of the dino actually running
+(tinted, score counting up, jumping) after the fix.
+
+**New regression test** in `dino-easter-egg.spec.js` — presses a key
+before asserting no console errors, closing the exact gap that let this
+ship unnoticed in the first place.
+
+Verified: `npm run build` clean; `dino-easter-egg.spec.js` 7/7 in
+isolation. Full `npm run test:e2e` also run — 6 unrelated failures
+present (a concurrent session added "Resources"/"Archive" navbar items to
+`docusaurus.config.js` without updating `navigation.spec.js`'s expected
+list, and the new navbar "Archive" link now name-collides with the
+`/clubs` page's own "Archive" link that `leadership-rollover.spec.js`/
+`clubs-and-fests.spec.js` target; one more, `hero-playback.spec.js`, is
+timing-flaky under parallel load and passes alone) — none touched here,
+not this task's scope.

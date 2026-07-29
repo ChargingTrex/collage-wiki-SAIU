@@ -111,7 +111,23 @@ src/
                               flattened the whole grayscale canvas to one
                               solid block; blend-mode preserves the
                               dino/ground's light/dark contrast while
-                              shifting the hue.
+                              shifting the hue. Also patches
+                              `CSSStyleSheet.prototype.insertRule` on
+                              module load — `react-chrome-dino`'s bundled
+                              Runner crashes the instant the game actually
+                              starts (only on the first keypress, which is
+                              why this went unnoticed for a while), calling
+                              `insertRule(rule, 0)` on the page's first
+                              stylesheet on the assumption index 0 is
+                              always safe. It isn't: `custom.css` opens
+                              with an `@import` for the handwriting fonts,
+                              and CSS requires `@import` to precede every
+                              other rule in its stylesheet, so inserting
+                              anything at index 0 throws
+                              `HierarchyRequestError`. The patch falls back
+                              to appending at the end when that happens —
+                              safe, since rule *order* among non-`@import`
+                              rules doesn't matter for a `@keyframes` rule.
     DocSidebarItem/Link/      swizzled (ejected) — renders a lucide icon
                               before a doc's sidebar label, from that doc's
                               `sidebar_custom_props.icon` frontmatter

@@ -4,6 +4,44 @@ import {Mail, Bug} from 'lucide-react';
 import ChromeDinoGame from 'react-chrome-dino';
 import 'react-chrome-dino/build/index.css';
 import {useAccentMode} from '../../components/useClubAccent';
+
+// `react-chrome-dino` (unmaintained, last published 2019, per its own
+// package.json — a newer/actively-maintained alternative doesn't
+// meaningfully exist; every fork on npm vendors the same original Chromium
+// Runner source) crashes the instant the game actually starts (confirmed
+// directly by scripting a real keypress in Playwright, not just opening the
+// overlay — the existing test suite never pressed a key, which is why this
+// shipped unnoticed). Its bundled Runner.playIntro() does
+// `document.styleSheets[0].insertRule(keyframesRule, 0)`, hard-assuming
+// index 0 of the page's first stylesheet is always a safe place to insert.
+// It isn't here: this site's custom.css opens with `@import
+// url(fonts.googleapis.com/...)` for the handwriting fonts, and the CSS
+// spec requires `@import` rules to precede every other rule in a
+// stylesheet — inserting anything at index 0 (i.e. *before* that @import)
+// violates that ordering and the browser throws `HierarchyRequestError`,
+// which react-chrome-dino doesn't catch, so it kills the whole game.
+// Per CLAUDE.md's own standing instruction ("swap react-chrome-dino only if
+// it throws errors against this stack — which it now does), the correct
+// fix is either replace the package or work around its bug; replacing it
+// buys nothing (the same vendored Runner ships in every fork), so this
+// patches the one unsafe call instead: rule *order* among non-@import
+// rules doesn't matter, so falling back to appending at the end of the
+// stylesheet when the requested index would violate ordering is exactly
+// equivalent to what the game intends, with no visible difference.
+if (typeof CSSStyleSheet !== 'undefined' && !CSSStyleSheet.prototype.__insertRuleDinoPatch) {
+  const nativeInsertRule = CSSStyleSheet.prototype.insertRule;
+  CSSStyleSheet.prototype.insertRule = function patchedInsertRule(rule, index) {
+    try {
+      return nativeInsertRule.call(this, rule, index);
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'HierarchyRequestError') {
+        return nativeInsertRule.call(this, rule, this.cssRules.length);
+      }
+      throw err;
+    }
+  };
+  CSSStyleSheet.prototype.__insertRuleDinoPatch = true;
+}
 import {CLUB_CONTACTS} from '../../data/clubContacts';
 
 // Lucide is a generic icon set and doesn't include brand logos — GitHub,

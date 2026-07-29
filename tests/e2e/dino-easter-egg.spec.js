@@ -58,6 +58,39 @@ test('clicking opens a full-screen overlay with a sized, playable canvas', async
   expect(errors).toEqual([]);
 });
 
+test('pressing a key actually starts the game running, without crashing', async ({page}) => {
+  const errors = trackConsoleErrors(page);
+  await page.goto('');
+  await page.locator('.footer-dino-trigger__button').click();
+  await page.waitForTimeout(300);
+
+  // Regression test for a real bug: react-chrome-dino's bundled Runner
+  // only executes its playIntro() codepath — the one that actually
+  // crashed — on the *first keypress* after mount. Every other test in
+  // this file opens the overlay but never presses a key, which is exactly
+  // why this shipped unnoticed: `Runner.playIntro()` does
+  // `document.styleSheets[0].insertRule(keyframesRule, 0)`, assuming
+  // index 0 of the page's first stylesheet is always safe to insert at.
+  // It isn't here — custom.css opens with `@import
+  // url(fonts.googleapis.com/...)`, and CSS requires `@import` rules to
+  // precede every other rule in a stylesheet, so inserting at index 0
+  // (before that @import) throws `HierarchyRequestError`, uncaught,
+  // killing the whole game. Fixed with a defensive
+  // `CSSStyleSheet.prototype.insertRule` patch in
+  // `src/theme/Footer/index.js` (falls back to appending at the end,
+  // which is equivalent for a `@keyframes` rule — only `@import`/
+  // `@namespace` order actually matters). Confirmed via screenshot before
+  // fixing: the same repro steps below threw exactly that error.
+  await page.keyboard.press('Space');
+  await page.waitForTimeout(500);
+
+  const score = page.locator('.dino-overlay canvas');
+  await expect(score).toBeVisible();
+  expect(errors).toEqual([]);
+
+  await page.mouse.click(20, 20); // close, so this test doesn't leak state
+});
+
 test('clicking the overlay background closes it; clicking the game itself does not', async ({page}) => {
   await page.goto('');
   await page.locator('.footer-dino-trigger__button').click();
