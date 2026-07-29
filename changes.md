@@ -1,5 +1,25 @@
 # Changes
 
+## 2026-07-29 — Add FEATURES.md
+
+Files: `FEATURES.md` (new)
+
+Requested: a features document listing everything the wiki does. Surveyed
+the actual codebase (`src/components/`, `src/theme/`, `src/pages/`,
+`docs/`, `static/admin/`, `tests/e2e/`, the license files) rather than
+working from memory, to keep it accurate — confirmed things like whether
+the accent unified-mode toggle UI and the off-screen `IntersectionObserver`
+pause actually exist before writing about them (the pause does; the toggle
+UI doesn't yet).
+
+Covers: the 23 hero animations and their two shared systems (playback,
+accent color), club/fest pages, homepage/directory, events/blog/archive
++ the leadership rollover system, the three photo carousels + autoplay,
+Decap CMS + the Resources tutorials, the footer dino easter egg, the
+design system/accessibility conventions, the 4-file license split, and
+the Playwright/deployment setup — plus an honest "Known gaps" section
+(unified-mode toggle UI, CMS auth) instead of only listing what's done.
+
 ## 2026-07-29 — Basic SEO: robots.txt, structured data, Google Search Console verification
 
 Files: `static/robots.txt` (new), `static/google07e076faf972a09c.html` (new),
