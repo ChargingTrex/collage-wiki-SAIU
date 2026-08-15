@@ -1,0 +1,32 @@
+---
+title: Pugwash Society
+description: Debating science, policy, and the world's hardest questions.
+hide_title: true
+sidebar_custom_props:
+  icon: PeaceSign
+---
+
+import { PugwashHero } from '@site/src/components/clubs/PugwashHero';
+import { ClubContact } from '@site/src/components/ClubContact';
+import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+import { TeamSection } from '@site/src/components/TeamSection';
+import { CURRENT_TEAM } from '@site/src/data/teams/pugwash-society.mjs';
+
+<PugwashHero />
+
+Named for the Pugwash Conferences on Science and World Affairs, the Pugwash
+Society hosts discussions and debates on science policy, ethics, and
+disarmament for the Sai University community.
+
+## Current Board
+
+<TeamSection clubSlug="pugwash-society" members={CURRENT_TEAM} />
+
+Looking for a past board? See the [Archive](/docs/archive).
+
+## Contact
+
+<ClubContact
+  clubSlug="pugwash-society"
+  {...CLUB_CONTACTS['pugwash-society']}
+/>

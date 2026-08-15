@@ -1,6 +1,6 @@
 # Contributing to the Sai University Wiki
 
-This is a Docusaurus v3 site for Sai University's 18 student clubs, fests, and
+This is a Docusaurus v3 site for Sai University's 21 student clubs, fests, and
 400+ archived events. It's built so **two very different kinds of people** can
 contribute to it:
 
@@ -78,13 +78,16 @@ Before opening a PR, always run `npm run build` **and** `npm run test:e2e`
 locally. A page that only breaks in the production build (not `npm start`)
 is a common way bugs slip through — the e2e suite runs against the
 production build for exactly this reason. See `TEST_REPORT.md` for what's
-covered (navigation, all 18 club pages, all 3 fest pages, the Events/Blog
+covered (navigation, all 21 club pages, all 3 fest pages, the Events/Blog
 tag-filtering split, the full `useIntroMotion` playback contract, theme
-toggling, the footer dino easter egg) and what isn't yet (Decap CMS auth,
-the accent unified-mode toggle UI, off-screen pause — none of those exist
-yet, so there's nothing to test). Tests live in `tests/e2e/`; add one
-alongside whatever you're changing rather than only relying on manual
-verification.
+toggling, the footer dino easter egg) and what isn't yet: Decap CMS auth
+still doesn't exist, so there's nothing to test there. The accent
+unified-mode toggle UI (`AccentModeToggle.jsx`) and off-screen pause
+(`useIntroMotion`'s always-on `IntersectionObserver`) are both now built
+(see `docs-internal/animation-caveats.md` §5 and §9) but don't have
+dedicated e2e coverage yet — add tests for either if you're touching that
+code. Tests live in `tests/e2e/`; add one alongside whatever you're
+changing rather than only relying on manual verification.
 
 ---
 
@@ -137,10 +140,29 @@ src/
                               once it has an Events subpage, and upstream's
                               Category component doesn't read
                               `customProps` the way Link does
+    NavbarItem/ComponentTypes.js  swizzled (ejected) — registers one custom
+                              navbar item type, `custom-accentModeToggle`,
+                              mapping to `AccentModeToggle.jsx` below.
+                              Spreads Docusaurus's own default type map,
+                              adds one key — the standard way to put a
+                              bespoke, stateful React component in the
+                              navbar via `docusaurus.config.js`'s
+                              `navbar.items[].type`
   components/
     useIntroMotion.js         shared animation-lifecycle hook — all heroes use this
     useClubAccent.js          shared per-club accent-color hook
-    clubAccents.js            the accent color for every club, one place
+    clubAccents.js            the accent color for every club, one place —
+                              plus `UNIFIED_ACCENT` (unified-mode color:
+                              monochrome, `dark: '#ffffff'` for the 16
+                              fixed-dark-card heroes, `light: '#000000'`
+                              specifically for Gardening/Literary's
+                              theme-adaptive light-mode background, where
+                              white would be ~1:1 contrast — see
+                              animation-caveats.md §5)
+    AccentModeToggle.jsx       the per-club↔unified navbar toggle — calls
+                              `setAccentMode` from `useClubAccent.js`,
+                              which existed with no caller anywhere in the
+                              app until this component
     useLoadMore.js            generic client-side "load more" pagination hook
     EventCard.jsx             one event's summary card (date/title/description
                               + an optional feature-image thumbnail, rendered
@@ -159,7 +181,17 @@ src/
                               excludes student-voices) and /student-voices
                               (all tags) via its `tagIds` prop
     MiniHeroCard.jsx          scales a real hero down for a directory grid
-                              card (used by /clubs and /explore)
+                              card (used by /clubs and /explore). Card is
+                              416x143px (custom.css) — sized around the 20
+                              of 21 club heroes sharing a fixed 192px/h-48
+                              natural height, not around Literary (the one
+                              hero with no fixed height, which crops as a
+                              result — see animation-caveats.md §16).
+                              `.mini-hero-card__scale-wrap` also zeroes the
+                              hero's own `my-6` margin — it was collapsing
+                              through the wrapper and clipping every
+                              hero's bottom edge; fixed once here, not per
+                              hero.
     ImageCarousel.jsx         3 photo carousels for blog/event posts with
     CoverflowCarousel.jsx     more than one image — Fade, Coverflow, Stack
     StackCarousel.jsx         respectively. See "Adding photos to an event
@@ -181,7 +213,7 @@ src/
     contactIcons.jsx          ContactLink/InstagramIcon/LinkedinIcon shared
                               by ClubContact and TeamSection
     primitives/Book.jsx       shared visual primitive
-    clubs/                    18 club hero components
+    clubs/                    21 club hero components
     fests/                    fest hero components + FestSound
   data/
     teams/<slug>.mjs          one file per club/fest — CURRENT_TEAM array
@@ -193,7 +225,7 @@ src/
                               fest's first archive category
   pages/
     index.js                  homepage
-    clubs.js                  /clubs — 18 club mini-hero cards
+    clubs.js                  /clubs — 21 club mini-hero cards
     fests.js                   /fests — 3 full-size fest heroes
     explore.js                 /explore — every hero + Events/Blog/Archives cards
     events.js                  /events — tag-filtered real-content feed
@@ -453,6 +485,17 @@ keeping them in sync:
 See the club table in the root `CLAUDE.md` for the correct slug and accent
 name for each club.
 
+**Done, but with placeholder data:** Chess Club, Pugwash Society, and Sports
+Society (whose activity is the University Premier League) were added after
+the original 18 — hero components (pulled from the companion
+[`campus-club-ui`](https://github.com/ChargingTrex/campus-club-ui) library),
+`clubAccents.js` entries, `clubDirectory.js` entries, and full
+`docs/clubs/<slug>/` folders all exist. Team and contact info for all three
+is still the same `PLACEHOLDER_NAME`/`<slug>@example.com` shape every other
+non-FOSS club uses — swap in real data via `src/data/teams/<slug>.mjs` and
+`src/data/clubContacts.js` whenever it's available, same as any other club.
+See `docs-internal/animation-caveats.md` §17 for the full history.
+
 ### Leadership rollover (clubs & fests)
 
 A club exec board or fest organisation committee changes every year. Unlike
@@ -513,7 +556,7 @@ unconditionally ESM regardless.
 ## 4. Working with the two shared systems
 
 Every hero component is built on two hooks. **Don't reimplement their
-behavior locally in a component** — extend the hook instead, so all 23 heroes
+behavior locally in a component** — extend the hook instead, so all 26 heroes
 stay consistent.
 
 ```jsx
@@ -527,18 +570,23 @@ const { accentStyle, accentName, isUnified } = useClubAccent('astronomy-club');
   not pointer-enter/leave). Hover-to-replay was tried and dropped: an
   incidental hover (trackpad drift, cursor passing through) stopped/replayed
   heroes the reader never meant to touch, and hover doesn't exist on touch
-  devices anyway. Also respects `prefers-reduced-motion`. **Off-screen pause
-  (`IntersectionObserver`) is not implemented yet** — heroes that loop
-  (`repeat: Infinity` while `isPlaying`) keep animating even when scrolled
-  out of view; this is deferred until after the homepage mini-hero cards
-  land (see `docs-internal/animation-caveats.md` §9 and `changes.md`).
+  devices anyway. Also respects `prefers-reduced-motion`. `hoverProps` now
+  also carries `role="button"`, `tabIndex={0}`, `aria-label="Replay
+  animation"`, and an `onKeyDown` mirroring `onClick` for Enter/Space, so
+  replay is keyboard-reachable, not just mouse/touch. **Off-screen pause is
+  now built**: a second, always-on `IntersectionObserver` (separate from the
+  one-shot `playOnVisible` start trigger) gates `isPlaying` on the hero's
+  root actually intersecting the viewport, so `repeat: Infinity` loopers
+  (Science's orbits, Gaming's chase, Art's color cycle, Oratory's rings,
+  Film's projector advance) and Turingites' `setInterval` stepper all stop
+  when scrolled out of view — see `docs-internal/animation-caveats.md` §9.
 - `useClubAccent` — resolves the club's accent color, or the unified site
   color if the visitor has switched accent mode. Renders `per-club` on first
   paint to avoid a hydration mismatch.
 
 Motion should come from what the club actually *does* (chess pieces moving,
 brush strokes, telescope panning), not a generic spinning icon. If you're
-adding a 24th hero, follow the pattern of an existing one in `src/components/clubs/`
+adding a 27th hero, follow the pattern of an existing one in `src/components/clubs/`
 rather than starting from scratch.
 
 ---

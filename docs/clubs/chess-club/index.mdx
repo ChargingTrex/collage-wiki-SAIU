@@ -1,0 +1,31 @@
+---
+title: Chess Club
+description: Strategy, tactics, and the quiet art of checkmate.
+hide_title: true
+sidebar_custom_props:
+  icon: ChessKnight
+---
+
+import { ChessHero } from '@site/src/components/clubs/ChessHero';
+import { ClubContact } from '@site/src/components/ClubContact';
+import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+import { TeamSection } from '@site/src/components/TeamSection';
+import { CURRENT_TEAM } from '@site/src/data/teams/chess-club.mjs';
+
+<ChessHero />
+
+The Chess Club runs weekly matches, opening/endgame study sessions, and
+tournaments open to every skill level, for the Sai University community.
+
+## Current Board
+
+<TeamSection clubSlug="chess-club" members={CURRENT_TEAM} />
+
+Looking for a past board? See the [Archive](/docs/archive).
+
+## Contact
+
+<ClubContact
+  clubSlug="chess-club"
+  {...CLUB_CONTACTS['chess-club']}
+/>

@@ -2,7 +2,7 @@ const {test, expect} = require('./base');
 const {trackConsoleErrors} = require('./helpers');
 const {CLUB_SLUGS, FEST_SLUGS} = require('./fixtures');
 
-test('/explore renders all 18 club cards, 3 fest heroes, and Events/Blog/Archives icon cards', async ({page}) => {
+test('/explore renders all 21 club cards, 3 fest heroes, and Events/Blog/Archives icon cards', async ({page}) => {
   const errors = trackConsoleErrors(page);
   await page.goto('explore');
   await page.waitForLoadState('networkidle');

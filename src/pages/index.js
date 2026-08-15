@@ -43,7 +43,7 @@ function HomepageHeader() {
           The Sai University wiki for student clubs, events, and student
           life in Chennai — every gathering kept by the people who ran it.
         </p>
-        <p className={styles.statRow}>18 clubs · 400+ events archived · Chennai</p>
+        <p className={styles.statRow}>21 clubs · 400+ events archived · Chennai</p>
         <div className={styles.buttons}>
           <Link className="button button--secondary button--lg" to="/clubs">
             Explore Clubs

@@ -8,13 +8,13 @@ export default function ClubsDirectory() {
   return (
     <Layout
       title="Clubs"
-      description="All 18 student-led clubs at Sai University — pick one to see what they're actually doing.">
+      description="All 21 student-led clubs at Sai University — pick one to see what they're actually doing.">
       <main className="container margin-vert--lg">
         <div className="row">
           <div className="col col--8 col--offset-2 text--center margin-bottom--lg">
             <h1>Clubs</h1>
             <p>
-              18 of them, each one student-led. Pick one to see what they're
+              21 of them, each one student-led. Pick one to see what they're
               actually doing.
             </p>
             <p>

@@ -6,7 +6,7 @@ extend any of this, see [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## Hero animations
 
-- **23 custom animated hero components** — one per club (18), plus Library,
+- **26 custom animated hero components** — one per club (21), plus Library,
   Archives, and 3 fests. Each is built around the club's *actual activity*
   (a telescope for Astronomy, a paintbrush stroke for Art, a script page for
   Theatre, etc.) rather than a generic spinning icon.
@@ -27,7 +27,7 @@ extend any of this, see [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## Club & fest pages
 
-- 18 club pages (`docs/clubs/<slug>/`), each with an `index.mdx` (hero +
+- 21 club pages (`docs/clubs/<slug>/`), each with an `index.mdx` (hero +
   overview), a dedicated `events.mdx` (that club's paginated event feed), and
   a `contact.mdx` page.
 - 3 fest pages (`docs/fests/`) with their own hero components and optional

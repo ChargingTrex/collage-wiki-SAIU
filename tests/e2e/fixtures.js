@@ -24,6 +24,9 @@ const CLUB_SLUGS = [
   'animal-welfare-society',
   'martial-arts-club',
   'foss-club',
+  'chess-club',
+  'pugwash-society',
+  'sports-society',
 ];
 
 const FEST_SLUGS = ['tech-fest', 'general-fest', 'cultural-fest'];

@@ -2166,3 +2166,369 @@ list, and the new navbar "Archive" link now name-collides with the
 `clubs-and-fests.spec.js` target; one more, `hero-playback.spec.js`, is
 timing-flaky under parallel load and passes alone) — none touched here,
 not this task's scope.
+
+## 2026-08-11 — PRODUCT.md/DESIGN.md captured, animation docs added, mini-hero-card clipping bug found and fixed
+
+Files: `PRODUCT.md` (new), `DESIGN.md` (new), `.impeccable/design.json`
+(new), `docs-internal/ANIMATION.md` (new), `docs-internal/ANIMATION-
+IMPROVEMENTS.md` (new), `src/components/MiniHeroCard.jsx`, `src/css/
+custom.css`
+
+**Impeccable `init`/`document`.** Ran `/impeccable init` to capture
+`PRODUCT.md` (primary user is public visitors, not the club leads who
+publish content; positioning around the 23 bespoke hero animations plus
+the free/self-serve content model). Ran `/impeccable document` to
+extract `DESIGN.md` + its `.impeccable/design.json` sidecar from the
+existing `scholar-design-system-hybrid (1).html` spec and `custom.css`
+— tokens, components (buttons/cards/tags/inputs, plus hero animations,
+carousels, mini-hero cards, the footer easter egg as signature
+components), and Named Rules pulled from real code comments (the
+WCAG button-contrast pins, the neutral-ramp inversion trap). Mid-build,
+the shape language was changed from the source spec's sharp
+"letterhead" radius scale (0.2–0.5rem) to a squircle system (0.5–1.25rem,
+`corner-shape: squircle` with a circular-radius fallback) — both files
+updated to match, including a renamed Named Rule (Letterhead Radius Rule
+→ Squircle Rule).
+
+**Two new animation docs in `docs-internal/`.** `ANIMATION.md` is a
+technical reference of what actually exists: the `useIntroMotion` and
+`useCarouselAutoplay` contracts, concrete per-hero techniques
+(`offsetPath` orbit binding, font-mask text reveal, seeded-PRNG ballistic
+confetti, the `Book`/`Shelf` drop-and-settle primitive), the click-vs-
+hover replay migration, and — the one real surprise — confirmation that
+the `motion.css`/`motion.js` fallback layer `CLAUDE.md` specifies as
+"kept, not deprecated" doesn't exist anywhere in the repo and isn't wired
+into `docusaurus.config.js`; Framer has covered every case built so far,
+so the fallback has never actually been exercised. It also distills six
+real bugs already hit and fixed (from `changes.md`'s own CP3/CP4 history)
+into reusable lessons — the `initial={false}` remount bug, the static-
+transform-vs-Framer-`x`/`y` conflict found independently twice, the
+fixed-dark-card contrast bug (and its still-incomplete fix, 4 remaining
+spots in `EntrepreneurshipHero.jsx`), the hydration-mismatch/seeded-PRNG
+requirement, and the `offsetPath`+`rotate` composition bug. `ANIMATION-
+IMPROVEMENTS.md` is a forward-looking, nothing-implemented-yet proposal
+for a `usePageIntro` hook + `PageIntro`/`PageIntroItem` components to
+stagger in page title/description text on first load — confirmed via the
+actual homepage header (`src/pages/index.js`) and a club page's
+description paragraph that both currently render with zero motion,
+unlike the heroes above them.
+
+**Mini-hero-card clipping bug in the `/clubs` directory grid.** Reported:
+several heroes' animations (Astronomy, Gaming, Literary, others) were
+visibly cut off in the directory grid. First attempt — reverting
+`MiniHeroCard.jsx`'s `SCALE` from `0.68` back to `0.58` (matching a
+`// was 0.58` comment in the code) — did not fix it; confirmed via
+Playwright screenshots that Literary was still almost entirely clipped
+and Astronomy/Gaming still partially clipped at the reverted size too.
+
+**Root cause, found via DOM measurement, not guessing:** every hero's own
+`my-6` margin (needed for spacing on its real, full-size page) was
+collapsing straight through `.mini-hero-card__scale-wrap` — a plain
+`<div>` with no border/padding/overflow to block collapse — and pushing
+the scaled content down by 24px *before* any of it was visible, eating a
+chunk of the fixed-height card's clipping budget from the top and cutting
+each hero's own bottom edge off. This affected all 18 heroes identically;
+it just wasn't visible for the ones with empty space at their own bottom
+edge. Fixed by zeroing `margin-top`/`margin-bottom` on the scale-wrap's
+child, scoped to the preview context only — the hero components
+themselves keep `my-6` for their real pages, untouched.
+
+**Checked real GitHub history before assuming anything was a regression**
+— `git log` across `origin/main` and all three branches of the separate
+`collage-wiki-SAIU-archive` repo (`main`, `snapshot-2026-07-28-2018`,
+`context-2026-08-03`) shows exactly one commit ever touched
+`MiniHeroCard.jsx` or its CSS (`2ed6f47`, CP4-CP5), and it shipped with
+`0.68`/`381×131px` already baked in on every single branch. There is no
+earlier `0.58` commit anywhere in real history — that value only ever
+existed as an in-code comment describing pre-commit dev history that got
+squashed before this file was ever committed. Also confirmed CP1
+(`9a8959a`) had no club view at all (stock Docusaurus homepage) — despite
+`CLAUDE.md`/`BUILD-BRIEF` describing an intermediate "hardcoded
+`ClubCards`" phase, no such component ever existed in git history; CP4-CP5
+went straight from the stock scaffold to the real-hero-preview
+`MiniHeroCard` approach. Separately confirmed the margin-collapse bug is
+unrelated to other uncommitted work already sitting in this working tree
+(the off-screen `IntersectionObserver` pause and keyboard-accessibility
+changes in `useIntroMotion.js`, and per-hero accent/contrast fixes) — none
+of that touches margins or this component's CSS.
+
+**Card sizing, iterated live against the real grid.** Literary Club is
+the only one of the 18 club heroes with no fixed height (renders at
+`308px` natural vs. the other 17's uniform `192px`/`h-48`), so no single
+card size fits every hero without a tradeoff. Landed, after checking
+column-count behavior against Infima's container breakpoints (`1248px`
+and `1504px`, confirmed empirically at several viewport widths) so the
+grid stays capped at exactly 3 cards per row even on wide monitors: card
+is `416×143px`, sized around the 17 uniform-height heroes (no dead space
+under them) rather than around Literary, which now crops again — a
+deliberate tradeoff, not chased for a perfect fit on every hero.
+`.explore-icon-card` kept in sync with the same footprint. The
+per-hero-auto-fit-scale alternative (measuring each hero's real height
+and scaling it individually so nothing ever crops, at the cost of
+implementation complexity) was scoped but not built.
+
+Verified throughout via a real headless-Chromium run against the actual
+dev server (Playwright, already a project dependency — no new tooling
+added), not just reasoning about the CSS: full-grid and per-card
+screenshots at multiple viewport widths, plus direct DOM measurement
+(`getBoundingClientRect`, computed styles) to find the margin-collapse
+root cause rather than guessing from the box model on paper.
+
+## 2026-08-11 — Hero reference docs, real audit/critique + WCAG run, keyboard access + discoverability built, unified-mode recolored to monochrome
+
+Files: `docs-internal/HEROS.md` (new), `docs-internal/HEROS-IMPROVEMENT-
+PLAN.md` (new), `docs-internal/HEROS-AUDIT-CRITIQUE.md` (new),
+`.impeccable/critique/*` (new), `docs-internal/animation-caveats.md`,
+`CONTRIBUTING.md`, `src/components/useIntroMotion.js`, `src/css/
+custom.css`, `src/components/clubAccents.js`, `src/components/
+AccentModeToggle.jsx` (new), `src/theme/NavbarItem/ComponentTypes.js`
+(new), `docusaurus.config.js`, `src/components/clubs/
+EntrepreneurshipHero.jsx`, `src/components/clubs/MartialArtsHero.jsx`,
+`src/components/clubs/TuringitesHero.jsx`, `src/components/clubs/
+MusicHero.jsx`, `src/components/fests/FestSound.jsx`,
+`src/components/MiniHeroCard.jsx`
+
+**`HEROS.md`** — a from-scratch reference reading all 23 hero source files
+plus the two shared hooks, documenting each hero's animation sequence, the
+specific decisions behind it, and cross-cutting patterns (the
+transform-ownership bug hit independently in Photography/AnimalWelfare, the
+`pathLength` line-drawing technique, the build-once-vs-loop-forever choice
+made per-concept). **`HEROS-IMPROVEMENT-PLAN.md`** — a prioritized backlog
+(P0–P3) built from that read plus `PRODUCT.md`/`DESIGN.md`, before any
+browser tooling was available this session.
+
+**Real `/impeccable audit` + `/impeccable critique` run, not just a
+source-level estimate.** Two isolated sub-agents dispatched per
+`critique.md`'s hard invariants (design review; detector + evidence).
+Assessment A completed in full and independently found a real duplicate
+accent color (`gardening-club`/`turingites-computer-science-society` both
+`#15803D`) that the earlier source-level plan had missed. Assessment B hit
+a session-limit API error mid-run after confirming the bundled detector's
+11 findings (all in `CulturalFestHero.jsx`/`GeneralFestHero.jsx`'s already-
+documented festive-palette exceptions, zero false positives) — its
+unfinished live-evidence scope was completed in-context instead, against a
+real production build (`npm run build`, not the dev server, which only
+serves a client-rendered SPA shell to non-JS fetches — confirmed by
+`curl`ing it and getting back the generic app shell with zero page-specific
+content). A full WCAG 2.1 contrast audit was computed (relative-luminance
+formula, all 18 accents × their real card backgrounds, both directions)
+rather than estimated — headline result: all 16 fixed-dark-card headings
+pass comfortably (5.8–12.3:1); the regression table (what happens if any of
+them made `EntrepreneurshipHero`'s mistake) shows 11 of 16 would fail AA
+*outright*, which is what made that fix worth prioritizing. Full report in
+`docs-internal/HEROS-AUDIT-CRITIQUE.md`; findings folded into
+`animation-caveats.md`.
+
+**Keyboard access, previously entirely missing across all 23 heroes.**
+`useIntroMotion.js`'s `hoverProps` only ever wired `onClick` — confirmed via
+a real production build that the hero's root `<div>` had no `tabindex`/
+`role` in rendered HTML (a page's `tabindex=0` matches all belonged to
+Docusaurus's own sidebar nav, not the hero). Added `role="button"`,
+`tabIndex={0}`, `aria-label="Replay animation"`, and an `onKeyDown`
+mirroring `onClick` for Enter/Space — one shared-hook change, inherited by
+all 23. Paired with a `[data-hero-replay]` CSS rule adding `cursor: pointer`
++ a `:focus-visible` ring, since nothing previously signaled a hero was
+clickable at all (confirmed 0 `cursor-pointer` matches across all 23 files
+before the fix).
+
+This surfaced two real bugs, both found and fixed in the same pass:
+- `MusicHero`'s "Hear us" button and `FestSound`'s "Play theme" button were
+  bubbling clicks *and* keydowns up into the hero's own root — playing a
+  sample also toggled the hero's replay. Fixed with `e.stopPropagation()`
+  in both the click handler and an `onKeyDown` on the button itself.
+- `MiniHeroCard` nests a full `<Hero />` inside a `<Link>`; once the hero's
+  root became independently focusable, every directory card got two
+  competing tab stops (the Link, then the hero's own replay button) for
+  what a reader perceives as one clickable card. Fixed with `inert=""` on
+  the scaled preview wrapper — confirmed this doesn't affect the
+  `IntersectionObserver` off-screen-pause gate below, since `inert` only
+  removes focus/pointer interaction, not layout or intersection
+  measurement.
+
+**Off-screen `IntersectionObserver` pause built** (the item tracked as
+highest-priority remaining infra work since CP4-CP5): a second, always-on
+observer in `useIntroMotion.js` (separate from the one-shot `playOnVisible`
+start trigger) gates `isPlaying` on the hero's root actually intersecting
+the viewport, so the `repeat: Infinity` loopers (Science, Gaming, Art,
+Oratory, Film) and Turingites' `setInterval` stepper all stop when scrolled
+out of view — confirmed via `MiniHeroCard.jsx` that this matters most on
+`/clubs`/`/explore`, which mount each club's real, full hero component
+(CSS-scaled, not a lightweight preview), not a hypothetical.
+
+**Unified-accent-mode toggle finally has a UI.** `useAccentMode`/
+`setAccentMode` existed in `useClubAccent.js` with no caller anywhere in the
+app. Built `AccentModeToggle.jsx` (a navbar pill) and
+`src/theme/NavbarItem/ComponentTypes.js` (swizzled, registers a
+`custom-accentModeToggle` navbar item type — the standard Docusaurus
+mechanism for a bespoke stateful navbar component), wired into
+`docusaurus.config.js`. **Unified mode's color changed from the site's
+primary blue to monochrome**, through a few rounds live with the requester:
+requested as "white," implemented as pure white for both light/dark
+variants, computed contrast flagged that white would be ~1:1 (unreadable)
+against Gardening/Literary's near-white light-mode card backgrounds — the
+only two heroes whose card genuinely changes with site theme — then
+corrected to `light: '#000000'` / `dark: '#ffffff'` per explicit follow-up
+("make light mode colour black"), briefly reverted back to white/white at
+the requester's request, then reapplied as black/white for good. Final
+state and full reasoning live in `clubAccents.js`'s own comment on
+`UNIFIED_ACCENT`.
+
+**Remaining P1/P2s from the audit fixed:** `EntrepreneurshipHero.jsx`'s
+contrast migration finished (4 remaining `var(--club-accent)` spots →
+`accent.dark` — icon color, `$` text fill, growth-line stroke, final-point
+fill) and given the `role="img"`/`aria-label` it was missing; same missing
+`role`/`aria-label` fixed on `MartialArtsHero.jsx` (the only other hero
+without it); `TuringitesHero.jsx`'s subtitle contrast bumped
+(`text-green-600/80` → `/90`, 4.30:1 → 5.26:1, closing a real if marginal
+AA miss) and a stale doc comment corrected (said "hover," meant "click");
+the duplicate accent hex fixed (Turingites' light value `#15803D` →
+`#16A34A`, since Gardening already owned `#15803D`).
+
+**Docs updated to match.** `animation-caveats.md` — corrected stale
+"hover-replay" wording, marked §9 (off-screen pause) and §15
+(`EntrepreneurshipHero` contrast) resolved with before/after numbers, added
+§16 (the `MiniHeroCard` sizing round-by-round history, cross-referencing
+the entry above) and §17 (three new clubs requested — see below).
+`CONTRIBUTING.md` — added `AccentModeToggle.jsx`/`NavbarItem/
+ComponentTypes.js` to the file-tree reference, documented the unified-mode
+color decision, and noted the three new clubs as in-progress.
+
+**Not yet built: three new club heroes.** Chess Club (an SVG chess game
+actually being played), Pugwash (a peace sign with a mushroom cloud —
+literal to the club's real subject, nuclear disarmament/science-policy
+discussion, same principle as every other hero in this set), and Sports
+Society (one continuous sequence: a leg kicking a football, transforming
+into hitting a cricket stump, transforming into a pickleball, ending on a
+shuttlecock — a single multi-sport beat, not four separate icons). Scoped
+in `animation-caveats.md` §17; full site integration (doc pages, team/
+contact data, directory listing) deliberately not fabricated without real
+club information on file.
+
+## 2026-08-15 — Chess, Pugwash, and Sports Society fully built and integrated
+
+Files: `src/components/clubs/ChessHero.jsx`, `PugwashHero.jsx`,
+`SportsHero.jsx` (new); `docs/clubs/chess-club/`, `docs/clubs/pugwash-
+society/`, `docs/clubs/sports-society/` (new — `index.mdx`, `contact.mdx`,
+`events.mdx`, `_category_.json` each, same shape as every existing club);
+`src/data/teams/chess-club.mjs`, `pugwash-society.mjs`, `sports-
+society.mjs` (new, placeholder board data); `src/components/clubAccents.js`,
+`src/data/clubDirectory.js`, `src/data/clubContacts.js`,
+`src/data/sidebarIcons.js`, `docs/clubs/_category_.json` (18 → 21 clubs).
+
+The three heroes scoped as "not yet built" above are now built and wired
+into the site end-to-end, following the same integration path as every
+other club — no shortcuts taken for the newcomers:
+
+- **Chess Club** — a real three-beat short game, not a static board: a pawn
+  opens, a knight travels a geometrically real L to capture a pawn, then
+  delivers check and the enemy king topples. Builds once and stays
+  checkmated (same reasoning as Martial Arts' broken plank — a landed mate
+  that reset would undercut). Uses lucide's own chess piece glyphs rather
+  than hand-drawn silhouettes.
+- **Pugwash Society** — landed on the peace sign alone, not paired with a
+  mushroom cloud as originally scoped. Earlier drafts tried the mushroom
+  cloud (the club's namesake Pugwash Conferences were founded in 1957 to
+  campaign against nuclear weapons) but it read as a tree even after
+  correction; dropped at the requester's direction since the peace sign
+  alone still carries the subject without needing to draw the threat it
+  answers. New hand-drawn `PeaceSign` sidebar icon (`sidebarIcons.js`) in
+  lucide's own stroke style, since lucide-react has no literal glyph for it.
+- **Sports Society** — one continuous path (not four separate icons):
+  kick → football → a still beat at the stumps → smash into cricket → a
+  still beat → hop into pickleball → a still beat → soften into a
+  shuttlecock. True shape-morphing between unrelated silhouettes isn't
+  practical as one SVG path, so a parent group carries the real, continuous
+  x/y motion (including flat dwell segments) while four independent
+  children fade/pop in and out at their own checkpoints — the dwells are
+  what make the handoffs read as sequential events instead of a smear.
+
+Each club got its own accent (Chess = Slate, Pugwash = Olive, Sports =
+Gold), a placeholder team board and contact info matching the convention
+every contact-less club already uses (`PLACEHOLDER_*` values, ready for
+`scripts/rollover.mjs`), and directory/sidebar entries. Category
+description updated from 18 to 21 clubs.
+
+## 2026-08-15 — Sitewide 18→21 doc sync, e2e fixture fixes, sidebar icons swapped to a real chess piece + a hand-drawn peace sign
+
+Files: `README.md`, `CLAUDE.md`, `PRODUCT.md`, `FEATURES.md`, `DESIGN.md`,
+`CONTRIBUTING.md`, `docs/intro.mdx`, `docs-internal/animation-caveats.md`,
+`docs-internal/HEROS.md`, `src/components/MiniHeroCard.jsx`, `src/css/
+custom.css`, `src/data/sidebarIcons.js`, `docs/clubs/chess-club/*`,
+`docs/clubs/pugwash-society/*`, `tests/e2e/fixtures.js`,
+`tests/e2e/homepage.spec.js`, `tests/e2e/clubs-and-fests.spec.js`,
+`tests/e2e/explore.spec.js`
+
+The previous entry landed the three new clubs functionally; this pass swept
+every doc and test that still said "18 clubs"/"23 heroes" instead of
+21/26, requested as its own follow-up ("update change docs and all other
+relevant docs").
+
+**Icons refined, per explicit request:** Chess Club's sidebar/category icon
+changed from a generic `Crown` to lucide's actual `ChessKnight` piece.
+Pugwash Society's changed from `Handshake` to a real peace sign — lucide has
+no literal peace-sign glyph, so a small `PeaceSign` component was hand-drawn
+in `sidebarIcons.js`, matching lucide's own icon contract (24×24 viewBox,
+`currentColor` stroke, round caps/joins) and reusing the *exact* circle +
+Y-line geometry `PugwashHero.jsx` already draws for its hero, just at icon
+scale — the sidebar icon and the hero are the same shape, not just
+thematically related. Verified both render in a real production build
+before/after.
+
+**e2e suite: one real, caused-by-this-work failure found and fixed, three
+confirmed pre-existing and unrelated.** `tests/e2e/fixtures.js`'s
+`CLUB_SLUGS` (already commented "if a club is added, add it here too") was
+missing all three new slugs — added them, which is what let
+`clubs-and-fests.spec.js`'s and `explore.spec.js`'s already-dynamic
+`toHaveCount(CLUB_SLUGS.length)` assertions pick up 21 without further
+changes; only their test *titles* still said "18," fixed to "21" for
+accuracy. `homepage.spec.js` had a hardcoded regex
+(`/18 clubs.*400\+ events archived/`) that would have failed outright
+against the homepage's now-21 stat row — updated to 21. Running the full
+suite surfaced a fourth, genuine regression: "every club has a working
+/contact page" iterates all `CLUB_SLUGS` sequentially and now exceeds
+Playwright's default 30s per-test timeout at 21 clubs where it didn't at
+18 — fixed with an explicit `test.setTimeout(60_000)` on that one test
+rather than changing what it verifies. Confirmed via a full suite re-run
+(75 passed) that the remaining 4 failures — two "Archive" link strict-mode
+violations (the navbar already has both a `Resources`-category link and a
+`docs/resources/archives` link both labeled "Archive," predating this
+session), one FOSS-contact-page selector matching both the page's own link
+and the footer's identical FOSS credit link, and a navbar-item-count test
+expecting 6 items where "Resources" and "Archive" already existed as
+separate navbar entries before this session — are all pre-existing and
+untouched by anything in this arc; none reference club count.
+
+**Doc sync, mechanical but thorough:** `README.md`/`CLAUDE.md`/`PRODUCT.md`/
+`FEATURES.md`/`DESIGN.md`'s "18 student clubs"/"23 custom hero components"
+lines all updated to 21/26. `CLAUDE.md`'s own club table gained three rows
+(Chess Club, Pugwash Society, Sports Society, in slug-alphabetical position)
+with a note that their team/contact data is still placeholder. `docs/
+intro.mdx`'s live "all 18 student-led clubs" copy, `src/pages/clubs.js`
+and `explore.js`'s header copy, and the homepage stat row (`18 clubs...`
+→ `21 clubs...`) were already fixed in the prior entry's session but
+re-verified here. `CONTRIBUTING.md` had the most scattered references (top
+description, e2e-coverage summary, the `MiniHeroCard.jsx` sizing writeup's
+"17 of 18" ratio, the file-tree's club counts, the shared-hooks section's
+"23 heroes," and a "24th hero" onboarding note) — all corrected, and its
+own "In progress, not yet done" callout for the three clubs rewritten to
+"Done, but with placeholder data" now that they're fully integrated.
+`MiniHeroCard.jsx` and `custom.css` both had a comment deriving the card's
+height from "the 17 of 18 club heroes that share a fixed 192px (h-48)
+height" — verified all three new heroes also use `h-48` before updating the
+ratio to 20 of 21.
+
+**`docs-internal/animation-caveats.md` §17** (previously titled "requested,
+not yet built") rewritten to reflect what actually happened: sourced from
+`campus-club-ui` rather than authored fresh, Pugwash's dropped
+mushroom-cloud history, the accent/contrast numbers, the icon decisions, and
+the full-integration landing — plus a cross-reference fix in §5 (the
+"18 distinct hues near the limit" note, now accurately "21, already past
+the point flagged at 18") and §6 (the hero-count tracker, now "26 heroes").
+
+**`docs-internal/HEROS.md`** — this project's detailed per-hero reference —
+gained full entries for all three new heroes (matching the depth of the
+original 23, not just a pointer note), inserted after Music Club and before
+the fest-heroes section, plus every "18 club(s)"/"23 hero" count elsewhere
+in the file (the accent-swap explanation, the traced-handwriting-effort
+rationale, Oratory's "simplest of the club concepts" line, the doc's own
+opening line) updated to 21/26.

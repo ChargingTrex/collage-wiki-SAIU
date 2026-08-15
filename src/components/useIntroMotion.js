@@ -33,12 +33,30 @@
 // scrolls down to it. With this on, the intro instead waits for the hero to
 // actually scroll into view, and plays once at that point. Requires
 // attaching the returned `containerRef` to the hero's root element.
+//
+// Off-screen pause: `isPlaying` is also gated on the hero's root element
+// actually intersecting the viewport at all, tracked continuously via a
+// second, always-on IntersectionObserver (separate from the one-shot
+// `playOnVisible` start trigger above). This matters most on pages that
+// stack many heroes at once — the club/fest directory grid mounts each
+// club's real, full hero component (scaled down with CSS, not a separate
+// lightweight preview), so without this gate several `repeat: Infinity`
+// loops (Science's orbit, Gaming's chase, etc.) would keep animating
+// indefinitely while scrolled out of view.
+//
+// Keyboard access: `hoverProps` also carries `role="button"`, `tabIndex={0}`,
+// an `aria-label`, and an `onKeyDown` that mirrors `onClick` for Enter/Space —
+// replay was click/tap-only with no keyboard path at all before this.
 
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 
 export function useIntroMotion({ scrollThreshold = 24, playOnVisible = false } = {}) {
   const [isIntroPlaying, setIsIntroPlaying] = useState(false);
   const [isClickPlaying, setIsClickPlaying] = useState(false);
+  // Defaults true so a hero already in the initial viewport (the common
+  // case) isn't punished before the observer below has had a chance to
+  // report in, and so SSR/first paint never has to guess.
+  const [isVisible, setIsVisible] = useState(true);
   // Reduced-motion is read once on mount and gates click too, so it can't
   // sneak animation past someone who asked for none.
   const allowsMotion = useRef(true);
@@ -122,26 +140,67 @@ export function useIntroMotion({ scrollThreshold = 24, playOnVisible = false } =
     return addStopListeners();
   }, [scrollThreshold, playOnVisible]);
 
+  // Continuous off-screen pause. Unlike the `playOnVisible` observer above
+  // (one-shot, only decides when to START the intro), this one runs for the
+  // component's whole lifetime and just tracks whether the root element is
+  // in the viewport at all right now, so `isPlaying` below can be gated on
+  // it. `threshold: 0` means any overlap at all counts as visible — this
+  // should stop looping heroes when nothing of them is showing, not react
+  // to partial-visibility edge cases.
+  useEffect(() => {
+    if (typeof window === 'undefined' || !containerRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { threshold: 0 }
+    );
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   const toggleClickPlaying = useCallback(() => {
     if (!allowsMotion.current) return;
     setIsClickPlaying((was) => !was);
   }, []);
 
+  const onKeyDown = useCallback(
+    (e) => {
+      if (!allowsMotion.current) return;
+      // Enter/Space are the native activation keys for role="button"; Space
+      // also scrolls the page by default, which preventDefault suppresses
+      // here since Space is being consumed as an activation, not a scroll.
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+        e.preventDefault();
+        toggleClickPlaying();
+      }
+    },
+    [toggleClickPlaying]
+  );
+
   // Spread onto the hero's outer element. Kept the name `hoverProps` even
   // though it's click-driven now, so every hero's existing
-  // `<div {...hoverProps}>` keeps working unchanged. `ref` rides along the
-  // same spread when `playOnVisible` is on, so a `playOnVisible` hero needs
-  // no JSX change beyond passing that option to the hook.
+  // `<div {...hoverProps}>` keeps working unchanged. `ref` is now always
+  // included (not just for `playOnVisible`) since the off-screen-pause
+  // observer above needs it on every hero, not only the opt-in ones.
+  // `role`/`tabIndex`/`aria-label`/`onKeyDown` make the same interaction
+  // mouse/touch already had reachable from the keyboard.
   const hoverProps = useMemo(
     () => ({
       onClick: toggleClickPlaying,
-      ...(playOnVisible ? {ref: containerRef} : {}),
+      onKeyDown,
+      role: 'button',
+      tabIndex: 0,
+      'aria-label': 'Replay animation',
+      // Styling hook only (cursor + focus ring, see custom.css) — kept
+      // separate from role="button" so that selector stays specific to
+      // this interaction rather than any button-role element sitewide.
+      'data-hero-replay': '',
+      ref: containerRef,
     }),
-    [toggleClickPlaying, playOnVisible]
+    [toggleClickPlaying, onKeyDown]
   );
 
   return {
-    isPlaying: isIntroPlaying || isClickPlaying,
+    isPlaying: (isIntroPlaying || isClickPlaying) && isVisible,
     // Each hero remounts its SVG on this (via `key={isReplaying ? ... }`) so
     // Framer Motion restarts cleanly from the first keyframe instead of
     // animating from wherever it happened to be.

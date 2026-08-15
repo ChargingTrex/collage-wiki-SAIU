@@ -796,15 +796,21 @@
 
 /* =====================================================================
    Mini-hero cards — homepage/clubs-directory grid (MiniHeroCard.jsx).
-   Card is sized to exactly match its scaled-down hero (560px source width,
-   0.68 scale = ~381x131px) so the grid lays out normal fixed-size cards.
-   (Was 0.58/~325x112px — read as too zoomed-out in the directory grid.)
+   416x143. Width: a ~4% equal-proportion bump from the original 400px, the
+   largest increase that still keeps the grid at exactly 3 cards per row at
+   the widest container breakpoint (never 4, even on wide monitors; a
+   meaningfully bigger card drops to 2 per row instead). Height: sized to
+   the 20 of 21 club heroes that share a fixed 192px (h-48) natural height,
+   not to Literary (the one hero with no fixed height, taller natural
+   content) — so there's no dead space below any of those 20. Literary's
+   card crops its content instead; accepted, not chased for a perfect fit.
+   See MiniHeroCard.jsx for the full reasoning and the exact scale math.
    ===================================================================== */
 .mini-hero-card {
   display: block;
   position: relative;
-  width: 381px;
-  height: 131px;
+  width: 416px;
+  height: 143px;
   overflow: hidden;
   border-radius: var(--ds-radius-lg);
   box-shadow: var(--ds-shadow-sm);
@@ -818,6 +824,17 @@
 .mini-hero-card__scale-wrap {
   transform-origin: top left;
   pointer-events: none; /* the card itself is the click target, not the hero's own replay toggle */
+}
+/* Every hero's own root has `my-6` for spacing on its real, full-size page.
+   That margin collapses straight through this wrapper (a plain div with no
+   border/padding/overflow doesn't block collapse) and pushes the scaled
+   content down by 24px *before* any of it is even visible — eating a third
+   of the fixed-height card's clipping budget and cutting the hero's own
+   bottom edge off. Zero it here, in the preview context only; the hero
+   components themselves keep `my-6` for their real page. */
+.mini-hero-card__scale-wrap > * {
+  margin-top: 0;
+  margin-bottom: 0;
 }
 .mini-hero-grid {
   display: flex;
@@ -835,8 +852,8 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  width: 381px;
-  height: 131px;
+  width: 416px;
+  height: 143px;
   border-radius: var(--ds-radius-lg);
   box-shadow: var(--ds-shadow-sm);
   background: var(--ifm-card-background-color);
@@ -858,4 +875,56 @@
 }
 .explore-icon-card__label {
   font-weight: 600;
+}
+
+/* =====================================================================
+   Hero replay affordance — every hero's root element carries
+   data-hero-replay (set by useIntroMotion's hoverProps) now that it's a
+   real, keyboard-operable button. Nothing signaled it was clickable before
+   this: no cursor change, no focus ring. Scoped to the data attribute
+   rather than [role="button"] so this stays specific to hero replay and
+   doesn't affect unrelated button-role elements sitewide.
+   ===================================================================== */
+[data-hero-replay] {
+  cursor: pointer;
+}
+[data-hero-replay]:focus-visible {
+  outline: 2px solid var(--ifm-color-primary);
+  outline-offset: 2px;
+}
+
+/* =====================================================================
+   Accent mode toggle (navbar) — flips every club's hero between its own
+   accent color and the site's unified primary color. Compact pill to match
+   the GitHub badge's navbar footprint; token-driven, no hardcoded hex.
+   ===================================================================== */
+.accent-mode-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 4px 12px;
+  border: 1px solid var(--ds-border-strong);
+  border-radius: var(--ds-radius-full);
+  background: var(--ds-bg-tertiary);
+  color: var(--ds-text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.accent-mode-toggle:hover {
+  border-color: var(--ifm-color-primary);
+  color: var(--ds-text);
+}
+.accent-mode-toggle__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ifm-color-primary);
+  flex-shrink: 0;
+}
+.accent-mode-toggle[aria-pressed='true'] .accent-mode-toggle__dot {
+  background: var(--ifm-color-primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ifm-color-primary) 30%, transparent);
 }

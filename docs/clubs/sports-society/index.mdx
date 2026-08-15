@@ -1,0 +1,32 @@
+---
+title: Sports Society
+description: Home to the University Premier League — and everything played to win.
+hide_title: true
+sidebar_custom_props:
+  icon: Trophy
+---
+
+import { SportsHero } from '@site/src/components/clubs/SportsHero';
+import { ClubContact } from '@site/src/components/ClubContact';
+import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+import { TeamSection } from '@site/src/components/TeamSection';
+import { CURRENT_TEAM } from '@site/src/data/teams/sports-society.mjs';
+
+<SportsHero />
+
+The Sports Society runs the University Premier League alongside football,
+cricket, pickleball, and badminton fixtures, training sessions, and
+inter-college tournaments for the Sai University community.
+
+## Current Board
+
+<TeamSection clubSlug="sports-society" members={CURRENT_TEAM} />
+
+Looking for a past board? See the [Archive](/docs/archive).
+
+## Contact
+
+<ClubContact
+  clubSlug="sports-society"
+  {...CLUB_CONTACTS['sports-society']}
+/>

@@ -107,11 +107,44 @@ Deliberate choices inside `useIntroMotion` worth revisiting if they feel wrong
 in practice:
 
 - Once stopped by scrolling, it does **not** auto-restart when the reader
-  scrolls back to the top. Only hover brings it back.
+  scrolls back to the top. Only a click/tap brings it back (see below —
+  hover-to-replay was tried and reverted).
 - Anyone landing mid-page (deep link, refresh, browser scroll restoration)
   never sees the intro play — they aren't "arriving."
-- `prefers-reduced-motion` users get the rested state immediately and hover
-  does **not** override it.
+- `prefers-reduced-motion` users get the rested state immediately and a
+  click does **not** override it.
+
+**Update — replay is click/tap, not hover, and this doc's own earlier wording
+was wrong to call it "hover":** hover-to-replay was tried and deliberately
+dropped — an incidental hover (trackpad drift, cursor passing through on the
+way elsewhere) restarted heroes nobody meant to touch, and hover doesn't
+exist on touch devices at all. `hoverProps` is a legacy name kept only so
+every hero's existing `<div {...hoverProps}>` didn't need a rename; it wires
+`onClick`, not hover handlers.
+
+**Update — keyboard access, previously entirely missing, now built:** every
+hero's root element only ever had an `onClick` — no `tabIndex`, `role`, or
+key handler, so a keyboard-only or screen-reader user could never discover
+or trigger replay at all. `hoverProps` now also carries `role="button"`,
+`tabIndex={0}`, an `aria-label="Replay animation"`, and an `onKeyDown` that
+mirrors `onClick` for Enter/Space. A matching CSS rule
+(`[data-hero-replay]` in `custom.css`) adds `cursor: pointer` and a
+`:focus-visible` ring, since nothing previously signaled the hero was
+clickable at all (0 `cursor-pointer` matches across all 23 files, confirmed
+by grep before the fix).
+
+This surfaced two real bugs, both fixed alongside it:
+- `MusicHero`'s and `FestSound`'s inner "play sample"/"play theme" buttons
+  were bubbling their click *and* keydown events up into the hero's own
+  root — clicking/keying the audio button also toggled the hero's replay.
+  Fixed with `e.stopPropagation()` in both.
+- `MiniHeroCard` nests a full `<Hero />` inside a `<Link>`. Once the hero's
+  root became independently focusable, that produced two competing tab
+  stops per directory card (the Link, then the hero's own replay button) for
+  what a reader perceives as one clickable card. Fixed with `inert=""` on
+  the scaled preview wrapper — the Link stays the single interactive
+  element there; replaying the animation isn't a feature that scaled-down,
+  preview-only context needs.
 
 ---
 
@@ -130,15 +163,35 @@ Accents are assigned so alphabetically adjacent clubs don't land on
 near-identical hues — otherwise the directory reads as a gradient smear
 instead of 18 distinguishable entries.
 
+**Resolved since first written:**
+- The settings UI now exists: `AccentModeToggle.jsx`, a navbar pill wired via
+  a swizzled `NavbarItem/ComponentTypes.js`, calling the `setAccentMode`
+  that previously had no caller anywhere in the app.
+- Accent contrast against final backgrounds has now actually been computed
+  (WCAG relative-luminance formula, all 18 accents × their real card
+  backgrounds) — the "close to their surfaces" worry was wrong: Sepia,
+  Crimson, and Terminal all pass comfortably (9–12:1), nowhere near failing.
+  Full numbers in `docs-internal/HEROS-AUDIT-CRITIQUE.md` Part 3. One real
+  duplicate was found instead (not a contrast issue): `gardening-club` and
+  `turingites-computer-science-society` shared the identical light-mode hex
+  `#15803D` — Turingites' light value is now `#16A34A`.
+- Unified mode's color changed from the site's primary blue to plain
+  **monochrome**: `dark: '#ffffff'` (used by 16 of 18 club heroes — the ones
+  with a permanently-dark card, always via `accent.dark` regardless of site
+  theme) and `light: '#000000'` (used only by Gardening/Literary's
+  `var(--club-accent)` in light site theme — their card backgrounds are
+  genuinely theme-adaptive and near-white in light mode, so white text there
+  would be ~1:1 contrast, unreadable; black is the correct pairing).
+  Requested, tried as pure white for both, confirmed unreadable for
+  Gardening/Literary specifically, then corrected to black for the light
+  variant only — full reasoning in `clubAccents.js`'s own comment on
+  `UNIFIED_ACCENT`.
+
 **Still open:**
-- The settings UI itself doesn't exist yet — only the hook and storage layer.
-  Needs a toggle somewhere in the navbar or a settings page.
-- Accent contrast hasn't been checked against final light/dark backgrounds.
-  Several (Sepia, Crimson, Terminal) are close to their surfaces and may need
-  adjusting once the site palette is locked.
-- 18 distinct hues is near the limit of what stays distinguishable. If clubs
-  are ever added, the set likely needs regrouping by category rather than
-  extending.
+- 21 distinct hues (18 → 21 once Chess/Pugwash/Sports Society landed, see
+  §17) is well past the point where "near the limit" was already flagged at
+  18. If any more clubs are ever added, the set likely needs regrouping by
+  category rather than extending further.
 
 ---
 
@@ -149,7 +202,13 @@ Library, Archives, Literary, Astronomy, Gardening, Music, Science, Film Society,
 FOSS, Dance, Oratory, Photography, Theatre, Martial Arts, Gaming, Art, Fashion,
 Entrepreneurship, Animal Welfare.
 
-**Remaining fest heroes (3):** General Fest, Tech Fest, Cultural Fest.
+**Remaining fest heroes (3, since built):** General Fest, Tech Fest, Cultural
+Fest — see §13.
+
+**Built and integrated (3 more club heroes, since added):** Chess Club,
+Pugwash Society, Sports Society — clubs that had no hero, doc page, or
+directory entry at all until requested. See §17 for the full history.
+**Total is now 21 clubs + Library + Archives + 3 fests = 26 heroes.**
 
 Rebuild notes by batch:
 - **Weakest four** (Music/Science/Film/FOSS) — were the same spinning-icon
@@ -195,17 +254,25 @@ requirement, the orbits need a sin/cos fallback. Not built yet — flag if neede
 
 ---
 
-## 9. Off-screen performance — deferred, now more pressing
+## 9. Off-screen performance — resolved
 
-Individually the heroes are cheap, but the directory page stacks many at once,
-and several now **loop indefinitely** and will animate even when scrolled out
-of view: Science (orbits), Gaming (arcade chase), Art (brushstroke color cycle),
-Music/Dance (waveform pulses), Oratory (rings), Film (projector advance).
+**Status:** built. `useIntroMotion` now runs a second, always-on
+`IntersectionObserver` (separate from the one-shot `playOnVisible` start
+trigger) that tracks whether the hero's root element is actually
+intersecting the viewport at all, and gates the returned `isPlaying` on it:
+`isPlaying: (isIntroPlaying || isClickPlaying) && isVisible`. A hero
+scrolled fully out of view stops animating, including the `repeat: Infinity`
+loopers (Science's orbits, Gaming's chase, Art's color cycle, Oratory's
+rings, Film's projector advance) and Turingites' `setInterval` stepper.
 
-That's a meaningful chunk of the 18 running continuously. Planned fix: extend
-`useIntroMotion` with an `IntersectionObserver` so a hero pauses when off-screen.
-Do it once in the hook, not per-component. **This is now the highest-value piece
-of remaining infra work** given how many looping heroes exist.
+This matters most on `/clubs`/`/explore`: confirmed by reading
+`MiniHeroCard.jsx` that the directory grid mounts each club's **real, full**
+hero component (scaled via CSS `transform`, not a lightweight separate
+preview) — so without this gate, several infinite loops could run
+simultaneously and indefinitely off-screen. Since `MiniHeroCard`'s preview
+wrapper is also `inert` now (see §4's keyboard-access update), it still sits
+in the DOM and gets measured by the observer normally — `inert` only removes
+focus/pointer interaction, not layout or intersection.
 
 ---
 
@@ -303,7 +370,7 @@ and an actual royalty-free/original audio file need adding back.
 
 ---
 
-## 15. `EntrepreneurshipHero` — light-mode contrast fix left half-applied
+## 15. `EntrepreneurshipHero` — light-mode contrast fix, now fully resolved
 
 A Web Content Accessibility Guidelines (WCAG) 2.1 audit found that fixed-dark-card heroes (background stays dark
 regardless of site theme) were coloring text/fills with `var(--club-accent)`,
@@ -324,10 +391,151 @@ and 10 other heroes got the full migration. `EntrepreneurshipHero.jsx` got the
 - line 108 — growth-line `<motion.path>` `stroke`
 - line 129 — peak-point `<motion.circle>` `fill`
 
-All four should become `accent.dark` to match the rest of the file.
+**Status: fixed.** All four now use `accent.dark`, matching the rest of the
+file. Also fixed alongside it: the file's SVG had no `role="img"`/
+`aria-label` at all (the only other file with this gap was
+`MartialArtsHero.jsx` — both now fixed; every other SVG-based hero already
+had it). Computed contrast confirms the fix: `accent.dark` on this card's
+`bg-slate-900` measures 11.71:1; the old `var(--club-accent)` bug value
+(`accent.light`, `#047857`) measured exactly the 3.26:1 this doc already
+cited — and running that same regression across the other 15
+fixed-dark-card heroes shows 11 of them would have failed AA *outright*
+(not just marginally) had the same mistake been made there. Full numbers in
+`docs-internal/HEROS-AUDIT-CRITIQUE.md` Part 3.
 
 **Not a bug:** `GardeningHero` and `LiteraryHero` still use
 `var(--club-accent)` throughout and should stay that way — their card
 background is theme-adaptive (`bg-emerald-50/50` ↔ `dark:bg-emerald-950/25`),
 not fixed-dark, so the accent swap is correct there. Confirmed contrast
 4.9–6.9:1 (light) / 12+:1 (dark).
+
+---
+
+## 16. `MiniHeroCard` sizing — several rounds, current state
+
+**Status:** settled, for now. The directory-grid card size went through
+multiple back-and-forth iterations in one session; recording the reasoning
+so a future change doesn't repeat the same trial and error.
+
+**Original (unchanged since the CP4-CP5 commit that introduced
+`MiniHeroCard.jsx`, and still what's on GitHub as of this writing):**
+`SOURCE_WIDTH = 560`, `SCALE = 0.68` → card renders **381×131px**.
+
+**Round 1 — fix clipping + wrong per-row count.** Reported symptom: the
+directory grid was showing 4 cards per row (not the intended 3) with
+animations visibly clipped. Root cause turned out to be two separate,
+compounding issues: (a) a hero's own `my-6` margin was collapsing straight
+through the plain `.mini-hero-card__scale-wrap` div and pushing content down
+24px before any of it was even visible, eating into the fixed-height card's
+clipping budget — fixed by zeroing margins on that wrapper's children,
+preview-context-only; (b) the card was sized to match one hero's scaled
+footprint, not the tallest one. Fix: **400×220px** — width chosen so 3 cards
++ 2 gaps never exceeds Infima's 1320px max container (usable ~1288px after
+padding) at any breakpoint; height chosen to fit **Literary's** real natural
+content height (~308px unscaled — the one club hero with no fixed height;
+the other 17 all share a fixed 192px/`h-48`), scaled by the same factor, so
+nothing clipped for any hero.
+
+**Round 2 — "increase all cards equally."** Requested a proportional
+size bump. Computed the ceiling: only ~4.8% headroom exists before a
+proportional increase drops the grid from 3 cards per row to 2 on the widest
+container — asked which tradeoff was wanted, got "small bump, keep 3/row."
+Result: **416×229px** (416 = the max width that still guarantees 3-per-row;
+229 = 220 scaled by the same 416/400 factor, still targeting Literary's
+full height).
+
+**Round 3 — the real problem was the opposite one.** Screenshot showed the
+actual visual issue wasn't clipping at all — it was **dead space**: sizing
+the card to fit Literary (the one outlier with tall content) left the other
+17 heroes, all fixed at a much shorter 192px natural height, with a large
+empty gap below their content, sitting flush at the top rather than
+centered. Reader confirmed it was fine for Literary's own attribution line
+to clip in exchange for fixing this for the majority. Re-targeted the height
+constraint from Literary to the 17-hero majority: **416×143px** (143 = 192
+scaled by 416/560) — current state. Literary's card now crops (roughly to
+heading + subtitle, matching what the icon-only heroes show), and the other
+17 fill their cards with no dead space.
+
+**If revisited again:** the underlying tension (one hero — Literary — has
+categorically different content height than the other 17) doesn't fully
+resolve at any single fixed card height; 416×143 is a majority-optimized
+compromise, not a universal fit. A per-hero-height masonry grid or a
+Literary-specific compact variant would be the way to actually solve it for
+both cases at once, if it's ever worth the complexity.
+
+---
+
+## 17. Three new clubs — Chess, Pugwash, Sports Society — built and fully integrated
+
+**Status: done.** Chess Club, Pugwash Society, and Sports Society (whose
+signature activity is the University Premier League) were missing heroes
+entirely at first — no doc page, no `clubAccents.js` entry, no
+`clubDirectory.js` entry, nothing. Requested concepts:
+
+- **Chess Club** — an SVG animation of a chess game (moves actually being
+  played, not a static board glyph — matching this set's own rule that
+  motion comes from the real activity, e.g. FOSS's commit graph or Science's
+  orbiting electrons, not an icon).
+- **Pugwash** — a peace sign with a mushroom cloud. (Named for the Pugwash
+  Conferences on Science and World Affairs — nuclear disarmament and
+  science-policy discussion is the club's actual subject matter, so the
+  imagery is literal to the club's real activity, same principle as
+  everything else in this set.)
+- **Sports Society** — a single motion sequence: a leg kicking a football,
+  which transforms into hitting a cricket stump, transforms again into a
+  pickleball, and ends on a shuttlecock — one continuous multi-sport beat
+  rather than four separate static icons, matching the "sequence as a small
+  story" technique already used by `EntrepreneurshipHero` and
+  `TechFestHero`'s scramble-resolve.
+
+**Source, not built from scratch:** rather than authoring these three fresh,
+they were pulled verbatim from
+[`ChargingTrex/campus-club-ui`](https://github.com/ChargingTrex/campus-club-ui)
+— the MIT-licensed companion component library this project's own 23 original
+heroes were extracted into, kept in sync with this repo's own conventions.
+`ChessHero.jsx`/`PugwashHero.jsx`/`SportsHero.jsx` already matched every
+convention established here (keyboard access, `cursor-pointer`, focus ring,
+`role="img"`/`aria-label`, `useIntroMotion`/`useClubAccent`) with zero
+adaptation needed — confirmed compatible (icon names, `--ds-primary-500`
+token) before dropping in, then verified via a real production build.
+
+**Pugwash's concept changed during that repo's own history**, per its own
+file header: earlier drafts paired the peace sign with a mushroom cloud (the
+club's namesake nuclear-disarmament subject) — first as a solid cloud that
+read as a tree, then as a corrected mushroom-cloud pictogram. Both were
+dropped in favor of the peace sign alone, which still carries the club's
+real subject without needing to draw the threat it's answering.
+
+**Accents added** (checked against all 21 for hex collisions — none):
+Chess Club = Slate (`#334155`/`#CBD5E1`), Pugwash Society = Olive
+(`#3F6212`/`#BEF264`), Sports Society = Gold (`#A16207`/`#FDE047`). All
+three pass WCAG AA comfortably against their fixed-dark cards (11.3–13.7:1
+computed).
+
+**Sidebar icons:** Chess Club uses lucide's `ChessKnight`; Sports Society
+uses `Trophy`. Pugwash needed a custom `PeaceSign` component (`sidebarIcons.js`)
+since lucide has no literal peace-sign glyph — hand-drawn in lucide's own
+24×24/`currentColor`-stroke style, using the exact same circle + Y-line
+geometry as the hero's own peace sign, so the sidebar icon and the hero
+visual are the same shape, not just thematically related.
+
+**Full site integration landed** once "dummy data is fine" was confirmed:
+`docs/clubs/chess-club/`, `docs/clubs/pugwash-society/`,
+`docs/clubs/sports-society/` each got the full four-file folder
+(`index.mdx`, `_category_.json`, `events.mdx`, `contact.mdx`), plus
+`src/data/teams/<slug>.mjs` and `src/data/clubContacts.js` entries — all
+using the exact same `PLACEHOLDER_NAME_N`/`PLACEHOLDER_ROLE`/
+`<slug>@example.com`/`#` placeholder shape every other non-FOSS club already
+used. `clubDirectory.js` now lists all 21, and every "18 clubs" reference
+sitewide (homepage stat row, `/clubs`, `/explore`, `docs/intro.mdx`,
+`CLAUDE.md`'s club table, `PRODUCT.md`, `README.md`, `FEATURES.md`,
+`DESIGN.md`) was updated to 21. `tests/e2e/fixtures.js`'s `CLUB_SLUGS` grew
+to 21 too, which surfaced one real, since-fixed side effect: the
+"every club has a working /contact page" e2e test's default 30s timeout was
+already tight at 18 sequential page loads and started failing at 21 —
+bumped to 60s for that one test rather than changing what it checks.
+
+Real team/contact info still isn't fabricated anywhere — swap the
+placeholders in `src/data/teams/<slug>.mjs` /
+`src/data/clubContacts.js` whenever it's actually available, same as any of
+the other 17 non-FOSS clubs already waiting on the same thing.

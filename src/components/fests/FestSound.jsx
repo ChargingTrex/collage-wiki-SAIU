@@ -17,7 +17,12 @@ export function FestSound({ audioSrc, label = 'Play theme', className = '' }) {
   const audioRef = React.useRef(null);
   const [playing, setPlaying] = React.useState(false);
 
-  const toggle = React.useCallback(() => {
+  const toggle = React.useCallback((e) => {
+    // Stop this from bubbling to the hero's own root onClick/onKeyDown —
+    // both now live on the same div (role="button" for keyboard replay),
+    // so without this, playing/stopping the theme also toggled the hero's
+    // animation replay on every click.
+    e.stopPropagation();
     const el = audioRef.current;
     if (!el) return;
     if (el.paused) {
@@ -35,6 +40,7 @@ export function FestSound({ audioSrc, label = 'Play theme', className = '' }) {
     <>
       <button
         onClick={toggle}
+        onKeyDown={(e) => e.stopPropagation()}
         className={`inline-flex items-center gap-2 rounded-full border border-white/25 px-3 py-1.5 text-xs font-medium text-white/80 backdrop-blur-sm transition-colors hover:border-white/50 hover:text-white ${className}`}
         aria-label={playing ? 'Stop the audio' : label}
       >

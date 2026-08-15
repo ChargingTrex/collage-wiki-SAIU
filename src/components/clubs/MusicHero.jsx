@@ -42,7 +42,12 @@ export function MusicHero({ audioSrc }) {
   const audioRef = React.useRef(null);
   const [isAudioPlaying, setIsAudioPlaying] = React.useState(false);
 
-  const toggleAudio = React.useCallback(() => {
+  const toggleAudio = React.useCallback((e) => {
+    // Stop this from bubbling to the hero's own root onClick/onKeyDown —
+    // both now live on the same div (role="button" for keyboard replay),
+    // so without this, playing/stopping the sample also toggled the hero's
+    // animation replay on every click.
+    e.stopPropagation();
     const el = audioRef.current;
     if (!el) return;
     if (el.paused) {
@@ -74,6 +79,7 @@ export function MusicHero({ audioSrc }) {
           <>
             <button
               onClick={toggleAudio}
+              onKeyDown={(e) => e.stopPropagation()}
               className="mt-3 inline-flex items-center gap-2 rounded-full border border-solid border-neutral-700 px-3 py-1.5 text-xs font-medium text-neutral-300 transition-colors hover:border-neutral-500 hover:text-white"
               aria-label={isAudioPlaying ? 'Stop the sample' : 'Play a short sample'}
             >

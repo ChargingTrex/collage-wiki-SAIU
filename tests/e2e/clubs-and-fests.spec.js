@@ -3,7 +3,7 @@ const {trackConsoleErrors} = require('./helpers');
 const {CLUB_SLUGS, FEST_SLUGS} = require('./fixtures');
 
 test.describe('/clubs directory', () => {
-  test('renders all 18 clubs as mini-hero cards, each linking to its doc page', async ({page}) => {
+  test('renders all 21 clubs as mini-hero cards, each linking to its doc page', async ({page}) => {
     const errors = trackConsoleErrors(page);
     await page.goto('clubs');
     await page.waitForLoadState('networkidle');
@@ -36,6 +36,10 @@ test.describe('/clubs directory', () => {
 
 test.describe('Club contact pages', () => {
   test('every club has a working /contact page', async ({page}) => {
+    // Default 30s per-test timeout was tight even at 18 clubs and is now
+    // exceeded at 21 (sequential goto + networkidle per club) — bump it
+    // rather than relaxing what's actually being checked.
+    test.setTimeout(60_000);
     const errors = trackConsoleErrors(page);
     for (const slug of CLUB_SLUGS) {
       await page.goto(`docs/clubs/${slug}/contact`);

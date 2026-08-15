@@ -3,9 +3,9 @@
 **🔗 Live site: [chargingtrex.github.io/collage-wiki-SAIU](https://chargingtrex.github.io/collage-wiki-SAIU/)**
 
 A [Docusaurus v3](https://docusaurus.io/) wiki for **Sai University, Chennai**:
-18 student clubs, 400+ archived events, hosted free on **GitHub Pages**, editable
+21 student clubs, 400+ archived events, hosted free on **GitHub Pages**, editable
 by non-technical club leads via **Decap CMS** at `/admin`. The signature feature
-is **23 custom animated hero components** (18 clubs + Library + Archives + 3
+is **26 custom animated hero components** (21 clubs + Library + Archives + 3
 fests), each built around the club's *actual activity* rather than a spinning
 icon, governed by one shared playback rule and one shared accent-color system.
 

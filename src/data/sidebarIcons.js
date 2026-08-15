@@ -30,7 +30,25 @@ import {
   Images,
   Image,
   UserRound,
+  ChessKnight,
+  Trophy,
 } from 'lucide-react';
+
+// lucide-react has no literal peace-sign glyph — hand-drawn here in the same
+// stroke style as every lucide icon (24x24 viewBox, currentColor stroke,
+// round caps/joins) so it reads as part of the same set, not a mismatched
+// one-off. Geometry matches PugwashHero.jsx's own peace-sign path exactly
+// (a circle + one vertical + two diagonals from center), just at icon scale.
+function PeaceSign(props) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 3v9" />
+      <path d="M12 12 6.6 17.4" />
+      <path d="M12 12l5.4 5.4" />
+    </svg>
+  );
+}
 
 export const SIDEBAR_ICONS = {
   BookOpen,
@@ -57,6 +75,9 @@ export const SIDEBAR_ICONS = {
   Images,
   Image,
   UserRound,
+  ChessKnight,
+  Trophy,
+  PeaceSign,
 };
 
 // Doc routes for club pages are the file's own slug (docs/clubs/art-club.mdx

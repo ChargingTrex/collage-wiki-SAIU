@@ -1,0 +1,7 @@
+{
+  "label": "Chess Club",
+  "description": "Strategy, tactics, and the quiet art of checkmate.",
+  "customProps": {
+    "icon": "ChessKnight"
+  }
+}

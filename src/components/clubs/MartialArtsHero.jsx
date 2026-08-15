@@ -37,7 +37,13 @@ export function MartialArtsHero() {
       </div>
 
       <div className="relative mr-4 flex h-32 w-40 items-center justify-center">
-        <svg viewBox="0 0 160 130" className="h-full w-full" key={isReplaying ? 'hover' : 'intro'}>
+        <svg
+          viewBox="0 0 160 130"
+          className="h-full w-full"
+          key={isReplaying ? 'hover' : 'intro'}
+          role="img"
+          aria-label="A hand striking a wooden board, which breaks into two halves"
+        >
           {/* Two support blocks the plank rests across. */}
           <rect x="14" y="78" width="16" height="34" rx="2" className="fill-red-900" />
           <rect x="130" y="78" width="16" height="34" rx="2" className="fill-red-900" />

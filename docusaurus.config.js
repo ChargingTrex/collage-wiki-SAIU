@@ -122,6 +122,10 @@ const config = {
           {to: '/events', label: 'Events', position: 'left'},
           {to: '/student-voices', label: 'Blog', position: 'left'},
           {
+            type: 'custom-accentModeToggle',
+            position: 'right',
+          },
+          {
             type: 'html',
             position: 'right',
             value: `<a href="https://github.com/ChargingTrex/collage-wiki-SAIU" target="_blank" rel="noopener noreferrer" class="github-badge" aria-label="GitHub repository">

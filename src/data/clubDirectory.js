@@ -7,6 +7,7 @@
 import {AnimalWelfareHero} from '@site/src/components/clubs/AnimalWelfareHero';
 import {ArtHero} from '@site/src/components/clubs/ArtHero';
 import {AstronomyHero} from '@site/src/components/clubs/AstronomyHero';
+import {ChessHero} from '@site/src/components/clubs/ChessHero';
 import {DanceHero} from '@site/src/components/clubs/DanceHero';
 import {EntrepreneurshipHero} from '@site/src/components/clubs/EntrepreneurshipHero';
 import {FashionHero} from '@site/src/components/clubs/FashionHero';
@@ -19,7 +20,9 @@ import {MartialArtsHero} from '@site/src/components/clubs/MartialArtsHero';
 import {MusicHero} from '@site/src/components/clubs/MusicHero';
 import {OratoryHero} from '@site/src/components/clubs/OratoryHero';
 import {PhotographyHero} from '@site/src/components/clubs/PhotographyHero';
+import {PugwashHero} from '@site/src/components/clubs/PugwashHero';
 import {ScienceHero} from '@site/src/components/clubs/ScienceHero';
+import {SportsHero} from '@site/src/components/clubs/SportsHero';
 import {TheatreHero} from '@site/src/components/clubs/TheatreHero';
 import {TuringitesHero} from '@site/src/components/clubs/TuringitesHero';
 
@@ -42,4 +45,7 @@ export const CLUB_DIRECTORY = [
   {slug: 'animal-welfare-society', name: 'Animal Welfare Society', Hero: AnimalWelfareHero},
   {slug: 'martial-arts-club', name: 'Martial Arts Club', Hero: MartialArtsHero},
   {slug: 'foss-club', name: 'FOSS Club', Hero: FossHero},
+  {slug: 'chess-club', name: 'Chess Club', Hero: ChessHero},
+  {slug: 'pugwash-society', name: 'Pugwash Society', Hero: PugwashHero},
+  {slug: 'sports-society', name: 'Sports Society', Hero: SportsHero},
 ];

@@ -11,7 +11,7 @@
 //
 // The simulation is a real generation stepper (standard B3/S23 rules). It obeys
 // the shared playback rule: runs while arriving, freezes on scroll (a paused
-// board is a fine rested state), re-seeds and runs again on hover.
+// board is a fine rested state), re-seeds and runs again on click.
 
 import React from 'react';
 import { useIntroMotion } from '../useIntroMotion';
@@ -103,7 +103,7 @@ export function TuringitesHero() {
         <h1 className="font-mono text-3xl font-bold" style={{ color: accent.dark }}>
           Turingites
         </h1>
-        <p className="mt-1 font-mono text-sm text-green-600/80">
+        <p className="mt-1 font-mono text-sm text-green-600/90">
           Computer Science Society — coding, algorithms, hackathons.
         </p>
       </div>

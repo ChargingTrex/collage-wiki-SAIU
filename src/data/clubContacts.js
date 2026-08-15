@@ -98,6 +98,21 @@ export const CLUB_CONTACTS = {
     instagram: { url: '#', label: 'Instagram' },
     linkedin: { url: '#', label: 'LinkedIn' },
   },
+  'chess-club': {
+    email: 'chess-club@example.com',
+    instagram: { url: '#', label: 'Instagram' },
+    linkedin: { url: '#', label: 'LinkedIn' },
+  },
+  'pugwash-society': {
+    email: 'pugwash-society@example.com',
+    instagram: { url: '#', label: 'Instagram' },
+    linkedin: { url: '#', label: 'LinkedIn' },
+  },
+  'sports-society': {
+    email: 'sports-society@example.com',
+    instagram: { url: '#', label: 'Instagram' },
+    linkedin: { url: '#', label: 'LinkedIn' },
+  },
 
   'foss-club': {
     email: 'fossclub@saiuniversity.edu.in',

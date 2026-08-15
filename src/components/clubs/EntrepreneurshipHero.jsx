@@ -50,7 +50,7 @@ export function EntrepreneurshipHero() {
             Both sit in the same spot; opacity crossfades them. */}
         <motion.div
           className="absolute left-2 top-6"
-          style={{ color: 'var(--club-accent)' }}
+          style={{ color: accent.dark }}
           initial="rested"
           animate={state}
           variants={{
@@ -65,13 +65,19 @@ export function EntrepreneurshipHero() {
           <Lightbulb className="h-14 w-14" />
         </motion.div>
 
-        <svg viewBox="0 0 210 100" className="h-full w-full" key={isReplaying ? 'hover' : 'intro'}>
+        <svg
+          viewBox="0 0 210 100"
+          className="h-full w-full"
+          key={isReplaying ? 'hover' : 'intro'}
+          role="img"
+          aria-label="A lightbulb turning into a dollar sign, then a rising growth line plotted to a final high point"
+        >
           {/* Currency mark, appears as the bulb fades. */}
           <motion.text
             x="24"
             y="44"
             textAnchor="middle"
-            fill="var(--club-accent)"
+            fill={accent.dark}
             style={{ fontSize: 48, fontWeight: 800 }}
             initial="rested"
             animate={state}
@@ -105,7 +111,7 @@ export function EntrepreneurshipHero() {
           <motion.path
             d={PLOT_PATH}
             fill="none"
-            stroke="var(--club-accent)"
+            stroke={accent.dark}
             strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -126,7 +132,7 @@ export function EntrepreneurshipHero() {
             cx={POINTS[POINTS.length - 1][0]}
             cy={POINTS[POINTS.length - 1][1]}
             r="4"
-            fill="var(--club-accent)"
+            fill={accent.dark}
             initial="rested"
             animate={state}
             variants={{

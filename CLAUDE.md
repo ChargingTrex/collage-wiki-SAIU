@@ -4,10 +4,10 @@ Guidance for Claude Code when working in this repository.
 
 ## What this project is
 
-A **Docusaurus v3** wiki for **Sai University, Chennai**: 18 student clubs, 400+
+A **Docusaurus v3** wiki for **Sai University, Chennai**: 21 student clubs, 400+
 archived events, hosted free on **GitHub Pages**, editable by non-technical club
-leads via **Decap CMS** at `/admin`. The signature feature is **23 custom
-animated hero components** (18 clubs + Library + Archives + 3 fests), each built
+leads via **Decap CMS** at `/admin`. The signature feature is **26 custom
+animated hero components** (21 clubs + Library + Archives + 3 fests), each built
 around the club's *actual activity* rather than a spinning icon, all governed by
 one shared playback rule and one shared accent-color system.
 
@@ -56,7 +56,8 @@ guessing its contents.
 - **Tailwind is required** — the hero components use utility classes.
 - **Shadcn is removed from the stack.** Do not install or init it. Any earlier
   spec mention is void.
-- **All 23 heroes exist**, including `TuringitesHero` — none are missing.
+- **All 26 heroes exist**, including `TuringitesHero`, `ChessHero`,
+  `PugwashHero`, and `SportsHero` — none are missing.
 - **Audio never autoplays.** Players are click-to-play and render only when an
   `audioSrc` is passed. Audio files are the user's to supply (licensing).
 
@@ -139,8 +140,8 @@ the color *is* the concept there.
 
 ## Component integration notes
 
-- All 23 heroes are pre-built and self-contained. **Wire one club page as a
-  smoke test before integrating all 18.**
+- All 26 heroes are pre-built and self-contained. **Wire one club page as a
+  smoke test before integrating all 21.**
 - **Rename on integration:** `LibraryHero-v2.jsx` → `LibraryHero.jsx`;
   `LiteraryHero-fontmask.jsx` → `LiteraryHero.jsx` (delete the old versions).
 - Homepage `index.js` uses hardcoded ClubCards + native `.card`/`.button` +
@@ -166,12 +167,13 @@ sai-uni-wiki/
 │   │   ├── useIntroMotion.js  useClubAccent.js  clubAccents.js
 │   │   ├── primitives/Book.jsx
 │   │   ├── LibraryHero.jsx  ArchivesHero.jsx
-│   │   ├── clubs/                # 18 club heroes (incl. TuringitesHero)
+│   │   ├── clubs/                # 21 club heroes (incl. TuringitesHero,
+│   │   │                         # ChessHero, PugwashHero, SportsHero)
 │   │   └── fests/                # FestSound + 3 fest heroes
 │   └── pages/index.js
 ├── docs/
 │   ├── resources/
-│   └── clubs/                    # 18 .mdx pages (hero at top of each)
+│   └── clubs/                    # 21 .mdx pages (hero at top of each)
 └── blog/
     ├── authors.yml
     └── YYYY-MM-DD-<event>/index.md + co-located images
@@ -183,12 +185,13 @@ Accent bridge in `custom.css`:
 [data-theme='dark'] { --club-accent: var(--club-accent-dark); }
 ```
 
-## The 18 clubs — slug / accent
+## The 21 clubs — slug / accent
 
 | Club | Slug (`/docs/clubs/<slug>`) | Accent |
 |---|---|---|
 | Literary Club | `literary-club` | Sepia |
 | Art Club | `art-club` | Fuchsia |
+| Chess Club | `chess-club` | Slate |
 | Dance Club | `dance-club` | Rose |
 | Gardening Club | `gardening-club` | Green |
 | Astronomy Club | `astronomy-club` | Indigo |
@@ -198,7 +201,9 @@ Accent bridge in `custom.css`:
 | Oratory Club | `oratory-club` | Blue |
 | Entrepreneurship Club | `entrepreneurship-club` | Emerald |
 | Fashion Club | `fashion-club` | Pink |
+| Pugwash Society | `pugwash-society` | Olive |
 | Science Society | `science-society` | Teal |
+| Sports Society | `sports-society` | Gold |
 | Music Club | `music-club` | Orange |
 | Film Society | `film-society` | Crimson |
 | Turingites CS Society | `turingites-computer-science-society` | Terminal |
@@ -206,7 +211,10 @@ Accent bridge in `custom.css`:
 | Martial Arts Club | `martial-arts-club` | Red |
 | FOSS Club | `foss-club` | Sky |
 
-Hex values live in `clubAccents.js`.
+Hex values live in `clubAccents.js`. Chess Club, Pugwash Society, and Sports
+Society (pulled from the companion `campus-club-ui` component library) were
+added after the original 18; team/contact data for all three is still
+placeholder — see `docs-internal/animation-caveats.md` §17.
 
 ## Fest audio wiring (once files supplied)
 
@@ -251,7 +259,7 @@ The swizzled `src/theme/Footer/index.js` wraps (not replaces) the default footer
 - [ ] Styling from `scholar-design-system-hybrid (1).md`; accent bridge present
 - [ ] Framer primary; `motion.css`/`motion.js` retained as fallback only
 - [ ] Infra hooks import cleanly; one club page smoke-tested
-- [ ] All 18 heroes render, animate on load, still on scroll, replay on hover
+- [ ] All 21 heroes render, animate on load, still on scroll, replay on click/tap
 - [ ] Accent unified-mode toggle built and persists (done before pause task)
 - [ ] Off-screen `IntersectionObserver` pause added to `useIntroMotion`
 - [ ] Reduced-motion path verified
