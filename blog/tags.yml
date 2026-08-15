@@ -1,12 +1,22 @@
 # Blog tag taxonomy for the Sai University Wiki.
-# Three groups: (1) one tag per club, (2) one tag per fest, (3) event-type
-# tags, plus a standalone tag for posts written by an individual student
-# rather than on behalf of a club. A post can carry a club/fest tag AND an
-# event-type tag AND (if applicable) student-voices.
+# Groups: (1) one tag per club, (2) one tag per committee, (3) one tag per
+# fest plus a generic `fest` tag, (4) event-type tags, (5) content-type tags
+# (`blog` vs `events`) that decide which sitewide page a post surfaces on,
+# plus a standalone tag for posts written by an individual student rather
+# than on behalf of a club. A post can carry a club/fest/committee tag AND an
+# event-type tag AND a content-type tag AND (if applicable) student-voices.
 #
-# Tags double as the club/fest -> event listing mechanism: tagging a post
-# `art-club` makes it show up on /blog/tags/art-club automatically, no
+# Tags double as the club/fest/committee -> event listing mechanism: tagging
+# a post `art-club` makes it show up on /blog/tags/art-club automatically, no
 # separate frontmatter field needed to link an event back to its club.
+#
+# Content-type tags (`blog` vs `events`) are what /events and /student-voices
+# (the "Blog" page) filter on — see src/pages/events.js and
+# src/pages/student-voices.js. `blog` = general club-authored writing, not
+# tied to a dated event. `events` = explicit event coverage; posts that only
+# carry a club/fest/committee/event-type tag without an explicit `blog` tag
+# still default to showing up on /events (no forced retagging of older
+# posts) — `events` just makes the intent explicit going forward.
 
 # ---- Clubs ----
 literary-club:
@@ -99,6 +109,32 @@ foss-club:
   permalink: /foss-club
   description: Events run by the FOSS Club
 
+chess-club:
+  label: Chess Club
+  permalink: /chess-club
+  description: Events run by the Chess Club
+
+pugwash-society:
+  label: Pugwash Society
+  permalink: /pugwash-society
+  description: Events run by the Pugwash Society
+
+sports-society:
+  label: Sports Society
+  permalink: /sports-society
+  description: Events run by the Sports Society
+
+# ---- Committees ----
+cultural-committee:
+  label: Cultural Committee
+  permalink: /cultural-committee
+  description: Events run by the Cultural Committee
+
+student-government:
+  label: Student Government
+  permalink: /student-government
+  description: Events run by the Student Government
+
 # ---- Fests ----
 tech-fest:
   label: Tech Fest
@@ -114,6 +150,11 @@ cultural-fest:
   label: Cultural Fest
   permalink: /cultural-fest
   description: Events that were part of the university's cultural fest
+
+fest:
+  label: Fest
+  permalink: /fest
+  description: General fest-related content not tied to one specific fest
 
 # ---- Event type ----
 workshop:
@@ -150,6 +191,17 @@ hackathon:
   label: Hackathon
   permalink: /hackathon
   description: Extended build/coding events
+
+# ---- Content type ----
+blog:
+  label: Blog
+  permalink: /blog
+  description: General club-authored writing — updates and announcements, not tied to a dated event
+
+events:
+  label: Events
+  permalink: /events
+  description: Explicit marker for event coverage (a club/fest/committee tag alone is still enough to qualify)
 
 # ---- Individual student authorship ----
 student-voices:

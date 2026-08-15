@@ -1,5 +1,18 @@
 # Changes
 
+## 2026-08-15 — Update FOSS Club and Fashion Club teams
+
+Files: `src/data/teams/fashion-club.mjs`, `src/data/teams/foss-club.mjs`, `src/components/clubAccents.js`, `src/data/clubContacts.js`, `src/data/fossMembers.ts` (new), `src/components/MembersGrid/index.tsx` (new), `src/components/MemberCard/index.tsx` (new), `src/css/custom.css`, `docs/clubs/foss-club/index.mdx`
+
+Requested: Update the Fashion Club and FOSS Club team information. For the FOSS Club, use the exact rendering code from the `y-bow.github.io/saiufosswiki` repository.
+
+Covers: 
+- Updated Fashion Club team data, club contacts, and accent colors.
+- Pulled FOSS Club members data into `fossMembers.ts`.
+- Brought over `MembersGrid` and `MemberCard` custom components to render FOSS club team with GitHub and FOSS United profile links.
+- Included the associated custom CSS in `custom.css`.
+- Updated the FOSS Club docs page to use the newly imported `MembersGrid` component instead of the default `TeamSection`.
+
 ## 2026-07-29 — Add FEATURES.md
 
 Files: `FEATURES.md` (new)
@@ -2532,3 +2545,74 @@ the fest-heroes section, plus every "18 club(s)"/"23 hero" count elsewhere
 in the file (the accent-swap explanation, the traced-handwriting-effort
 rationale, Oratory's "simplest of the club concepts" line, the doc's own
 opening line) updated to 21/26.
+
+## 2026-08-15 — Decap CMS backend built, tested locally end-to-end, Student Voices support added
+
+Files: `static/admin/config.yml`, `oauth-proxy/` (new: `server.js`,
+`package.json`, `README.md`), `docusaurus.config.js`, `package.json`
+(`decap-server` dev dependency, `cms:proxy` script), `blog/tags.yml`,
+`docs-internal/decap-cms-auth-todo.md`.
+
+**Backend switched from the `git-gateway` placeholder to the real `github`
+backend** (Option A, confirmed in `decap-cms-auth-todo.md` once GitHub
+Pages hosting was settled). Built the OAuth-proxy service that decision was
+blocked on — `oauth-proxy/server.js`, a small standalone Express app
+implementing Decap's documented popup handshake (`/auth` redirects to
+GitHub, `/callback` exchanges the code and posts the token back to the CMS
+popup via `window.opener.postMessage`). Not deployed anywhere yet —
+`config.yml`'s `base_url` is a `REPLACE-WITH-DEPLOYED-OAUTH-PROXY-URL`
+placeholder until a GitHub OAuth App exists and the proxy runs somewhere
+reachable (the VPS, per `vps-hosting-plan.md`); `oauth-proxy/README.md` has
+the exact deploy steps for whoever does that.
+
+**Tested locally end-to-end for the first time** — not just wired blind.
+Added `decap-server` as a dev dependency (`npm run cms:proxy`) alongside
+`local_backend: true` in `config.yml`, so `/admin` can be exercised fully
+without a GitHub account, OAuth App, or deployed proxy: it talks to a local
+proxy that reads/writes this checkout's real files directly. Drove it with
+a headless Playwright script (logged in, filled the real editor form,
+published, inspected the resulting file on disk), which is how the
+following were actually caught rather than assumed:
+
+- **Config was failing schema validation before login even mattered.**
+  Decap requires a root-level `media_folder`/`public_folder` even though
+  the one collection defines its own per-post ones — `/admin` loaded a
+  blank "Error loading the CMS configuration" screen until this was added.
+  Nobody had hit this before because auth was never wired up far enough to
+  reach it.
+- **The re-enabled footer "Decap CMS" link broke the production build.**
+  Docusaurus's broken-link checker (`onBrokenLinks: 'throw'`) only
+  validates against its own generated routes, not raw files copied from
+  `static/` — true for both `to` and `href`, contrary to an initial
+  assumption that `href` alone would sidestep it. Fixed with Docusaurus's
+  documented `pathname://` escape hatch (facebook/docusaurus#3309) for
+  links that are real but deliberately outside the route graph; confirmed
+  by running the actual build, not just the dev server.
+- **A bare `authors: <name>` string is not a valid inline author.**
+  Docusaurus's blog plugin always treats a bare string under `authors` as a
+  lookup key into `blog/authors.yml`, never a literal name (by design, so a
+  typo'd key doesn't silently become a "name" — confirmed by reading
+  `@docusaurus/plugin-content-blog`'s own `authors.js`). A real `npm run
+  build` failed with "author key not found" on the first attempt. Fixed by
+  making the CMS field an `object` widget (`authors: {name: ...}`), which
+  Docusaurus does accept as an inline, non-authors.yml author.
+
+**Student Voices support added to the CMS**, per a direct request that the
+CMS manage both club-lead event posts and individual student blog posts —
+not two separate Decap collections (tried, but Decap's folder `filter`
+only does exact-match, can't reliably split entries by array-tag
+membership or exclude a tag, so two collections risked either an unfiltered
+duplicate list or silently-wrong filtering); one collection instead, same
+as the site's own model (`/events` and `/student-voices` are both just
+tag-filtered views over one shared `blog/` folder, see
+`src/pages/student-voices.js`). Added an optional "Author" object field
+(blank for club events, filled in for a personal post) and updated the
+collection description to explain the split to whichever audience opens it.
+
+**Also fixed while in here:** the three new clubs (Chess/Pugwash/Sports,
+added earlier the same day) were never added to `blog/tags.yml` or the
+CMS's Tags dropdown — their club leads couldn't have tagged a post to their
+own club at all. Added all three to both places.
+
+Two throwaway test posts (`ZZTEST...`) created during verification were
+deleted afterward; not part of the real archive.

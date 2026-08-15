@@ -10,14 +10,34 @@
 // PLACEHOLDER_* constants — grep "PLACEHOLDER" to find every one of these.
 
 export const CURRENT_TEAM = [
-  { name: 'PLACEHOLDER_NAME_1', role: 'PLACEHOLDER_ROLE (e.g. President)' },
   {
-    name: 'PLACEHOLDER_NAME_2',
-    role: 'PLACEHOLDER_ROLE (e.g. Vice President)',
-    // Both optional fields demonstrated once, here, rather than duplicated
-    // as fake data across every team file:
+    name: 'ADITYA KB',
+    role: 'Core Member',
     photo: '/img/team/placeholder-avatar.svg',
-    contact: { email: 'placeholder@example.com', instagram: null, linkedin: null },
+    contact: { linkedin: 'https://linkedin.com/in/aditya-kb-19052005-in', github: 'https://github.com/1AdityaX' },
   },
-  { name: 'PLACEHOLDER_NAME_3', role: 'PLACEHOLDER_ROLE (e.g. Secretary)' },
+  {
+    name: 'VIDHYAKSHAYA KANNAN',
+    role: 'Core Member',
+    photo: '/img/team/placeholder-avatar.svg',
+    contact: { linkedin: 'https://linkedin.com/in/vidhyakshayakannan', github: 'https://github.com/vidhyakshayakannan' },
+  },
+  {
+    name: 'PRANAV R',
+    role: 'Core Member',
+    photo: '/img/team/placeholder-avatar.svg',
+    contact: { linkedin: 'https://linkedin.com/in/pranavr2003', github: 'https://github.com/pranavr2003' },
+  },
+  {
+    name: 'ARUNBALAJI SATHYANARAYANN',
+    role: 'Core Member',
+    photo: '/img/team/placeholder-avatar.svg',
+    contact: { linkedin: 'https://linkedin.com/in/arunbalaji-sathyanarayann-833a3b326', github: 'https://github.com/ChargingTrex' },
+  },
+  {
+    name: 'B. VAIBHAV',
+    role: 'Core Member',
+    photo: '/img/team/placeholder-avatar.svg',
+    contact: { linkedin: 'https://linkedin.com/in/vaibhavbalaji', github: 'https://github.com/y-bow' },
+  },
 ];

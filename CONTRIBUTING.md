@@ -518,10 +518,13 @@ npm run rollover -- club art-club 2025-26 --dry-run   # preview, no writes
 It validates the team data, refuses to overwrite an existing snapshot,
 bootstraps `docs/archive/<slug>/_category_.json` the first time a slug is
 rolled over, writes the year's snapshot `.mdx`, and resets
-`src/data/teams/<slug>.mjs` to a fresh placeholder. See
-`docs-internal/leadership-rollover.md` for the fuller walkthrough —
-maintainer-only, not a public `docs/resources/` page, since running the
-script needs repo access anyway.
+`src/data/teams/<slug>.mjs` to a fresh placeholder. The full walkthrough is
+now public — see the live [Running a Leadership
+Rollover](/docs/resources/leadership-rollover) guide (still needs a
+terminal and repo access to actually run; "public" here means anyone can
+*read* it, not that it's usable from a phone the way the plain-language
+guides are). `docs-internal/leadership-rollover.md` has the same content
+plus some internal-only history/decision notes.
 
 **Manual fallback**, if the script isn't available or won't run:
 

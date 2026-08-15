@@ -4,15 +4,18 @@ import Link from '@docusaurus/Link';
 import {usePluginData} from '@docusaurus/useGlobalData';
 import {TagFilteredEvents} from '@site/src/components/TagFilteredEvents';
 
-// Real event content only — every club tag, every fest tag, every
-// event-type tag. Deliberately excludes `student-voices` (that's the Blog
-// page's territory, /student-voices) and anything not defined in
-// blog/tags.yml at all (the leftover Docusaurus tutorial posts carry tags
-// like `hola`/`hello`/`facebook`/`docusaurus`, none of which are real
-// content categories).
+// Real event content only — every club tag, every committee tag, every fest
+// tag, every event-type tag, plus the explicit `events` marker. Deliberately
+// excludes `blog` (general club writing, not event coverage) and
+// `student-voices` (both are the Blog page's territory, /student-voices),
+// and anything not defined in blog/tags.yml at all (the leftover Docusaurus
+// tutorial posts carry tags like `hola`/`hello`/`facebook`/`docusaurus`,
+// none of which are real content categories).
+const NON_EVENT_TAGS = new Set(['blog', 'student-voices']);
+
 function useEventTagIds() {
   const {tagsMeta} = usePluginData('club-events-plugin');
-  return Object.keys(tagsMeta).filter((id) => id !== 'student-voices');
+  return Object.keys(tagsMeta).filter((id) => !NON_EVENT_TAGS.has(id));
 }
 
 export default function Events() {

@@ -2,13 +2,20 @@ const {test, expect} = require('./base');
 const {trackConsoleErrors} = require('./helpers');
 
 test.describe('/events — real content only', () => {
-  test('offers exactly the 28 club/fest/event-type tags, never student-voices', async ({page}) => {
+  test('offers exactly the 35 club/committee/fest/event-type tags, never blog or student-voices', async ({page}) => {
     const errors = trackConsoleErrors(page);
     await page.goto('events');
     await page.waitForLoadState('networkidle');
 
-    await expect(page.locator('input[type=checkbox]')).toHaveCount(28);
+    // 21 clubs + 2 committees + 3 named fests + 1 generic fest + 7
+    // event-type + 1 explicit `events` marker = 35. Excludes `blog` and
+    // `student-voices` (both are /student-voices' territory) out of the 37
+    // total tags defined in blog/tags.yml.
+    await expect(page.locator('input[type=checkbox]')).toHaveCount(35);
     await expect(page.getByText('Student Voices', {exact: true})).toHaveCount(0);
+    // "Blog" (the tag label) never renders as a checkbox — page text alone
+    // isn't a safe check since /events' own intro links to "Blog"
+    // (/student-voices). The checkbox count above is what proves exclusion.
 
     expect(errors).toEqual([]);
   });
@@ -53,13 +60,16 @@ test.describe('/events — real content only', () => {
 });
 
 test.describe('/student-voices — the Blog landing page', () => {
-  test('renders the LibraryHero and all 29 tags', async ({page}) => {
+  test('renders the LibraryHero and exactly the blog + student-voices tags', async ({page}) => {
     const errors = trackConsoleErrors(page);
     await page.goto('student-voices');
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByRole('heading', {name: 'Student Voices', level: 2})).toBeVisible();
-    await expect(page.locator('input[type=checkbox]')).toHaveCount(29);
+    // Scoped to `blog` + `student-voices` only — club/fest/committee/
+    // event-type content lives on /events instead. See NON_EVENT_TAGS in
+    // src/pages/events.js for the complementary exclusion.
+    await expect(page.locator('input[type=checkbox]')).toHaveCount(2);
 
     expect(errors).toEqual([]);
   });

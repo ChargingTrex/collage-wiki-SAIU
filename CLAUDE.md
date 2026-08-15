@@ -13,11 +13,44 @@ one shared playback rule and one shared accent-color system.
 
 ### Content model
 - `/docs` = permanent structured pages (constitutions, exec boards, directories)
-  for **clubs** and **fests**
-- `/blog` = chronological event posts, images **co-located** beside each
+  for **clubs**, **committees**, and **fests**
+- `/blog` = chronological posts, images **co-located** beside each
   `index.md` so Docusaurus auto-compresses them and URLs never break
-- A separate `/events` section is planned for the **future** — do not build it
-  now; the 400+ archive currently lives under `/blog`.
+- `/events` and `/student-voices` (navbar label "Blog") are **built** —
+  custom pages (`src/pages/events.js`, `src/pages/student-voices.js`) that
+  read every `/blog` post's frontmatter `tags:` via `club-events-plugin.js`
+  and filter by tag. There is no separate `/events` content directory — the
+  "400+ archive" is aspirational; it has not been imported into `/blog` yet
+  (only a handful of posts exist today, so no backfill/migration step is
+  needed for tag changes — see Tag taxonomy below).
+
+### Tag taxonomy — `blog/tags.yml`
+
+Every `/blog` post is classified purely by frontmatter `tags:` — no separate
+linking field. `club-events-plugin.js` reads `blog/tags.yml` + every post's
+tags at build time and exposes `{posts, postsByTag, tagsMeta}` via
+`usePluginData('club-events-plugin')`; `/events`, `/student-voices`, each
+club/committee's `events.mdx`, and the homepage Recent Activity strip all
+read from that one source.
+
+- **Organizer tags** — one per club (21), one per committee
+  (`cultural-committee`, `student-government`), one per named fest
+  (`tech-fest`/`general-fest`/`cultural-fest`) plus a generic `fest` tag for
+  fest content not tied to one specific fest.
+- **Event-type tags** — `workshop`/`competition`/`talk`/`screening`/
+  `exhibition`/`performance`/`hackathon`.
+- **Content-type tags** — `blog` (general club writing, not a dated event)
+  vs. `events` (explicit event-coverage marker). These decide which sitewide
+  page a post surfaces on: `/events` shows everything except `blog` and
+  `student-voices` (`NON_EVENT_TAGS` in `src/pages/events.js`);
+  `/student-voices` shows only `blog` + `student-voices` (`BLOG_TAG_IDS` in
+  `src/pages/student-voices.js`). A post carrying only a club/fest/committee/
+  event-type tag and no explicit `blog`/`events` tag still defaults to
+  `/events` — no forced retagging of older posts.
+- **`student-voices`** — individual student writing, not on behalf of any
+  club/committee/fest.
+- Keep `static/admin/config.yml`'s tags `select` options in sync manually —
+  Decap can't read `blog/tags.yml` directly.
 
 ## Source-of-truth docs (read before building)
 
@@ -215,6 +248,26 @@ Hex values live in `clubAccents.js`. Chess Club, Pugwash Society, and Sports
 Society (pulled from the companion `campus-club-ui` component library) were
 added after the original 18; team/contact data for all three is still
 placeholder — see `docs-internal/animation-caveats.md` §17.
+
+## Committees — slug
+
+Standing bodies distinct from the 21 clubs; same tag/directory mechanism
+(`docs/committees/<slug>/` mirrors `docs/clubs/<slug>/`: `index.mdx` +
+`contact.mdx` + `events.mdx`), no dedicated accent or hero component —
+`useClubAccent` falls back to the unified/monochrome accent for any slug not
+in `CLUB_ACCENTS`.
+
+| Committee | Slug (`/docs/committees/<slug>`) |
+|---|---|
+| Cultural Committee | `cultural-committee` |
+| Student Government | `student-government` |
+
+Contact/team data is placeholder (`src/data/clubContacts.js`,
+`src/data/teams/<slug>.mjs`), same convention as every newly added club.
+**Known gap:** `scripts/rollover.mjs` only supports `type` `club` (which
+hardcodes reading `docs/clubs/<slug>/_category_.json`) or `fest` — it
+doesn't know about `docs/committees/` yet, so leadership rollover for these
+two has to be done manually until the script gains a `committee` type.
 
 ## Fest audio wiring (once files supplied)
 

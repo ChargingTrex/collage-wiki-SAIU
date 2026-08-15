@@ -1,0 +1,138 @@
+---
+title: Running a Leadership Rollover
+description: The full technical walkthrough for archiving an outgoing club/fest board and bringing in the new one — needs terminal and repo access.
+sidebar_position: 4
+sidebar_custom_props:
+  icon: History
+---
+
+Unlike the other guides in this section, this one needs a computer with
+this repository cloned and `npm install` already run — it isn't something
+you can do from a phone or through GitHub's web editor alone. It's here for
+transparency and so anyone with repo access (a developer, or a club lead
+who's comfortable in a terminal) can do a rollover without asking someone
+else first.
+
+## What a rollover is, and why it exists
+
+A club's exec board or a fest's organisation committee changes every year.
+The live club/fest page always shows the *current* team — if someone just
+edited it in place for the new year, the outgoing team's record would be
+silently lost with no way to look it back up. A **rollover** fixes that in
+one step:
+
+1. It freezes the outgoing team into a **permanent archive page**
+   (`docs/archive/<slug>/<year>-board.mdx`, or `-committee.mdx` for a
+   fest) — never edited again after it's created.
+2. It resets the **live page's team data** back to placeholder names, ready
+   for the incoming team to be filled in.
+
+Every past board/committee this wiki has ever recorded stays reachable
+forever at [`/docs/archive`](/docs/archive), one page per club/fest per
+year.
+
+## Running the script
+
+From a terminal, in the root of the repo:
+
+```bash
+npm run rollover -- club art-club 2025-26
+npm run rollover -- fest tech-fest 2025-26
+```
+
+- **First argument**: `club` or `fest`.
+- **Second argument**: the club or fest's slug — the same one already in
+  its URL (e.g. `art-club`, `tech-fest`). See the club table in the root
+  `CLAUDE.md` if you're not sure of a slug.
+- **Third argument**: the year range that's ending (e.g. `2025-26`).
+
+**Preview first, if you want to see what it would do without changing
+anything:**
+
+```bash
+npm run rollover -- club art-club 2025-26 --dry-run
+```
+
+### What it creates
+
+- The permanent archive page itself
+  (`docs/archive/<slug>/<year>-board.mdx`), with the outgoing team frozen
+  exactly as it was, under a `## <year> Board` (or `Organisation
+  Committee`) heading.
+- The first time a given club/fest is ever rolled over, an archive
+  category page too, so it shows up correctly nested under
+  [`/docs/archive`](/docs/archive) — every rollover after the first just
+  adds another year underneath it.
+
+### What it resets
+
+`src/data/teams/<slug>.mjs` — the live page's team data — goes back to
+placeholder names (`PLACEHOLDER_NAME_1`/`PLACEHOLDER_ROLE`, etc.). You
+still need to fill in the incoming team's real names afterward — see
+below.
+
+### What it refuses to do
+
+Overwrite a snapshot that already exists for that exact slug/year.
+Archive pages are permanent by design; if you need to fix a mistake in one,
+edit that file directly — the script itself won't touch an existing
+snapshot again.
+
+## After running it: fill in the incoming team
+
+Open `src/data/teams/<slug>.mjs` and replace the placeholder entries with
+the real incoming team:
+
+```js
+export const CURRENT_TEAM = [
+  { name: 'Real Name', role: 'President' },
+  { name: 'Real Name', role: 'Vice President' },
+  { name: 'Real Name', role: 'Secretary' },
+];
+```
+
+`name` and `role` are required for every member. `photo` and `contact` are
+optional — add them per member if you have them:
+
+```js
+{
+  name: 'Real Name',
+  role: 'President',
+  photo: '/img/team/art-club/president.jpg',
+  contact: { email: 'art-club@example.com', instagram: null, linkedin: null },
+}
+```
+
+For the photo specifically, see [Adding a Team Member's
+Photo](/docs/resources/team-photos) — a full walkthrough of uploading the
+file and pointing at it, written for whoever's filling this in, technical
+background or not.
+
+Once the file is saved, run `npm run build` to confirm everything still
+resolves cleanly before committing.
+
+## If the script isn't available
+
+The same result, done by hand:
+
+1. Create `docs/archive/<slug>/<year>-board.mdx` (or `-committee.mdx` for a
+   fest) yourself — copy an existing snapshot under `docs/archive/` as a
+   template. **Set an explicit `slug:` field in its frontmatter**
+   (e.g. `slug: 2025-26-board`) — Docusaurus silently strips a leading
+   `NNNN-word` pattern from a doc's default slug otherwise, dropping the
+   year from the URL for a single four-digit year like `2026` (a
+   year-range like `2025-26` is safe from this either way, but setting it
+   explicitly costs nothing and avoids the trap entirely).
+2. If `docs/archive/<slug>/` doesn't exist yet, also add a
+   `_category_.json` — copy the pattern from an existing one, e.g.
+   `docs/archive/cultural-fest/_category_.json`.
+3. Replace `src/data/teams/<slug>.mjs`'s `CURRENT_TEAM` with the incoming
+   team, same shape as above.
+4. `npm run build` to confirm nothing broke.
+
+## Browsing past teams
+
+Every past board and committee lives under [`/docs/archive`](/docs/archive)
+— nested by club/fest, then by year, permanently. Nothing here requires a
+rollover to *view*; the script is only needed to *create* a new snapshot
+when a team changes.

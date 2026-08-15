@@ -1,0 +1,28 @@
+---
+title: Cultural Committee
+description: The student body running cultural events across Sai University.
+sidebar_custom_props:
+  icon: Sparkles
+---
+
+import { ClubContact } from '@site/src/components/ClubContact';
+import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+import { TeamSection } from '@site/src/components/TeamSection';
+import { CURRENT_TEAM } from '@site/src/data/teams/cultural-committee.mjs';
+
+The Cultural Committee organizes cultural events, performances, and
+celebrations across campus — separate from any single club's own event
+calendar.
+
+## Current Committee
+
+<TeamSection clubSlug="cultural-committee" members={CURRENT_TEAM} />
+
+Looking for a past committee? See the [Archive](/docs/archive).
+
+## Contact
+
+<ClubContact
+  clubSlug="cultural-committee"
+  {...CLUB_CONTACTS['cultural-committee']}
+/>

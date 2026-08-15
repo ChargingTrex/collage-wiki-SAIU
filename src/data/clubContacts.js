@@ -64,8 +64,8 @@ export const CLUB_CONTACTS = {
     linkedin: { url: '#', label: 'LinkedIn' },
   },
   'fashion-club': {
-    email: 'fashion-club@example.com',
-    instagram: { url: '#', label: 'Instagram' },
+    email: 'fashionclub@saiuniversity.edu.in',
+    instagram: { url: 'https://www.instagram.com/saiufashionclub/', label: 'Instagram' },
     linkedin: { url: '#', label: 'LinkedIn' },
   },
   'science-society': {
@@ -118,5 +118,16 @@ export const CLUB_CONTACTS = {
     email: 'fossclub@saiuniversity.edu.in',
     instagram: { url: 'https://www.instagram.com/foss.saiu', label: '@foss.saiu' },
     linkedin: { url: 'https://www.linkedin.com/company/saiu-foss-club/', label: 'SaiU FOSS Club on LinkedIn' },
+  },
+
+  'cultural-committee': {
+    email: 'cultural-committee@example.com',
+    instagram: { url: '#', label: 'Instagram' },
+    linkedin: { url: '#', label: 'LinkedIn' },
+  },
+  'student-government': {
+    email: 'student-government@example.com',
+    instagram: { url: '#', label: 'Instagram' },
+    linkedin: { url: '#', label: 'LinkedIn' },
   },
 };

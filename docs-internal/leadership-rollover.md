@@ -1,10 +1,21 @@
 # Running a Leadership Rollover
 
-Maintainer-only doc — not part of the public site. Running the script
-requires terminal/repo access, so this deliberately isn't a public
-`docs/resources/` page reachable by every visitor. See
-`CONTRIBUTING.md`'s "Leadership rollover" section for the condensed
-technical version; this is the fuller walkthrough.
+**Update:** this walkthrough is now also public, at
+[`docs/resources/leadership-rollover.mdx`](../docs/resources/leadership-rollover.mdx)
+(live at `/docs/resources/leadership-rollover`) — requested explicitly,
+overriding the original "deliberately not public" call below. Running the
+script still needs terminal/repo access either way, so publishing the page
+doesn't make it usable by someone without that access; it just means
+anyone can *read* how it works without cloning the repo first. This file
+stays as the internal copy plus the decision history; the two are
+kept in sync by hand, not generated from one source — if you edit one,
+check whether the other needs the same change.
+
+**Original framing, kept for context:** maintainer-only doc — not part of
+the public site. Running the script requires terminal/repo access, so this
+deliberately isn't a public `docs/resources/` page reachable by every
+visitor. See `CONTRIBUTING.md`'s "Leadership rollover" section for the
+condensed technical version; this is the fuller walkthrough.
 
 A club exec board or fest organisation committee changes every year. The
 live club/fest page always shows the *current* team — if someone just

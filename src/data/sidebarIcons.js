@@ -32,6 +32,9 @@ import {
   UserRound,
   ChessKnight,
   Trophy,
+  Sparkles,
+  Landmark,
+  History,
 } from 'lucide-react';
 
 // lucide-react has no literal peace-sign glyph — hand-drawn here in the same
@@ -78,6 +81,9 @@ export const SIDEBAR_ICONS = {
   ChessKnight,
   Trophy,
   PeaceSign,
+  Sparkles,
+  Landmark,
+  History,
 };
 
 // Doc routes for club pages are the file's own slug (docs/clubs/art-club.mdx

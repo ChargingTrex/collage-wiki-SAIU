@@ -1,0 +1,28 @@
+---
+title: Student Government
+description: The elected student body representing Sai University students.
+sidebar_custom_props:
+  icon: Landmark
+---
+
+import { ClubContact } from '@site/src/components/ClubContact';
+import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+import { TeamSection } from '@site/src/components/TeamSection';
+import { CURRENT_TEAM } from '@site/src/data/teams/student-government.mjs';
+
+The Student Government represents the student body, runs university-wide
+initiatives, and organizes events on behalf of students at large — separate
+from any single club's own event calendar.
+
+## Current Government
+
+<TeamSection clubSlug="student-government" members={CURRENT_TEAM} />
+
+Looking for a past government? See the [Archive](/docs/archive).
+
+## Contact
+
+<ClubContact
+  clubSlug="student-government"
+  {...CLUB_CONTACTS['student-government']}
+/>

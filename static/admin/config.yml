@@ -1,12 +1,39 @@
-# Decap CMS config — structural scaffold only, auth NOT wired yet.
+# Decap CMS config. Backend is `github` (Option A in
+# `docs-internal/decap-cms-auth-todo.md`) — confirmed once GitHub Pages
+# hosting was settled, now buildable for real since the OAuth-proxy it
+# needs can run on the VPS (see `vps-hosting-plan.md`).
 #
-# See `docs-internal/decap-cms-auth-todo.md` for why (GitHub+OAuth-proxy vs
-# git-gateway+Netlify Identity is unresolved until hosting is finalized) and
-# what has to happen before this actually works. Until then, `/admin` loads
-# the CMS UI but cannot authenticate or save anything.
+# `base_url`/`auth_endpoint` point at that proxy. **Not deployed yet** — the
+# GitHub OAuth App + proxy service still need to exist somewhere reachable
+# before a real, production `/admin` login will work. Update `base_url` to
+# the real deployed URL once that's live; until then, production `/admin`
+# will load the CMS UI but authentication will fail at the "Login with
+# GitHub" step.
+#
+# Local development doesn't need any of that: `local_backend: true` below
+# makes Decap talk to a local proxy (`npm run cms:proxy`, i.e.
+# `decap-server`) instead, which reads/writes this checkout's real files
+# directly — no GitHub account, no OAuth App, no deployed proxy required.
+# See `docs-internal/decap-cms-auth-todo.md` for the full local-testing
+# steps.
 backend:
-  name: git-gateway
+  name: github
+  repo: ChargingTrex/collage-wiki-SAIU
   branch: main
+  base_url: https://REPLACE-WITH-DEPLOYED-OAUTH-PROXY-URL
+  auth_endpoint: auth
+
+local_backend: true
+
+# Required by Decap's config schema even though the one collection below
+# defines its own per-post `media_folder`/`public_folder` (co-located with
+# each event, not this shared folder) — this is only the fallback default
+# for any future collection that doesn't override it. Actually testing
+# `/admin` past the login screen (not just editing YAML blind) is what
+# surfaced this was missing — Decap's schema validation failed the whole
+# config over it before any collection-specific settings even mattered.
+media_folder: static/img
+public_folder: /img
 
 # Only the "Events" collection is wired up. Club and fest pages
 # (docs/clubs/<slug>/index.mdx, docs/fests/<slug>.mdx) are deliberately left
@@ -23,9 +50,15 @@ collections:
     label: Events
     label_singular: Event
     description: >-
-      Club and fest event write-ups. Tag with the club/fest it belongs to
-      (see blog/tags.yml for the full list) so it shows up on that club's
-      own Events page automatically — no other linking needed.
+      One shared collection for two audiences, same as the site's own
+      /events (club/fest write-ups) vs /student-voices (individual student
+      posts) split — both live in this same folder and are told apart
+      purely by tag, not by anything in this CMS. Club leads: tag with the
+      club/fest it belongs to (see blog/tags.yml for the full list) so it
+      shows up on that club's own Events page automatically. Students
+      posting for themselves, not on behalf of a club: use the
+      "student-voices" tag instead of a club tag, and fill in Author Name
+      below.
     folder: blog
     create: true
     slug: '{{slug}}'
@@ -47,10 +80,12 @@ collections:
         multiple: true
         min: 1
         hint: >-
-          At least one club/fest tag, plus an event-type tag if it fits.
-          Use "student-voices" instead of a club tag for an individual
-          student's own post. Keep this list in sync with blog/tags.yml —
-          Decap can't read that file directly.
+          At least one club/fest/committee tag, plus an event-type tag if it
+          fits. Use "student-voices" instead of a club tag for an individual
+          student's own post. Add "blog" for general club writing that isn't
+          event coverage (shows on the Blog page instead of Events), or
+          "events" to mark event coverage explicitly. Keep this list in sync
+          with blog/tags.yml — Decap can't read that file directly.
         options:
           - literary-club
           - art-club
@@ -70,9 +105,15 @@ collections:
           - animal-welfare-society
           - martial-arts-club
           - foss-club
+          - chess-club
+          - pugwash-society
+          - sports-society
+          - cultural-committee
+          - student-government
           - tech-fest
           - general-fest
           - cultural-fest
+          - fest
           - workshop
           - competition
           - talk
@@ -80,7 +121,22 @@ collections:
           - exhibition
           - performance
           - hackathon
+          - blog
+          - events
           - student-voices
+      - label: Author
+        name: authors
+        widget: object
+        required: false
+        hint: >-
+          Only for a "student-voices" post — leave blank for a club/fest
+          event (it's posted on behalf of the club, not an individual).
+          Note: Docusaurus reads a bare string here as a lookup key into
+          blog/authors.yml, not a literal name — this has to stay a
+          one-field object (Name) for a fresh name to actually show up as
+          the byline. Verified against a real build, not assumed.
+        fields:
+          - {label: Name, name: name, widget: string}
       - {label: Description, name: description, widget: string, required: false, hint: 'Optional — shown as the post preview/excerpt.'}
       - label: Feature Image
         name: image

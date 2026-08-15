@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-04T00:00:00Z",
+  "title": "Design System: Sai University Club & Event Wiki",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Varsity Blue",
+        "canonical": "#3b6af5",
+        "tonalRamp": ["#111a3f", "#1d2d69", "#1d3087", "#1d38ab", "#2549d4", "#3b6af5", "#5c88ff", "#8fb2ff", "#bcd1ff", "#d9e6ff", "#eef4ff"]
+      },
+      "secondary": {
+        "role": "secondary",
+        "displayName": "Homecoming Orange",
+        "canonical": "#f77f0e",
+        "tonalRamp": ["#401402", "#782d0e", "#93360d", "#b54607", "#db6204", "#f77f0e", "#ff9d38", "#ffc070", "#ffdca8", "#ffefd4", "#fff8ed"]
+      },
+      "accent": {
+        "role": "accent",
+        "displayName": "Emerald Ivy",
+        "canonical": "#218a5e",
+        "tonalRamp": ["#082018", "#0f392b", "#124533", "#14573e", "#186e4c", "#218a5e", "#3aa877", "#66c494", "#9cdcb8", "#cdeeda", "#eaf7ef"]
+      },
+      "neutral-bg": {
+        "role": "neutral",
+        "displayName": "Neutral 0 (Surface)",
+        "canonical": "#ffffff",
+        "tonalRamp": ["#15181f", "#232836", "#353b4d", "#4d546b", "#646d87", "#848da8", "#a8b0c5", "#c9cedc", "#e3e6ef", "#f0f2f7", "#f8f9fc", "#ffffff"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero and cover-page titles only." },
+      "heading": { "displayName": "Heading", "purpose": "In-content h1-h6." },
+      "body": { "displayName": "Body", "purpose": "Running text, long-form event write-ups." },
+      "mono": { "displayName": "Mono", "purpose": "Tags, dates, metadata, code." }
+    },
+    "shadows": [
+      { "name": "sm", "value": "0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)", "purpose": "Resting state for cards and buttons." },
+      { "name": "md", "value": "0 4px 16px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04)", "purpose": "Hover-lift for interactive cards (mini-hero, explore)." },
+      { "name": "lg", "value": "0 8px 32px rgba(26,32,80,0.12), 0 4px 8px rgba(26,32,80,0.05)", "purpose": "Rare, most-prominent surfaces only." }
+    ],
+    "motion": [
+      { "name": "transition-fast", "value": "150ms ease", "purpose": "Hover/focus micro-transitions (buttons, links, tags)." },
+      { "name": "transition-base", "value": "250ms ease", "purpose": "Theme toggle, larger state changes." }
+    ],
+    "breakpoints": [
+      { "name": "mobile", "value": "768px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main call-to-action fill button.",
+      "html": "<button class=\"ds-btn-primary\">Read</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.4rem; border-radius: 0.85rem; corner-shape: squircle; font-family: Inter, sans-serif; font-size: 0.875rem; font-weight: 500; border: 1px solid #3b6af5; background: #3b6af5; color: #fff; cursor: pointer; transition: background 0.15s ease, border-color 0.15s ease; } .ds-btn-primary:hover { background: #2549d4; border-color: #2549d4; } .ds-btn-primary:focus-visible { outline: 2px solid #3b6af5; outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Secondary action fill button, pinned to a WCAG-safe shade.",
+      "html": "<button class=\"ds-btn-secondary\">View</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.4rem; border-radius: 0.85rem; corner-shape: squircle; font-family: Inter, sans-serif; font-size: 0.875rem; font-weight: 500; border: 1px solid #b54607; background: #b54607; color: #fff; cursor: pointer; transition: background 0.15s ease; } .ds-btn-secondary:hover { background: #93360d; border-color: #93360d; } .ds-btn-secondary:focus-visible { outline: 2px solid #b54607; outline-offset: 2px; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Low-emphasis bordered button.",
+      "html": "<button class=\"ds-btn-outline\">Edit</button>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.4rem; border-radius: 0.85rem; corner-shape: squircle; font-family: Inter, sans-serif; font-size: 0.875rem; font-weight: 500; border: 1px solid #c9cedc; background: transparent; color: #232836; cursor: pointer; transition: background 0.15s ease, border-color 0.15s ease; } .ds-btn-outline:hover { background: #f0f2f7; border-color: #a8b0c5; } .ds-btn-outline:focus-visible { outline: 2px solid #3b6af5; outline-offset: 2px; }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Standard content card with title, sub-label, and body.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card__title\">Wiki Page</div><div class=\"ds-card__sub\">Module 3 · Trees &amp; Graphs</div><div class=\"ds-card__body\">Card surfaces, borders, and shadows all pull from the same token set.</div></div>",
+      "css": ".ds-card { background: #ffffff; border: 1px solid #e3e6ef; border-radius: 1.25rem; corner-shape: squircle; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04); transition: transform 0.15s ease, box-shadow 0.15s ease; } .ds-card:hover { transform: translateY(-3px); box-shadow: 0 4px 16px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04); } .ds-card__title { font-family: Spectral, Georgia, serif; font-size: 1.125rem; font-weight: 600; margin-bottom: 0.25rem; color: #232836; } .ds-card__sub { font-family: JetBrains Mono, monospace; font-size: 0.75rem; color: #848da8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; } .ds-card__body { font-family: Inter, sans-serif; font-size: 0.875rem; color: #4d546b; line-height: 1.75; }"
+    },
+    {
+      "name": "Tag - Primary",
+      "kind": "chip",
+      "refersTo": "tag-primary",
+      "description": "Filter/label chip in the primary hue.",
+      "html": "<span class=\"ds-tag-primary\">astronomy-club</span>",
+      "css": ".ds-tag-primary { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 9999px; font-family: JetBrains Mono, monospace; font-size: 0.75rem; font-weight: 500; background: #d9e6ff; color: #1d38ab; border: 1px solid #bcd1ff; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Labeled text field with focus glow.",
+      "html": "<div class=\"ds-input-group\"><label for=\"ds-demo-input\">Email</label><input id=\"ds-demo-input\" type=\"email\" placeholder=\"you@college.edu\" /></div>",
+      "css": ".ds-input-group { display: flex; flex-direction: column; gap: 0.25rem; } .ds-input-group label { font-family: Inter, sans-serif; font-size: 0.875rem; font-weight: 500; color: #4d546b; } .ds-input-group input { padding: 0.6rem 0.9rem; border-radius: 0.85rem; corner-shape: squircle; border: 1px solid #e3e6ef; background: #ffffff; color: #232836; font-family: Inter, sans-serif; font-size: 0.875rem; outline: none; min-width: 220px; transition: border-color 0.15s ease, box-shadow 0.15s ease; } .ds-input-group input:focus-visible { border-color: #3b6af5; box-shadow: 0 0 0 3px rgba(59,106,245,0.15); }"
+    },
+    {
+      "name": "Mini-Hero Card",
+      "kind": "custom",
+      "refersTo": "mini-hero-card",
+      "description": "Fixed-footprint (381x131) scaled hero used in directory grids.",
+      "html": "<a class=\"ds-mini-hero-card\" href=\"#\"><div class=\"ds-mini-hero-card__label\">Astronomy Club</div></a>",
+      "css": ".ds-mini-hero-card { display: flex; align-items: flex-end; position: relative; width: 381px; height: 131px; overflow: hidden; border-radius: 1.25rem; corner-shape: squircle; box-shadow: 0 1px 3px rgba(0,0,0,0.06); background: linear-gradient(135deg, #4338CA, #1d2d69); transition: transform 0.15s ease, box-shadow 0.15s ease; text-decoration: none; } .ds-mini-hero-card:hover { transform: translateY(-3px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); } .ds-mini-hero-card__label { padding: 0.75rem; color: #fff; font-family: Spectral, Georgia, serif; font-weight: 600; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Scholar's Letterhead",
+    "overview": "The chrome is formal and collegiate — brand blue, warm orange, and an \"Emerald Ivy\" green sitting on a softened, squircle-cornered radius scale (0.5–1.25rem, superellipse rounding rather than a plain circular border-radius), set in a four-role type system (Playfair Display / Spectral / Inter / JetBrains Mono) that reads like a university seal more than a SaaS dashboard. But the letterhead is a frame, not the point: the site's actual personality lives in its 23 hand-built hero animations — a telescope panning for Astronomy, a brush stroke for Art, a script page for Theatre — each rooted in what that specific club does, plus the handwritten Caveat/Dancing Script/Great Vibes flourishes on the Literary Club and blog. The formal shell exists so 23 wildly different, warm, playful expressions don't read as visual chaos next to each other; consistency at the structural level buys freedom at the expressive level. One deliberate crack in the formality: Turingites CS Society and FOSS Club swap the whole type system to \"Tech Forward\" (Space Grotesk / IBM Plex Sans / IBM Plex Mono) via a scoped .tech-club class — colors stay identical, only the voice shifts, because a terminal-flavored club reading in Playfair Display would undercut its own premise.",
+    "keyCharacteristics": [
+      "Formal, institutional chrome (color, four-role type system) softened by squircle-rounded surfaces, as a quiet container.",
+      "Expressive personality concentrated in per-club hero animations and accent colors, not in the chrome itself.",
+      "One scoped typography exception (Tech Forward) for the two clubs whose subject matter calls for it.",
+      "Ambient depth (soft hover shadows), never a strict elevation hierarchy.",
+      "Every color, radius, and spacing value is a --ds-* custom property — no hardcoded hex in components."
+    ],
+    "rules": [
+      { "name": "The Token-Only Rule", "body": "No hardcoded hex color in a component. If a needed color isn't in the --ds-* token set, it gets added to the token file — never inlined.", "section": "colors" },
+      { "name": "The Deliberate Exception Rule", "body": "Two things break the token system on purpose: the GitHub navbar badge (hardcoded to GitHub's own production palette) and per-club hero accents (their own layered system).", "section": "colors" },
+      { "name": "The Four Roles Rule", "body": "Display, heading, body, and mono each have exactly one job; none substitutes for another.", "section": "typography" },
+      { "name": "The Tech Forward Exception", "body": "Turingites CS Society and FOSS Club pages wrap content in .tech-club, swapping the type system to Space Grotesk / IBM Plex Sans / IBM Plex Mono. Colors and every other token stay identical.", "section": "typography" },
+      { "name": "The Hover-Lift Rule", "body": "Interactive cards go from shadow-sm at rest to shadow-md plus a -3px translateY on hover — the only place elevation actively communicates state.", "section": "elevation" },
+      { "name": "The Squircle Rule", "body": "Every primary surface (buttons, cards, inputs, mini-hero cards) rounds with a superellipse curve, not a sharp rectangle and not a plain circular radius — soft and organic without going all the way to a pill. Only badges, tags, buttons-as-chips, and the theme toggle go fully rounded to a pill.", "section": "shapes" }
+    ],
+    "dos": [
+      "Do route every color, radius, and spacing value through a --ds-* custom property.",
+      "Do let each hero's motion come from what that club/fest actually does, never a generic spinning icon.",
+      "Do respect prefers-reduced-motion everywhere motion exists — skip the animation outright, don't just slow it down.",
+      "Do keep audio strictly click-to-play; no autoplay anywhere on the site.",
+      "Do use the pinned WCAG-safe button shades rather than a token scale's raw -500 default.",
+      "Do co-locate blog post images next to their post and reference them with relative paths."
+    ],
+    "donts": [
+      "Don't hardcode a hex color inside a component.",
+      "Don't wire hero replay to hover — click/tap only.",
+      "Don't use --ds-neutral-* for anything that must stay visually dark/light regardless of theme — that ramp inverts direction between light and dark mode.",
+      "Don't let a club's per-club accent leak into unified mode for the handful of heroes where the color is the concept.",
+      "Don't treat the GitHub navbar badge as a token-system candidate."
+    ]
+  }
+}

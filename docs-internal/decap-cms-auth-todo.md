@@ -1,11 +1,19 @@
 # Decap CMS auth backend — decision needed once hosting is finalized
 
-**Status: hosting is now decided (CP8, `github-pages-hosting-plan.md`) —
-the repo is public and live on GitHub Pages
-(`https://chargingtrex.github.io/collage-wiki-SAIU/`) via GitHub Actions.
-That resolves the "which hosting?" fork below in favor of Option A. The
-OAuth-proxy service itself is still not built — that's the remaining work,
-tracked as step 2 below.**
+**Status: implemented, not yet deployed.** Hosting is decided (CP8,
+`github-pages-hosting-plan.md`) — the repo is public and live on GitHub
+Pages via GitHub Actions, resolving the fork below in favor of Option A.
+`static/admin/config.yml`'s `backend` is now `github` (not the old
+`git-gateway` placeholder), and the OAuth-proxy service it needs is built
+at `oauth-proxy/` (see that directory's own `README.md`). What's left is
+purely deploy work — registering the real GitHub OAuth App and running the
+proxy somewhere reachable (the VPS, per `vps-hosting-plan.md`) — not code.
+
+**Local testing needs none of the above.** `local_backend: true` is set in
+`config.yml`; pair it with `npm run cms:proxy` (installed as
+`decap-server`) to test `/admin` end-to-end against this checkout's real
+files with no GitHub account, no OAuth App, and no deployed proxy. See
+"Testing locally" below.
 
 ## What's already done
 
@@ -72,12 +80,43 @@ unless hosting is deliberately revisited later.
 
 1. ~~Decide GitHub Pages vs. Netlify~~ — done, CP8: GitHub Pages via
    GitHub Actions (`.github/workflows/deploy.yml`).
-2. **Remaining work**: stand up an OAuth-proxy (e.g. Cloudflare Worker,
-   Vercel function, or a small always-on Node service) implementing
-   Decap's OAuth handshake; add `base_url`/`auth_endpoint` to
-   `config.yml`'s `backend:` block pointing at it.
-3. Once that's live: update `static/admin/config.yml`'s `backend:` block
-   accordingly, remove this file's "not built" framing, and re-enable the
-   commented-out Decap CMS link in `docusaurus.config.js`'s footer.
-4. Once auth actually works, revisit the club/fest MDX-editing gap noted
-   above — separately, since it's not an auth problem.
+2. ~~Write the OAuth-proxy~~ — done, `oauth-proxy/server.js`. Implements
+   Decap's documented popup handshake (`/auth` redirects to GitHub, `/callback`
+   exchanges the code for a token and posts it back to the CMS popup).
+   `static/admin/config.yml`'s `backend:` block already points at it via
+   `base_url` — currently a placeholder
+   (`REPLACE-WITH-DEPLOYED-OAUTH-PROXY-URL`) since nothing's deployed yet.
+3. **Remaining work is deploy-only, not code:** register a real GitHub
+   OAuth App (`oauth-proxy/README.md` has the exact steps), run
+   `oauth-proxy/` somewhere reachable with `GITHUB_CLIENT_ID` /
+   `GITHUB_CLIENT_SECRET` / `OAUTH_PROXY_BASE_URL` set (the VPS, per
+   `vps-hosting-plan.md`, once IT access exists), then swap `config.yml`'s
+   `base_url` placeholder for the real deployed URL.
+4. Once that's live: re-enable the commented-out Decap CMS link in
+   `docusaurus.config.js`'s footer (if still commented — check current
+   state).
+5. Once auth actually works in production, revisit the club/fest
+   MDX-editing gap noted above — separately, since it's not an auth
+   problem.
+
+## Testing locally (works today, no deployment needed)
+
+Decap's **local backend** feature bypasses OAuth entirely for local dev —
+it talks to a small proxy that reads/writes this checkout's real files
+directly. Already wired up:
+
+```bash
+# terminal 1 — the local content proxy
+npm run cms:proxy
+
+# terminal 2 — the site itself
+npm start
+```
+
+Then open `http://localhost:3000/admin`. Decap detects `localhost` +
+`local_backend: true` (set in `config.yml`) and routes through the proxy
+instead of attempting real GitHub OAuth — no login screen, no GitHub
+account needed. Editing the "Events" collection and saving writes the
+`.md` file straight into `blog/` on disk, same as editing it by hand; it's
+not committed automatically, so review the diff (`git diff`/`git status`)
+before deciding whether to keep it.

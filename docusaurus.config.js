@@ -196,13 +196,19 @@ const config = {
                 label: 'Open an issue',
                 href: 'https://github.com/ChargingTrex/collage-wiki-SAIU/issues',
               },
-              // Re-enable once Decap CMS lands at /admin (CP5) — linking to
-              // it now breaks the build's broken-link check since the page
-              // doesn't exist yet.
-              // {
-              //   label: 'Decap CMS',
-              //   to: '/admin',
-              // },
+              {
+                // `pathname://` — Docusaurus's documented escape hatch
+                // (facebook/docusaurus#3309) for a link that's real but
+                // deliberately outside the route graph: /admin is a raw
+                // static file (static/admin/index.html), not a Docusaurus
+                // page, so plain `to`/`href: '/admin'` both fail the
+                // build's broken-link check (`onBrokenLinks: 'throw'`)
+                // since the checker only knows about generated routes, not
+                // static/ files — confirmed by actually running the build,
+                // not assumed. This prefix still gets baseUrl applied.
+                label: 'Decap CMS',
+                href: 'pathname:///admin',
+              },
               {
                 label: 'Code License (GPL-3.0)',
                 href: 'https://github.com/ChargingTrex/collage-wiki-SAIU/blob/main/LICENSE',
