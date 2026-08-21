@@ -1,12 +1,22 @@
 # VPS hosting plan — self-hosted site, GitHub stays the content source
 
-**Status: planning only, nothing below has been executed.** Written because
-the university (via the dean's office) has provisioned a VPS for hosting
-this site. The VPS is **administered by someone else** (university IT) —
-this repo has no SSH access to it and can't stand anything up directly. This
-doc is meant to be handed to whoever administers the VPS as a concrete
-request list, and to record the repo-side changes that follow once that
-access exists.
+**Status: VPS itself not provisioned/reachable yet; one piece of the
+repo-side work is now built ahead of it.** Written because the university
+(via the dean's office) has provisioned a VPS for hosting this site. The VPS
+is **administered by someone else** (university IT) — this repo has no SSH
+access to it and can't stand anything up directly. This doc is meant to be
+handed to whoever administers the VPS as a concrete request list, and to
+record the repo-side changes that follow once that access exists.
+
+The Decap CMS OAuth-proxy this plan calls for (see "Architecture" below) has
+already been written — `oauth-proxy/` (`server.js` + `README.md`) — and
+`static/admin/config.yml`'s `backend.name` already switched from the old
+`git-gateway` placeholder to `github`. Neither is deployed: the proxy has
+nowhere to run until the VPS access below exists, and `config.yml`'s
+`base_url` is still the literal placeholder
+`REPLACE-WITH-DEPLOYED-OAUTH-PROXY-URL`. See
+`docs-internal/decap-cms-auth-todo.md` for the full detail on that piece —
+it's tracked there, this doc just needed to stop claiming it as unstarted.
 
 Supersedes the GitHub Pages hosting decision recorded in
 `docs-internal/decap-cms-auth-todo.md` (which was itself written against the
@@ -112,6 +122,57 @@ From `docs-internal/decap-cms-auth-todo.md`:
   hosting deliberately moves to Netlify itself, which this plan does not
   propose.
 
+## OAuth-proxy & CMS requirements
+
+Concrete, so whoever deploys `oauth-proxy/` doesn't have to reconstruct this
+from the code. Full detail: `oauth-proxy/README.md`.
+
+**GitHub OAuth App** (repo owner creates this, GitHub → Settings →
+Developer settings → OAuth Apps — not a VPS/IT task):
+
+- **Homepage URL**: the site's public URL (the VPS domain once live).
+- **Authorization callback URL**: `<OAUTH_PROXY_BASE_URL>/callback` exactly
+  — must match what the proxy is configured with, or the handshake fails.
+- Produces a **Client ID** and a **Client Secret** (secret shown once,
+  copy immediately).
+
+**OAuth-proxy runtime** (`oauth-proxy/server.js`, run on the VPS):
+
+- Environment variables, all required: `GITHUB_CLIENT_ID`,
+  `GITHUB_CLIENT_SECRET` (both from the OAuth App above — real secrets,
+  never committed, injected via env or the host's secret store),
+  `OAUTH_PROXY_BASE_URL` (the proxy's own public URL, no trailing slash,
+  minus `/callback`).
+- Listens on `PORT` (default `8081`) — always behind the reverse proxy;
+  never expose `8081` directly to the internet.
+- Node.js v20 (matches CI), run persistently (systemd unit or `pm2` — see
+  "The ask for IT" item 3 below).
+- Stateless — no database, no persistent app state, safe to restart anytime.
+
+**`static/admin/config.yml` wiring** (repo-side, once the proxy has a real
+URL — see "Repo-side changes" below):
+
+```yaml
+backend:
+  name: github
+  repo: ChargingTrex/collage-wiki-SAIU
+  branch: main
+  base_url: https://oauth.<domain>   # currently the placeholder
+  auth_endpoint: auth
+```
+
+**Editor (club lead) requirements** — the actual cost of Option A, worth
+stating plainly since it's a UX tradeoff, not just an infra one:
+- A real GitHub account.
+- Added as a collaborator on `ChargingTrex/collage-wiki-SAIU` (or org
+  membership with repo access) — Decap's `github` backend authenticates
+  editors as real GitHub users with real write access, there's no separate
+  lighter-weight identity layer (that was Option B, ruled out above).
+
+**Local development needs none of this** — `local_backend: true` in
+`config.yml` + `npm run cms:proxy` bypasses OAuth entirely, see
+`docs-internal/decap-cms-auth-todo.md`'s "Testing locally" section.
+
 ## The ask for IT / the dean's office
 
 Concrete list to hand over — nothing here can be done from this repo alone:
@@ -148,13 +209,20 @@ GitHub Pages site doesn't break mid-transition:
 - `.github/workflows/deploy.yml`: swap the final two steps
   (`actions/configure-pages`, `actions/deploy-pages`) for an SSH/rsync
   step; add `VPS_HOST` / `VPS_USER` / `VPS_SSH_KEY` as repo secrets.
-- `static/admin/config.yml`: `backend.name` from `git-gateway` → `github`,
-  plus `base_url` / `auth_endpoint` once the OAuth-proxy's real URL is
-  known. (Currently still set to the `git-gateway` placeholder — see the
-  header comment in that file.)
-- `docs-internal/decap-cms-auth-todo.md`: update once this is live — flip
-  Option A from "confirmed path, not built" to actually built, and note
-  this doc as the source of the hosting change.
+- ~~`static/admin/config.yml`: `backend.name` from `git-gateway` →
+  `github`~~ — done. What's left is `base_url` / `auth_endpoint`, which need
+  the OAuth-proxy's real deployed URL; still the literal placeholder
+  `REPLACE-WITH-DEPLOYED-OAUTH-PROXY-URL` until then.
+- ~~Write the OAuth-proxy service~~ — done, `oauth-proxy/server.js`
+  (implements Decap's popup handshake: `/auth` redirects to GitHub,
+  `/callback` exchanges the code and posts the token back). Not deployed —
+  needs `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` / `OAUTH_PROXY_BASE_URL`
+  and somewhere to run persistently, i.e. the VPS this doc is about. See
+  `oauth-proxy/README.md` for the exact run steps and the GitHub OAuth App
+  setup.
+- `docs-internal/decap-cms-auth-todo.md`: already updated to reflect the
+  OAuth-proxy being code-complete but undeployed — no further edit needed
+  there unless deploy actually happens.
 - Check `js/github-badge.js` (referenced in `docusaurus.config.js`'s
   `scripts`) for any GitHub Pages–specific assumptions before the domain
   changes.
