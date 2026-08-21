@@ -1,6 +1,6 @@
 ---
 title: Running a Leadership Rollover
-description: The full technical walkthrough for archiving an outgoing club/fest board and bringing in the new one — needs terminal and repo access.
+description: The full technical walkthrough for archiving an outgoing club/committee/fest board and bringing in the new one — needs terminal and repo access.
 sidebar_position: 4
 sidebar_custom_props:
   icon: History
@@ -15,21 +15,30 @@ else first.
 
 ## What a rollover is, and why it exists
 
-A club's exec board or a fest's organisation committee changes every year.
-The live club/fest page always shows the *current* team — if someone just
-edited it in place for the new year, the outgoing team's record would be
-silently lost with no way to look it back up. A **rollover** fixes that in
-one step:
+A club's exec board, a committee's leadership (Cultural Committee, Student
+Government), or a fest's organisation committee all change every year. The
+live page always shows the *current* team — if someone just edited it in
+place for the new year, the outgoing team's record would be silently lost
+with no way to look it back up. A **rollover** fixes that in one step:
 
 1. It freezes the outgoing team into a **permanent archive page**
    (`docs/archive/<slug>/<year>-board.mdx`, or `-committee.mdx` for a
-   fest) — never edited again after it's created.
+   committee/fest) — never edited again after it's created.
 2. It resets the **live page's team data** back to placeholder names, ready
    for the incoming team to be filled in.
 
-Every past board/committee this wiki has ever recorded stays reachable
-forever at [`/docs/archive`](/docs/archive), one page per club/fest per
-year.
+Every past board/committee/government this wiki has ever recorded stays
+reachable forever at [`/docs/archive`](/docs/archive), one page per
+club/committee/fest per year.
+
+**Every rollover is its own separate, independent run — there is no "roll
+everything over at once" mode, on purpose.** Each club, each committee, and
+each fest gets its own invocation of the script, one slug at a time. That
+means an end-of-year rollover for, say, 18 clubs, 2 committees, and 3 fests
+is 23 separate commands (or 23 separate runs of the manual steps below), not
+one big batch job — a mistake in one slug's data can't cascade into
+another's, and having some already rolled over while others haven't yet is
+a completely normal, safe state, not a half-finished one.
 
 ## Running the script
 
@@ -37,13 +46,15 @@ From a terminal, in the root of the repo:
 
 ```bash
 npm run rollover -- club art-club 2025-26
+npm run rollover -- committee cultural-committee 2025-26
 npm run rollover -- fest tech-fest 2025-26
 ```
 
-- **First argument**: `club` or `fest`.
-- **Second argument**: the club or fest's slug — the same one already in
-  its URL (e.g. `art-club`, `tech-fest`). See the club table in the root
-  `CLAUDE.md` if you're not sure of a slug.
+- **First argument**: `club`, `committee`, or `fest`.
+- **Second argument**: the club/committee/fest's slug — the same one
+  already in its URL (e.g. `art-club`, `cultural-committee`, `tech-fest`).
+  See the club table in the root `CLAUDE.md` if you're not sure of a club's
+  slug; committees are `cultural-committee` and `student-government`.
 - **Third argument**: the year range that's ending (e.g. `2025-26`).
 
 **Preview first, if you want to see what it would do without changing
@@ -56,11 +67,14 @@ npm run rollover -- club art-club 2025-26 --dry-run
 ### What it creates
 
 - The permanent archive page itself
-  (`docs/archive/<slug>/<year>-board.mdx`), with the outgoing team frozen
-  exactly as it was, under a `## <year> Board` (or `Organisation
-  Committee`) heading.
-- The first time a given club/fest is ever rolled over, an archive
-  category page too, so it shows up correctly nested under
+  (`docs/archive/<slug>/<year>-board.mdx`, or `-committee.mdx` for a
+  committee/fest), with the outgoing team frozen exactly as it was, under a
+  `## <year> Board` heading for a club, or a committee-specific heading
+  word for committees (`Committee` for Cultural Committee, `Government`
+  for Student Government — see `src/data/committeeMeta.mjs`) or
+  `Organisation Committee` for a fest.
+- The first time a given club/committee/fest is ever rolled over, an
+  archive category page too, so it shows up correctly nested under
   [`/docs/archive`](/docs/archive) — every rollover after the first just
   adds another year underneath it.
 
@@ -116,8 +130,9 @@ resolves cleanly before committing.
 The same result, done by hand:
 
 1. Create `docs/archive/<slug>/<year>-board.mdx` (or `-committee.mdx` for a
-   fest) yourself — copy an existing snapshot under `docs/archive/` as a
-   template. **Set an explicit `slug:` field in its frontmatter**
+   committee or fest) yourself — copy an existing snapshot under
+   `docs/archive/` as a template. **Set an explicit `slug:` field in its
+   frontmatter**
    (e.g. `slug: 2025-26-board`) — Docusaurus silently strips a leading
    `NNNN-word` pattern from a doc's default slug otherwise, dropping the
    year from the URL for a single four-digit year like `2026` (a

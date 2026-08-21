@@ -45,8 +45,12 @@ test.describe('Current Board / Organisation Committee sections', () => {
   });
 
   test('/clubs "Archive" mention navigates to the leadership archive', async ({page}) => {
+    // Scoped to <main> — the navbar's own "Archive" item (added later, to
+    // /docs/resources/archives, the *event* archive) and the footer's copy
+    // of the same navbar both also match "Archive" by exact text now, so an
+    // unscoped locator is a strict-mode violation with 3 hits.
     await page.goto('clubs');
-    await page.getByRole('link', {name: 'Archive', exact: true}).click();
+    await page.locator('main').getByRole('link', {name: 'Archive', exact: true}).click();
     await page.waitForLoadState('networkidle');
     await expect(page).toHaveURL(/\/docs\/archive$/);
   });

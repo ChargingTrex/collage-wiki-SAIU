@@ -6,6 +6,8 @@ const NAVBAR_LINKS = [
   {label: 'Clubs', path: '/clubs'},
   {label: 'Fests', path: '/fests'},
   {label: 'Docs', path: '/docs/intro'},
+  {label: 'Resources', path: '/docs/category/resources'},
+  {label: 'Archive', path: '/docs/resources/archives'},
   {label: 'Events', path: '/events'},
   {label: 'Blog', path: '/student-voices'},
 ];
@@ -15,12 +17,14 @@ const FOOTER_WIKI_LINKS = [
   {label: 'Clubs', path: '/clubs'},
   {label: 'Fests', path: '/fests'},
   {label: 'Docs', path: '/docs/intro'},
+  {label: 'Resources', path: '/docs/category/resources'},
+  {label: 'Archive', path: '/docs/resources/archives'},
   {label: 'Events', path: '/events'},
   {label: 'Blog', path: '/student-voices'},
 ];
 
 test.describe('navbar', () => {
-  test('shows all six items in order', async ({page}) => {
+  test('shows all eight items in order', async ({page}) => {
     const errors = trackConsoleErrors(page);
     await page.goto('');
     const items = (await page.locator('.navbar__item.navbar__link').allTextContents())
@@ -79,9 +83,21 @@ test.describe('footer', () => {
     );
   });
 
-  test('no Decap CMS link yet (not scaffolded)', async ({page}) => {
+  test('footer links to Decap CMS at /admin', async ({page}) => {
+    // Was "no Decap CMS link yet (not scaffolded)" — that reflected an
+    // earlier state where the link was deliberately withheld until the CMS
+    // had a real config. `docusaurus.config.js`'s footer now links to
+    // `/admin` on purpose (via the documented `pathname://` escape hatch,
+    // since /admin is a static file outside Docusaurus's route graph, not
+    // a generated page) — the page loads and is browsable even though
+    // saving still needs the OAuth backend deployed (see
+    // docs-internal/decap-cms-auth-todo.md), so linking to it isn't
+    // premature.
     await page.goto('');
     const footer = page.locator('footer');
-    await expect(footer.getByRole('link', {name: /decap/i})).toHaveCount(0);
+    await expect(footer.getByRole('link', {name: /decap/i})).toHaveAttribute(
+      'href',
+      /\/admin$/
+    );
   });
 });

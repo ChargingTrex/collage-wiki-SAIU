@@ -1,15 +1,22 @@
 #!/usr/bin/env node
 // scripts/rollover.mjs
 //
-// Snapshots an outgoing club board / fest organisation committee into a
-// permanent docs/archive/<slug>/<year>-board|committee.mdx file, then resets
+// Snapshots an outgoing club board / committee organisation / fest
+// organisation committee into a permanent
+// docs/archive/<slug>/<year>-board|committee.mdx file, then resets
 // src/data/teams/<slug>.mjs to a fresh placeholder for the incoming team.
-// See docs/resources/leadership-rollover.mdx for the plain-language guide,
-// or CONTRIBUTING.md's "Leadership rollover" section for the manual
-// (no-script) fallback and full design rationale.
+// club, committee, and fest are three genuinely separate, independent
+// rollovers — each slug is rolled over on its own, one invocation at a
+// time; there is no "roll over everything at once" mode, deliberately, so
+// a mistake in one club/committee/fest's data can't cascade into another's
+// and a partial end-of-year rollover (some done, some not yet) is always a
+// perfectly normal, safe state. See docs/resources/leadership-rollover.mdx
+// for the plain-language guide, or CONTRIBUTING.md's "Leadership rollover"
+// section for the manual (no-script) fallback and full design rationale.
 //
 // Usage:
 //   npm run rollover -- club art-club 2025-26
+//   npm run rollover -- committee cultural-committee 2025-26
 //   npm run rollover -- fest tech-fest 2025-26 --dry-run
 //   npm run rollover -- club art-club 2025-26 --force
 //
@@ -30,6 +37,7 @@ import { fileURLToPath, pathToFileURL } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
 const festMetaPath = path.join(ROOT, 'src', 'data', 'festMeta.mjs');
+const committeeMetaPath = path.join(ROOT, 'src', 'data', 'committeeMeta.mjs');
 
 const args = process.argv.slice(2);
 const flags = new Set(args.filter((a) => a.startsWith('--')));
@@ -45,8 +53,8 @@ function fail(message) {
 }
 
 // Step 1 — validate type + year shape.
-if (type !== 'club' && type !== 'fest') {
-  fail(`First argument must be "club" or "fest" (got: ${type ?? '(none)'}).`);
+if (type !== 'club' && type !== 'committee' && type !== 'fest') {
+  fail(`First argument must be "club", "committee", or "fest" (got: ${type ?? '(none)'}).`);
 }
 if (!slug) {
   fail('Missing <slug> argument.');
@@ -59,14 +67,38 @@ if (!outgoingYear || !/^\d{4}(-\d{2})?$/.test(outgoingYear)) {
 // clubAccents.js (same CJS-parsing risk as above).
 const teamFilePath = path.join(ROOT, 'src', 'data', 'teams', `${slug}.mjs`);
 if (!fs.existsSync(teamFilePath)) {
-  fail(`No src/data/teams/${slug}.mjs — is "${slug}" a real club/fest slug?`);
+  fail(`No src/data/teams/${slug}.mjs — is "${slug}" a real club/committee/fest slug?`);
 }
 
-// Step 3.
+// Step 3 — the archive filename suffix is a fixed, type-level word (never
+// slug-dependent): clubs are always archived as "-board", committees and
+// fests as "-committee" — matching the *category* of leadership group, not
+// each entity's own on-page wording (which does vary per committee, see
+// COMMITTEE_META below; the filename suffix deliberately doesn't chase
+// that per-slug wording, only the page content does).
 const suffix = type === 'club' ? 'board' : 'committee';
-const heading = type === 'club' ? 'Board' : 'Organisation Committee';
 
 async function main() {
+  // Step 3b — the on-page heading word. Clubs are uniformly "Board"; fests
+  // are uniformly "Organisation Committee"; committees vary per slug
+  // ("Committee" for Cultural Committee, "Government" for Student
+  // Government) so that one has to be resolved from COMMITTEE_META, which
+  // needs an async import — hence this lives inside main(), not alongside
+  // `suffix` above.
+  let heading;
+  if (type === 'club') {
+    heading = 'Board';
+  } else if (type === 'fest') {
+    heading = 'Organisation Committee';
+  } else {
+    const { COMMITTEE_META } = await import(pathToFileURL(committeeMetaPath));
+    const meta = COMMITTEE_META[slug];
+    if (!meta) {
+      fail(`No COMMITTEE_META["${slug}"] entry in src/data/committeeMeta.mjs.`);
+    }
+    heading = meta.heading;
+  }
+
   // Step 4 — load current team, validate shape.
   const teamModule = await import(pathToFileURL(teamFilePath));
   const CURRENT_TEAM = teamModule.CURRENT_TEAM;
@@ -120,6 +152,22 @@ async function main() {
       label = `${clubCategory.label} Archive`;
       description = `Past boards for the ${clubCategory.label}, one file per year.`;
       icon = clubCategory.customProps?.icon;
+    } else if (type === 'committee') {
+      // Same source as clubs — docs/committees/<slug>/_category_.json —
+      // committees already have this file (see docs/committees/*/index.mdx),
+      // just under a sibling directory to docs/clubs/. `heading` (resolved
+      // in step 3b, per-slug from COMMITTEE_META) drives the phrasing so
+      // "Cultural Committee" reads "Past committees for..." while "Student
+      // Government" reads "Past governments for..." instead of both saying
+      // the generic, less natural "boards" or a hardcoded "committees".
+      const committeeCategoryPath = path.join(ROOT, 'docs', 'committees', slug, '_category_.json');
+      if (!fs.existsSync(committeeCategoryPath)) {
+        fail(`No docs/committees/${slug}/_category_.json to source the archive category's label/icon from.`);
+      }
+      const committeeCategory = JSON.parse(fs.readFileSync(committeeCategoryPath, 'utf-8'));
+      label = `${committeeCategory.label} Archive`;
+      description = `Past ${heading.toLowerCase()}s for the ${committeeCategory.label}, one file per year.`;
+      icon = committeeCategory.customProps?.icon;
     } else {
       const { FEST_META } = await import(pathToFileURL(festMetaPath));
       const meta = FEST_META[slug];
@@ -143,10 +191,14 @@ async function main() {
   }
 
   // Step 7 — the snapshot file itself.
-  const title =
-    type === 'club'
-      ? JSON.parse(fs.readFileSync(path.join(ROOT, 'docs', 'clubs', slug, '_category_.json'), 'utf-8')).label
-      : (await import(pathToFileURL(festMetaPath))).FEST_META[slug].title;
+  let title;
+  if (type === 'club') {
+    title = JSON.parse(fs.readFileSync(path.join(ROOT, 'docs', 'clubs', slug, '_category_.json'), 'utf-8')).label;
+  } else if (type === 'committee') {
+    title = JSON.parse(fs.readFileSync(path.join(ROOT, 'docs', 'committees', slug, '_category_.json'), 'utf-8')).label;
+  } else {
+    title = (await import(pathToFileURL(festMetaPath))).FEST_META[slug].title;
+  }
 
   // Explicit `slug:` — Docusaurus strips a leading NNNN-word pattern from a
   // doc's default slug (meant for manual-ordering filenames like
@@ -176,13 +228,24 @@ import { TeamSection } from '@site/src/components/TeamSection';
 `;
 
   // Step 8 — fresh placeholder template for the incoming team.
-  const roleExamples =
-    type === 'club'
-      ? ['President', 'Vice President', 'Secretary']
-      : ['Fest Director', 'Operations Lead', 'Sponsorship Lead'];
+  let roleExamples;
+  if (type === 'club') {
+    roleExamples = ['President', 'Vice President', 'Secretary'];
+  } else if (type === 'committee') {
+    const { COMMITTEE_META } = await import(pathToFileURL(committeeMetaPath));
+    roleExamples = COMMITTEE_META[slug].roleExamples;
+  } else {
+    roleExamples = ['Fest Director', 'Operations Lead', 'Sponsorship Lead'];
+  }
+  // Some entities' own title already ends in the heading word ("Cultural
+  // Committee", "Student Government") — appending it again would read as
+  // "Current Cultural Committee committee." Only append when title doesn't
+  // already end with it, case-insensitively.
+  const titleAlreadyHasHeading = title.toLowerCase().endsWith(heading.toLowerCase());
+  const teamNoun = titleAlreadyHasHeading ? title : `${title} ${heading.toLowerCase()}`;
   const freshTeamContent = `// src/data/teams/${slug}.mjs
 //
-// Current ${title} ${heading === 'Board' ? 'board' : heading.toLowerCase()}. Snapshotted into
+// Current ${teamNoun}. Snapshotted into
 // docs/archive/${slug}/ at rollover (see scripts/rollover.mjs), then reset to
 // this same placeholder shape for the incoming team — see CONTRIBUTING.md's
 // "Leadership rollover" section.

@@ -7,7 +7,7 @@ test('homepage renders hero, stat row, Recent Activity, and Contribute section c
   await page.waitForLoadState('networkidle');
 
   await expect(page.locator('h1')).toHaveText('Sai University Wiki');
-  await expect(page.getByText(/21 clubs.*400\+ events archived.*Chennai/)).toBeVisible();
+  await expect(page.getByText(/21 clubs.*Chennai/)).toBeVisible();
   await expect(page.getByRole('heading', {name: 'Recent Activity', level: 2})).toBeVisible();
   await expect(page.getByRole('link', {name: 'See the source on GitHub'})).toHaveAttribute(
     'href',

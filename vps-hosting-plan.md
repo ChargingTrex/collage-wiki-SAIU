@@ -163,6 +163,7 @@ backend:
 
 **Editor (club lead) requirements** — the actual cost of Option A, worth
 stating plainly since it's a UX tradeoff, not just an infra one:
+
 - A real GitHub account.
 - Added as a collaborator on `ChargingTrex/collage-wiki-SAIU` (or org
   membership with repo access) — Decap's `github` backend authenticates

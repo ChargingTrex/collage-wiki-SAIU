@@ -28,23 +28,27 @@ This opens **Decap CMS**, a form-based editor. Right now it has one
 collection wired up:
 
 - **Events** — add a new dated event write-up (text + tags + images,
-  through a form) under `blog/`. Tag it with the relevant club/fest so it
-  shows up on that club's own Events page automatically. The optional
+  through a form) under `blog/`. Tag it with the relevant club/fest/committee
+  so it shows up on that club's own Events page automatically. Add the
+  `blog` tag instead of (or alongside) an organizer tag if the post is
+  general writing rather than a dated event — see "Adding a new event post"
+  below for the full `blog` vs. `events` distinction. The optional
   **Feature Image** field sets the thumbnail shown on the homepage Recent
   Activity section, this club's Events page, and the sitewide Events/Blog
   feed — see the live [Adding a Feature
   Image](/docs/resources/feature-images) guide; that's separate from any
   photo added inside the post body itself.
 
-**Club and fest pages (`docs/clubs/*`, `docs/fests/*`) are NOT editable via
-the CMS** — those are MDX files with hero-component imports and a
-`<ClubContact>` embed, not plain prose. Decap CMS collections replace a
-file's entire frontmatter + body with only what's represented in its field
-config; letting a non-technical editor save through a generic body widget
-would silently strip those imports and break the page. Exposing that
-safely needs the prose pulled out into plain frontmatter fields first — a
-content-model change, not a CMS-config one (also noted in the auth-todo
-doc). For now, club/fest page edits go through a developer via PR too.
+**Club, committee, and fest pages (`docs/clubs/*`, `docs/committees/*`,
+`docs/fests/*`) are NOT editable via the CMS** — those are MDX files with
+hero-component imports and a `<ClubContact>` embed, not plain prose. Decap
+CMS collections replace a file's entire frontmatter + body with only what's
+represented in its field config; letting a non-technical editor save through
+a generic body widget would silently strip those imports and break the page.
+Exposing that safely needs the prose pulled out into plain frontmatter
+fields first — a content-model change, not a CMS-config one (also noted in
+the auth-todo doc). For now, club/committee/fest page edits go through a
+developer via PR too.
 
 You do not need to know Markdown, React, or Git to use the Events
 collection. Images you upload are automatically stored next to the post
@@ -196,9 +200,11 @@ src/
     RecentActivity.jsx        homepage "Recent Activity" section — the 5
                               most recent posts site-wide, any club/fest
     TagFilteredEvents.jsx     tag picker + recent-posts feed, same plugin
-                              data — powers /events (real content only,
-                              excludes student-voices) and /student-voices
-                              (all tags) via its `tagIds` prop
+                              data — powers /events (excludes `blog` and
+                              `student-voices`) and /student-voices (only
+                              `blog` + `student-voices`) via its `tagIds`
+                              prop; between the two, every real content-type
+                              tag is covered exactly once
     MiniHeroCard.jsx          scales a real hero down for a directory grid
                               card (used by /clubs and /explore). Card is
                               416x143px (custom.css) — sized around the 20
@@ -284,6 +290,11 @@ docs/
                                                    a dedicated Contact page,
                                                    same data as index.mdx's
                                                    own inline Contact section
+  committees/<slug>/           same 4-file shape as clubs/<slug>/, no hero —
+                                Cultural Committee (`cultural-committee`) and
+                                Student Government (`student-government`);
+                                `useClubAccent` falls back to the unified
+                                accent since neither is in `clubAccents.js`
   fests/
   resources/                  linked from the navbar/footer as "Resources";
                               cards ordered alphabetically via each doc's
@@ -359,33 +370,41 @@ tags: [astronomy-club, talk]
 ---
 ```
 
-- If the post is a club event, include that club's tag (e.g. `astronomy-club`)
-  so it automatically appears both on that club's tag page
-  (`/blog/tags/astronomy-club`) and on that club's own Events page
-  (`/docs/clubs/astronomy-club/events`) — this is how a club's page can list
-  its own events without any extra linking work. (A club's Events page shows
-  "no events recorded yet" until at least one post carries its tag — that's
-  expected, not a bug, while the archive is still being backfilled.)
+- If the post is a club/committee event, include that organizer's tag (e.g.
+  `astronomy-club`, or `cultural-committee`/`student-government` for the two
+  standing committees) so it automatically appears both on that organizer's
+  tag page (`/blog/tags/astronomy-club`) and on their own Events page
+  (`/docs/clubs/astronomy-club/events`, `/docs/committees/<slug>/events`) —
+  this is how a club/committee page can list its own events without any
+  extra linking work.
 - If it was part of a fest, add the fest's tag too (`tech-fest`,
   `general-fest`, or `cultural-fest`).
 - Add one event-type tag if it fits: `workshop`, `competition`, `talk`,
   `screening`, `exhibition`, `performance`, `hackathon`.
-- If it's an **individual student post with no club affiliation**, use the
-  `student-voices` tag instead of a club tag.
+- Add the `events` tag to mark a post as explicit event coverage, or `blog`
+  if it's general club/committee writing not tied to a dated event (an
+  update, an announcement) — see below for how these two decide which
+  sitewide page a post shows up on. A post with only an organizer/fest/
+  event-type tag and no explicit `blog`/`events` tag still defaults to
+  showing up on Events; `events` just makes the intent explicit.
+- If it's an **individual student post with no club/committee affiliation**,
+  use the `student-voices` tag instead of an organizer tag.
 
 Don't invent new tags ad hoc — add them to `blog/tags.yml` first so the tag
 page gets a proper label and description.
 
 **Where a post shows up depends on its tags, not its folder:** `/events`
-(the "Events" nav item) only ever considers tags defined in `blog/tags.yml`
-*other than* `student-voices` — a club tag, a fest tag, or an event-type tag.
-`/student-voices` (the "Blog" nav item) considers every defined tag. A post
-tagged only `student-voices` appears on Blog only; a post tagged
-`astronomy-club, talk` appears on Events (and that club's own Events page)
-but not Blog; a post carrying both a club tag and `student-voices` can appear
-on both. Posts with tags that aren't in `blog/tags.yml` at all (e.g. the
-leftover Docusaurus tutorial posts) never appear on either — that's the
-filter working as intended, not a bug.
+(the "Events" nav item) shows every tag defined in `blog/tags.yml` *except*
+`blog` and `student-voices` — every club/committee tag, fest tag, event-type
+tag, and the explicit `events` marker. `/student-voices` (the "Blog" nav
+item) shows only `blog` and `student-voices`. A post tagged only
+`student-voices` appears on Blog only; a post tagged `astronomy-club, talk`
+appears on Events (and that club's own Events page) but not Blog; a post
+tagged `astronomy-club, blog` appears on Blog, not Events; a post carrying
+both an organizer tag and `student-voices` can appear on both. Posts with
+tags that aren't in `blog/tags.yml` at all (e.g. the leftover Docusaurus
+tutorial posts) never appear on either — that's the filter working as
+intended, not a bug.
 
 ### Adding photos to an event post
 
@@ -706,8 +725,9 @@ reuse as-is.
       passed as bare relative-path strings
 - [ ] A post's feature `image:` frontmatter (if set) is a co-located
       relative path, same rule as body images
-- [ ] New club added: `docs/clubs/<slug>/` has `index.mdx`, `_category_.json`,
-      and `events.mdx` (copy an existing club's folder as a template)
+- [ ] New club/committee added: `docs/clubs|committees/<slug>/` has
+      `index.mdx`, `_category_.json`, `events.mdx`, and `contact.mdx` (copy
+      an existing club's/committee's folder as a template)
 - [ ] No new audio autoplays — audio is click-to-play only
 - [ ] `/admin` still loads, if you touched CMS config (it can't save yet —
       see §1 — so there's no "test edit" to try until auth is wired up)

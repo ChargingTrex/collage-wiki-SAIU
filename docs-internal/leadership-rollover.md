@@ -17,23 +17,35 @@ deliberately isn't a public `docs/resources/` page reachable by every
 visitor. See `CONTRIBUTING.md`'s "Leadership rollover" section for the
 condensed technical version; this is the fuller walkthrough.
 
-A club exec board or fest organisation committee changes every year. The
-live club/fest page always shows the *current* team — if someone just
-edited it in place for the new year, the outgoing team's record would be
-silently lost. A rollover fixes that: it copies the outgoing team into a
-permanent archive page (kept forever, never edited again), then clears the
-live page for the incoming team.
+A club exec board, a committee's leadership, or a fest organisation
+committee changes every year. The live page always shows the *current*
+team — if someone just edited it in place for the new year, the outgoing
+team's record would be silently lost. A rollover fixes that: it copies the
+outgoing team into a permanent archive page (kept forever, never edited
+again), then clears the live page for the incoming team.
+
+**Club, committee, and fest are three separate types, each rolled over
+independently, one slug at a time — never all at once.** Added `committee`
+as its own type (not folded into `fest`) once Cultural Committee and
+Student Government existed as real content with no way to archive them —
+the type check previously only accepted `club`/`fest` and rejected
+`committee` outright.
 
 ## Using the script
 
 ```bash
 npm run rollover -- club art-club 2025-26
+npm run rollover -- committee cultural-committee 2025-26
 npm run rollover -- fest tech-fest 2025-26
 ```
 
-The first argument is `club` or `fest`, the second is the club/fest's slug
-(the same one in its URL, e.g. `art-club`), the third is the outgoing
-year-range.
+The first argument is `club`, `committee`, or `fest`, the second is the
+slug (the same one in its URL, e.g. `art-club`, `cultural-committee`), the
+third is the outgoing year-range. A committee's on-page heading word isn't
+uniform the way club's ("Board") and fest's ("Organisation Committee") are
+— Cultural Committee says "Committee", Student Government says
+"Government" — so that's resolved per-slug from `src/data/committeeMeta.mjs`
+rather than hardcoded in the script.
 
 Add `--dry-run` first if you want to see what it *would* do without
 changing anything:
@@ -44,10 +56,10 @@ npm run rollover -- club art-club 2025-26 --dry-run
 
 **What it creates:**
 - A permanent archive page — `docs/archive/<slug>/<year>-board.mdx` (or
-  `-committee.mdx` for a fest) — with the outgoing team frozen exactly as
-  it was.
-- The first time a club/fest is rolled over, an archive category page too,
-  so it shows up correctly under the live site's Archive
+  `-committee.mdx` for a committee or fest) — with the outgoing team frozen
+  exactly as it was.
+- The first time a club/committee/fest is rolled over, an archive category
+  page too, so it shows up correctly under the live site's Archive
   (`/docs/archive`).
 
 **What it resets:** the live page's team data
@@ -96,6 +108,7 @@ See "Leadership rollover" in `CONTRIBUTING.md` for the exact manual steps
 
 ## Browsing past teams
 
-Every past board/committee lives under the live site's Archive
-(`/docs/archive`), one permanent page per club/fest per year — that page
-*is* public, only this maintainer how-to isn't.
+Every past board/committee/government lives under the live site's Archive
+(`/docs/archive`), one permanent page per club/committee/fest per year —
+that page *is* public, and (per the update note at the top) so is this
+walkthrough now.

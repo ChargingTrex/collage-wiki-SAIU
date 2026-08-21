@@ -2,16 +2,15 @@ const {test, expect} = require('./base');
 const {trackConsoleErrors} = require('./helpers');
 
 test.describe('/events — real content only', () => {
-  test('offers exactly the 35 club/committee/fest/event-type tags, never blog or student-voices', async ({page}) => {
+  test('offers exactly the 34 club/committee/fest/event-type tags, never blog or student-voices', async ({page}) => {
     const errors = trackConsoleErrors(page);
     await page.goto('events');
     await page.waitForLoadState('networkidle');
 
-    // 21 clubs + 2 committees + 3 named fests + 1 generic fest + 7
-    // event-type + 1 explicit `events` marker = 35. Excludes `blog` and
-    // `student-voices` (both are /student-voices' territory) out of the 37
-    // total tags defined in blog/tags.yml.
-    await expect(page.locator('input[type=checkbox]')).toHaveCount(35);
+    // 21 clubs + 2 committees + 3 fests + 7 event-type + 1 explicit `events`
+    // marker = 34. Excludes `blog` and `student-voices` (both are
+    // /student-voices' territory) out of the 36 total tags in blog/tags.yml.
+    await expect(page.locator('input[type=checkbox]')).toHaveCount(34);
     await expect(page.getByText('Student Voices', {exact: true})).toHaveCount(0);
     // "Blog" (the tag label) never renders as a checkbox — page text alone
     // isn't a safe check since /events' own intro links to "Blog"
@@ -21,11 +20,9 @@ test.describe('/events — real content only', () => {
   });
 
   test('"Clear" unchecks every tag, "Select all tags" rechecks them all', async ({page}) => {
-    // Checks the mechanical checkbox state rather than "posts appear",
-    // because the archive currently has zero real event-tagged posts —
-    // "no posts match" is the correct, expected result of Select All too
-    // right now, not a sign either button is broken. See changes.md: every
-    // club/event view shows this empty state until the archive is backfilled.
+    // Checks the mechanical checkbox state — "no posts match" after Clear
+    // is the correct, expected result regardless of how much real content
+    // exists (zero tags selected always matches zero posts).
     await page.goto('events');
     const checkboxes = page.locator('input[type=checkbox]');
     const count = await checkboxes.count();

@@ -19,8 +19,12 @@ test.describe('/clubs directory', () => {
   });
 
   test('Archive mention links to the leadership archive, not the event archive', async ({page}) => {
+    // Scoped to <main> — the navbar's own "Archive" item (added later, to
+    // /docs/resources/archives, the *event* archive) and the footer's copy
+    // of the same navbar both also match "Archive" by exact text now, so an
+    // unscoped locator is a strict-mode violation with 3 hits.
     await page.goto('clubs');
-    await expect(page.getByRole('link', {name: 'Archive', exact: true})).toHaveAttribute(
+    await expect(page.locator('main').getByRole('link', {name: 'Archive', exact: true})).toHaveAttribute(
       'href',
       /\/docs\/archive$/
     );
@@ -36,10 +40,14 @@ test.describe('/clubs directory', () => {
 
 test.describe('Club contact pages', () => {
   test('every club has a working /contact page', async ({page}) => {
-    // Default 30s per-test timeout was tight even at 18 clubs and is now
-    // exceeded at 21 (sequential goto + networkidle per club) — bump it
-    // rather than relaxing what's actually being checked.
-    test.setTimeout(60_000);
+    // Default 30s per-test timeout was tight even at 18 clubs, then 60s
+    // still wasn't enough at 21 (sequential goto + networkidle per club, and
+    // the archive is heavier now with 23 real posts to load plugin data
+    // for on every page) — bumped again rather than relaxing what's
+    // actually being checked. If this keeps growing, worth switching to
+    // `test.step`-per-slug or checking a sample instead of all 21
+    // sequentially.
+    test.setTimeout(120_000);
     const errors = trackConsoleErrors(page);
     for (const slug of CLUB_SLUGS) {
       await page.goto(`docs/clubs/${slug}/contact`);
@@ -50,12 +58,17 @@ test.describe('Club contact pages', () => {
   });
 
   test("FOSS Club's contact page shows its real email/Instagram/LinkedIn", async ({page}) => {
+    // Scoped to <article> — the site footer also credits FOSS Club (its
+    // Instagram is the one real, verified contact on file, reused there) on
+    // every page including this one, so an unscoped "@foss.saiu" link
+    // locator is a strict-mode violation with 2 hits.
     await page.goto('docs/clubs/foss-club/contact');
-    await expect(page.getByRole('link', {name: 'fossclub@saiuniversity.edu.in'})).toHaveAttribute(
+    const article = page.locator('article');
+    await expect(article.getByRole('link', {name: 'fossclub@saiuniversity.edu.in'})).toHaveAttribute(
       'href',
       'mailto:fossclub@saiuniversity.edu.in'
     );
-    await expect(page.getByRole('link', {name: '@foss.saiu'})).toHaveAttribute(
+    await expect(article.getByRole('link', {name: '@foss.saiu'})).toHaveAttribute(
       'href',
       'https://www.instagram.com/foss.saiu'
     );

@@ -1,6 +1,6 @@
 # Blog tag taxonomy for the Sai University Wiki.
 # Groups: (1) one tag per club, (2) one tag per committee, (3) one tag per
-# fest plus a generic `fest` tag, (4) event-type tags, (5) content-type tags
+# fest, (4) event-type tags, (5) content-type tags
 # (`blog` vs `events`) that decide which sitewide page a post surfaces on,
 # plus a standalone tag for posts written by an individual student rather
 # than on behalf of a club. A post can carry a club/fest/committee tag AND an
@@ -150,11 +150,6 @@ cultural-fest:
   label: Cultural Fest
   permalink: /cultural-fest
   description: Events that were part of the university's cultural fest
-
-fest:
-  label: Fest
-  permalink: /fest
-  description: General fest-related content not tied to one specific fest
 
 # ---- Event type ----
 workshop:

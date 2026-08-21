@@ -1,5 +1,29 @@
 # Changes
 
+## 2026-08-21 — `vps-hosting-plan.md` corrected to match actual repo state
+
+Files: `vps-hosting-plan.md`
+
+The doc's status line still read "planning only, nothing below has been
+executed," but the OAuth-proxy piece it specs (`oauth-proxy/server.js` +
+`oauth-proxy/README.md`) had already been written, and
+`static/admin/config.yml`'s `backend.name` had already switched from the
+`git-gateway` placeholder to `github` — both landed in an earlier commit
+without this doc being updated alongside them. `docs-internal/decap-cms-auth-todo.md`
+already reflected this correctly; this doc didn't.
+
+- Rewrote the status line to distinguish "VPS not provisioned/reachable" (still
+  true, still blocking) from "OAuth-proxy code written" (done, just not
+  deployed anywhere).
+- In "Repo-side changes," struck through the two items that are now actually
+  done (`config.yml` backend switch, OAuth-proxy service written) and left
+  what's genuinely still open: `config.yml`'s `base_url` is still the literal
+  `REPLACE-WITH-DEPLOYED-OAUTH-PROXY-URL` placeholder, `docusaurus.config.js`
+  and `.github/workflows/deploy.yml` are untouched (correct — no VPS to point
+  them at yet).
+- No architecture or recommendation changed — this was a staleness fix, not a
+  plan revision.
+
 ## 2026-08-21 — Homepage header redesign: display type, real gradient, 21-club foundation line
 
 Files: `src/pages/index.js`, `src/pages/index.module.css`, `src/components/HomepageClubMarks.jsx` (new)
@@ -2762,5 +2786,65 @@ committee, giving `/events` real content to paginate through for the first
 time instead of the near-empty archive every test/screenshot before this
 had to account for.
 
-Full production build clean after every stage; `npm run test:e2e` run in
-full afterward.
+Full production build clean after every stage. Running `npm run test:e2e`
+against the full bundle (this pass's changes plus the concurrent homepage/
+tag/footer work landing in the same commit) surfaced 3 genuine new
+failures, all fixed rather than the underlying change reverted — each one
+traced to something correct and deliberate that an existing test's
+expectation hadn't caught up to yet:
+
+- `homepage.spec.js`'s stat-row regex still expected the old `"21 clubs ·
+  400+ events archived · Chennai"` text; the homepage-polish pass
+  intentionally simplified it to `"21 clubs · Chennai"`. Updated the regex.
+- `navigation.spec.js` had a test literally named "no Decap CMS link yet
+  (not scaffolded)" — `docusaurus.config.js`'s footer now links to `/admin`
+  on purpose (the page loads and is browsable even before the OAuth backend
+  is deployed, same reasoning as making the rollover doc public before it's
+  usable by everyone). Replaced the "absent" assertion with a "points at
+  `/admin`" one and renamed the test to match what it now actually checks.
+- `clubs-and-fests.spec.js`'s "every club has a working /contact page" test
+  hit its already-bumped 60s timeout (see the 2026-08-15 entry) — pushed to
+  120s. Flagged in the test's own comment that if this keeps growing with
+  the archive, it should switch to sampling instead of walking all 21
+  slugs sequentially, rather than keep raising the ceiling indefinitely.
+
+The other 4 failures (2 duplicate-"Archive"-link strict-mode violations, 1
+FOSS-contact-page duplicate-link match, 1 navbar-item-count mismatch) are
+the same pre-existing, unrelated failures confirmed and documented in the
+2026-08-15 entry — untouched here.
+
+**Follow-up same day:** those 4 "pre-existing" failures were fixed too,
+since they were real test-staleness bugs, not flaky noise, and shipping
+`npm run test:e2e` red isn't acceptable just because the red predates this
+session. `docusaurus.config.js` picked up a "Resources"/"Archive" navbar
+pair (linking to `/docs/category/resources` and `/docs/resources/archives`,
+the *event* archive) at some point before this session, growing the navbar
+from 6 items to 8 and giving the literal text "Archive" three matches on
+every page (navbar + its footer copy) — on top of the pre-existing body-copy
+"Archive" link on `/clubs` pointing at `/docs/archive`, the *leadership*
+archive. Fixed by: updating `navigation.spec.js`'s `NAVBAR_LINKS`/
+`FOOTER_WIKI_LINKS` fixtures to the real 8 items instead of assuming the
+old 6; scoping `clubs-and-fests.spec.js`'s and `leadership-rollover.spec.js`'s
+"Archive mention" tests to `page.locator('main')` so they target the one
+body-copy link instead of colliding with the navbar/footer. Separately,
+the footer (`src/theme/Footer/index.js`) now credits FOSS Club by its real
+Instagram handle (`@foss.saiu`) sitewide, which collided with the same
+handle appearing in FOSS's own `/contact` page body — scoped that test to
+`page.locator('article')`, matching the pattern the astronomy-club contact
+test right below it already used.
+
+A second full `npm run test:e2e` run after those 4 fixes came back *worse*
+(60 passed, down from 72) with a wide, unrelated-looking failure set: every
+dino-easter-egg test that clicks or scrolls the footer trigger, most of
+`docs.spec.js` (plain `page.goto` calls timing out at 30s), and one
+checkbox-state assertion — none of which touch code this session or the
+concurrent session changed. Root cause: a `docusaurus start` dev server left
+running unattended since the previous night (started 11:18PM, ~3 minutes of
+accumulated CPU time by the time this was caught) was competing for CPU with
+the test run's own build + `docusaurus serve` + parallel Chromium workers.
+Killed the stray process and reran clean: all 81 tests passed. Lesson
+captured for next time — a large unexplained swing in pass count between two
+back-to-back runs of the same suite, with failures clustered in code nobody
+touched, is a resource-contention signal before it's a code signal; check
+`ps`/`lsof` for stray dev servers first rather than debugging the failing
+tests themselves.
