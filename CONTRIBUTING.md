@@ -163,7 +163,26 @@ src/
                               `setAccentMode` from `useClubAccent.js`,
                               which existed with no caller anywhere in the
                               app until this component
+    HomepageClubMarks.jsx     the homepage hero's background band — 21
+                              static marks, one per real club, in that
+                              club's real accent (reads `CLUB_ACCENTS`
+                              directly, honors unified mode). Deliberately
+                              static, no entrance animation — see the
+                              file's own header for why one was tried and
+                              cut
     useLoadMore.js            generic client-side "load more" pagination hook
+                              — still what ClubEventsList uses; kept as-is
+    usePagination.js          generic page-number pagination hook — a
+                              companion to useLoadMore.js, not a replacement:
+                              for a result set the reader jumps around in
+                              (TagFilteredEvents), not an ever-growing
+                              appended list
+    PageCounter.jsx           the page-number nav UI itself (Prev/Next +
+                              windowed page buttons with "…" for gaps past
+                              7 pages) — sits right below TagFilteredEvents'
+                              article list, replacing what used to be a
+                              "Load more" button hard-capped at 10 results
+                              total (see changes.md)
     EventCard.jsx             one event's summary card (date/title/description
                               + an optional feature-image thumbnail, rendered
                               via @theme/IdealImage). `size="lg"` (used by
@@ -213,6 +232,14 @@ src/
     contactIcons.jsx          ContactLink/InstagramIcon/LinkedinIcon shared
                               by ClubContact and TeamSection
     primitives/Book.jsx       shared visual primitive
+    HomepageClubMarks.jsx     homepage header's foundation line — 21 static
+                              positioned circles, one per real club, real
+                              accent color from clubAccents.js + a native
+                              tooltip naming it; honors the unified-accent
+                              toggle. No Framer Motion — an entrance was
+                              tried and cut, the static marks alone read as
+                              a considered minimal hero (see changes.md,
+                              2026-08-21)
     clubs/                    21 club hero components
     fests/                    fest hero components + FestSound
   data/
@@ -223,8 +250,21 @@ src/
     festMeta.mjs              per-fest label/description/icon, read only by
                               scripts/rollover.mjs when bootstrapping a
                               fest's first archive category
+    committeeMeta.mjs         per-committee on-page heading word ("Committee"
+                              for Cultural Committee, "Government" for
+                              Student Government — not uniform, unlike
+                              clubs/fests) + role examples, read only by
+                              scripts/rollover.mjs — label/icon still come
+                              from each committee's own
+                              docs/committees/<slug>/_category_.json, same
+                              as clubs
   pages/
-    index.js                  homepage
+    index.js                  homepage — header uses the Display type role
+                              (Playfair Display) and the --ds-primary
+                              gradient, both already-owned tokens the
+                              section wasn't using before; see
+                              HomepageClubMarks.jsx above for the
+                              foundation-line piece it renders
     clubs.js                  /clubs — 21 club mini-hero cards
     fests.js                   /fests — 3 full-size fest heroes
     explore.js                 /explore — every hero + Events/Blog/Archives cards
@@ -287,9 +327,12 @@ docs-internal/                 planning/decision docs about the project,
                               deliberately not a public docs/resources/
                               page; running the script needs repo access
 scripts/
-  rollover.mjs                  snapshots an outgoing board/committee into
-                              docs/archive/, resets src/data/teams/<slug>.mjs
-                              — see "Leadership rollover" below
+  rollover.mjs                  snapshots an outgoing club/committee/fest
+                              board into docs/archive/, resets
+                              src/data/teams/<slug>.mjs — three separate,
+                              independent types (club/committee/fest), one
+                              slug per invocation — see "Leadership
+                              rollover" below
 tests/e2e/                     Playwright suite — see TEST_REPORT.md and
                               this doc's "Developer setup" section
 playwright.config.js
@@ -496,28 +539,46 @@ non-FOSS club uses — swap in real data via `src/data/teams/<slug>.mjs` and
 `src/data/clubContacts.js` whenever it's available, same as any other club.
 See `docs-internal/animation-caveats.md` §17 for the full history.
 
-### Leadership rollover (clubs & fests)
+### Leadership rollover (clubs, committees & fests)
 
-A club exec board or fest organisation committee changes every year. Unlike
-event posts (permanently dated once published), a club/fest's live page
-shows the *current* team — editing it in place for the new year would
-silently destroy the previous team's record unless something snapshots it
-first. The fix: snapshot the outgoing team into a permanent
-`docs/archive/<slug>/<year>-board.mdx` (fests: `-committee.mdx`) file, then
-reset `src/data/teams/<slug>.mjs` for the incoming team. Archive files are
-never edited after creation.
+A club exec board, a committee's leadership (Cultural Committee, Student
+Government), or a fest organisation committee changes every year. Unlike
+event posts (permanently dated once published), a club/committee/fest's
+live page shows the *current* team — editing it in place for the new year
+would silently destroy the previous team's record unless something
+snapshots it first. The fix: snapshot the outgoing team into a permanent
+`docs/archive/<slug>/<year>-board.mdx` (committees and fests:
+`-committee.mdx`) file, then reset `src/data/teams/<slug>.mjs` for the
+incoming team. Archive files are never edited after creation.
+
+**Club, committee, and fest rollovers are three genuinely separate,
+independent operations — not one combined process.** Each slug gets its own
+invocation of the script, one at a time; there's no "roll over every club
+and committee and fest at once" mode. An end-of-year pass through the whole
+site is just that many separate commands run back to back — a mistake in
+one slug can't cascade into another, and having some already done while
+others aren't yet is a normal, safe, expected state mid-rollover season.
 
 **Using the script (preferred):**
 
 ```bash
 npm run rollover -- club art-club 2025-26
+npm run rollover -- committee cultural-committee 2025-26
 npm run rollover -- fest tech-fest 2025-26
 npm run rollover -- club art-club 2025-26 --dry-run   # preview, no writes
 ```
 
-It validates the team data, refuses to overwrite an existing snapshot,
-bootstraps `docs/archive/<slug>/_category_.json` the first time a slug is
-rolled over, writes the year's snapshot `.mdx`, and resets
+`type` is `club`, `committee`, or `fest` — committees are
+`cultural-committee` and `student-government`, same slugs already used
+everywhere else on the site. It validates the team data, refuses to
+overwrite an existing snapshot, bootstraps
+`docs/archive/<slug>/_category_.json` the first time a slug is rolled over
+(clubs and committees both source their archive category's label/icon from
+their own live `docs/clubs|committees/<slug>/_category_.json`; a
+committee's on-page heading word varies per committee — "Committee" for
+Cultural Committee, "Government" for Student Government — read from
+`src/data/committeeMeta.mjs`, since unlike clubs and fests it isn't
+uniform), writes the year's snapshot `.mdx`, and resets
 `src/data/teams/<slug>.mjs` to a fresh placeholder. The full walkthrough is
 now public — see the live [Running a Leadership
 Rollover](/docs/resources/leadership-rollover) guide (still needs a
@@ -529,14 +590,16 @@ plus some internal-only history/decision notes.
 **Manual fallback**, if the script isn't available or won't run:
 
 1. Create `docs/archive/<slug>/<year>-board.mdx` (or `-committee.mdx` for a
-   fest) by hand, frontmatter (**including an explicit `slug: <year>-board`/
-   `-committee` field** — Docusaurus strips a leading `NNNN-word` pattern
-   from a doc's default slug otherwise, silently dropping the year from the
-   URL for a single-year `<year>` like `2026`; a year-range like `2025-26`
-   is protected from this, but set `slug:` either way for safety) + a
-   `<TeamSection clubSlug="<slug>" members={...} />` under a
-   `## <year> Board` (or `Organisation Committee`) heading — copy an
-   existing snapshot under `docs/archive/` as a template.
+   committee or fest) by hand, frontmatter (**including an explicit
+   `slug: <year>-board`/`-committee` field** — Docusaurus strips a leading
+   `NNNN-word` pattern from a doc's default slug otherwise, silently
+   dropping the year from the URL for a single-year `<year>` like `2026`;
+   a year-range like `2025-26` is protected from this, but set `slug:`
+   either way for safety) + a `<TeamSection clubSlug="<slug>"
+   members={...} />` under a `## <year> Board` (club), `Committee`/
+   `Government` (committee — matches that entity's own page heading, see
+   `committeeMeta.mjs`), or `Organisation Committee` (fest) heading — copy
+   an existing snapshot under `docs/archive/` as a template.
 2. If `docs/archive/<slug>/` doesn't exist yet, also add a
    `_category_.json` (label/description/icon — copy the pattern from an
    existing one, e.g. `docs/archive/cultural-fest/_category_.json`).

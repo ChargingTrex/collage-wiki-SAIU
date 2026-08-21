@@ -5,6 +5,7 @@ import Head from '@docusaurus/Head';
 import Link from '@docusaurus/Link';
 import Heading from '@theme/Heading';
 import {RecentActivity} from '@site/src/components/RecentActivity';
+import {HomepageClubMarks} from '@site/src/components/HomepageClubMarks';
 import styles from './index.module.css';
 
 const SITE_URL = 'https://chargingtrex.github.io/collage-wiki-SAIU/';
@@ -35,15 +36,16 @@ const STRUCTURED_DATA = {
 function HomepageHeader() {
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
-      <div className="container">
-        <Heading as="h1" className="hero__title">
+      <HomepageClubMarks />
+      <div className={clsx('container', styles.heroContent)}>
+        <Heading as="h1" className={clsx('hero__title', styles.heroTitle)}>
           Sai University Wiki
         </Heading>
         <p className="hero__subtitle">
           The Sai University wiki for student clubs, events, and student
           life in Chennai — every gathering kept by the people who ran it.
         </p>
-        <p className={styles.statRow}>21 clubs · 400+ events archived · Chennai</p>
+        <p className={styles.statRow}>21 clubs · Chennai</p>
         <div className={styles.buttons}>
           <Link className="button button--secondary button--lg" to="/clubs">
             Explore Clubs

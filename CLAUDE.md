@@ -34,9 +34,9 @@ club/committee's `events.mdx`, and the homepage Recent Activity strip all
 read from that one source.
 
 - **Organizer tags** — one per club (21), one per committee
-  (`cultural-committee`, `student-government`), one per named fest
-  (`tech-fest`/`general-fest`/`cultural-fest`) plus a generic `fest` tag for
-  fest content not tied to one specific fest.
+  (`cultural-committee`, `student-government`), one per fest
+  (`tech-fest`/`general-fest`/`cultural-fest`) — no generic `fest` tag;
+  `general-fest` already covers fest content not tied to one specific fest.
 - **Event-type tags** — `workshop`/`competition`/`talk`/`screening`/
   `exhibition`/`performance`/`hackathon`.
 - **Content-type tags** — `blog` (general club writing, not a dated event)
@@ -81,8 +81,10 @@ guessing its contents.
 
 - **Framer Motion is the primary animation system.** Use it wherever possible.
   **Fallback:** if no Framer equivalent exists for a specific effect, fall back
-  to `motion.css` / `motion.js` — but Framer is always the first choice. These
-  two files are **kept**, not deprecated, purely as a fallback layer.
+  to `motion.css` / `motion.js`. **Neither file has ever actually been created**
+  — Framer has covered every effect built so far, so this fallback layer is
+  specified but unbuilt. If a future hero needs it, build it from scratch;
+  don't assume it already exists.
 - **Design system** = the Scholar hybrid doc. Anchors: primary `#3b6af5` (blue),
   secondary `#f77f0e` (orange), accent `#218A5E` (green), full light/dark ramps.
   Ignore the Marginalia / Scholar / Sai Crimson alternatives (Appendix C).
@@ -100,31 +102,33 @@ guessing its contents.
 Docusaurus v3          core
 Tailwind CSS           via docusaurus-plugin-tailwindcss (REQUIRED by heroes)
 framer-motion          all hero animations (primary)
-motion.css / motion.js pure-CSS fallback when no Framer equivalent exists
+motion.css / motion.js specified fallback, never built — see above
 lucide-react           icons within heroes
 react-chrome-dino      footer easter-egg game (swap later only if it errors)
-Decap CMS              /admin editing
-GitHub Pages           hosting
+Decap CMS              /admin editing (scaffolded, auth not wired — see
+                        docs-internal/decap-cms-auth-todo.md)
+GitHub Pages           hosting, auto-deployed via GitHub Actions on push to main
 ```
 
 ## Setup
 
+This repo already exists and is fully scaffolded — don't re-run
+`create-docusaurus`. Real dev flow:
+
 ```bash
-npx create-docusaurus@latest sai-uni-wiki classic
-cd sai-uni-wiki
-npm install framer-motion lucide-react react-chrome-dino
-npm install -D tailwindcss postcss autoprefixer docusaurus-plugin-tailwindcss
-npm run start            # http://localhost:3000
+git clone https://github.com/ChargingTrex/collage-wiki-SAIU.git
+cd collage-wiki-SAIU
+npm install
+npm start            # http://localhost:3000/collage-wiki-SAIU/, hot reload
 ```
 
-`docusaurus.config.js`:
+Real `docusaurus.config.js` values (for reference, don't hand-edit without
+reason):
 ```js
-plugins: ['docusaurus-plugin-tailwindcss'],
-clientModules: [/* add motion.js here — it's the fallback layer */],
-url: 'https://sai-university.github.io',
-baseUrl: '/',
-organizationName: 'sai-university',
-projectName: 'sai-uni-wiki',
+url: 'https://chargingtrex.github.io',
+baseUrl: '/collage-wiki-SAIU/',
+organizationName: 'ChargingTrex',
+projectName: 'collage-wiki-SAIU',
 deploymentBranch: 'gh-pages',
 ```
 
@@ -133,19 +137,29 @@ Handwriting fonts — top of `custom.css`:
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Dancing+Script:wght@600;700&family=Great+Vibes&display=swap');
 ```
 
-Deploy: `cmd /C "set GIT_USER=YOUR_GITHUB_USERNAME && npm run deploy"`
+**Deploy is automatic** — GitHub Actions deploys on every push to `main`
+(`.github/workflows/deploy.yml`). Don't run `npm run deploy` manually; per
+Conventions below, it needs explicit maintainer sign-off (it pushes straight
+to `gh-pages`, bypassing CI).
 
 ## The two shared systems (read before touching heroes)
 
 ### Playback — `useIntroMotion`
 Every hero animates **while the reader arrives**, then goes still on
-scroll / click / key / touch. Hover replays from the start.
+scroll / click / key / touch. **Click/tap replays from the start** — hover-to-
+replay was tried and deliberately reverted (fired on incidental cursor drift,
+and doesn't exist on touch at all).
 ```jsx
-const { isPlaying, isHovered, hoverProps } = useIntroMotion();
+const { isPlaying, isReplaying, hoverProps } = useIntroMotion();
 ```
-Baked in: no auto-restart on scroll-to-top; mid-page landings never play the
-intro; hover is pointer-only (excludes touch); `prefers-reduced-motion` gets the
-rested state and hover does not override it.
+`hoverProps` is spread on the hero's root element regardless of the name (kept
+for call-site compatibility) — it wires `onClick`, plus `role="button"`,
+`tabIndex`, `onKeyDown` (Enter/Space), and `aria-label="Replay animation"` so
+replay is keyboard-reachable too. Baked in: no auto-restart on scroll-to-top;
+mid-page landings never play the intro; `prefers-reduced-motion` gets the
+rested state and a click does not override it; an always-on
+`IntersectionObserver` pauses `isPlaying` whenever the hero scrolls off-screen
+(covers looping heroes on the directory grid).
 
 ### Accent color — `useClubAccent`
 Each club has its own accent; a settings toggle switches to **unified mode**
@@ -160,57 +174,32 @@ Hook renders `per-club` on first paint (avoids hydration mismatch) and fires a
 mode (Gaming's 2nd ghost, Art's color cycle, Fashion's gold, fest palettes) —
 the color *is* the concept there.
 
-## Remaining infra tasks — do in THIS order
+## Remaining infra tasks
 
-1. **Accent unified-mode toggle UI** — the `useClubAccent` hook and its
-   localStorage layer exist, but nothing calls `setAccentMode`. Build the
-   missing settings control (navbar item or settings page) that flips per-club ↔
-   unified and persists. Do this first.
-2. **Off-screen `IntersectionObserver` pause** — looping heroes keep animating
-   when scrolled out of view (wasteful, worst on the directory page with many
-   heroes). Add the observer **once inside `useIntroMotion`**, not per component,
-   to pause off-screen heroes.
+Both items below are **done** — kept as a record, not a to-do list:
+
+1. **Accent unified-mode toggle UI** — built (`AccentModeToggle.jsx`, wired
+   into the navbar); `useAccentMode()` persists to localStorage.
+2. **Off-screen `IntersectionObserver` pause** — done, once inside
+   `useIntroMotion` (see "Playback" above), not per component.
 
 ## Component integration notes
 
-- All 26 heroes are pre-built and self-contained. **Wire one club page as a
-  smoke test before integrating all 21.**
-- **Rename on integration:** `LibraryHero-v2.jsx` → `LibraryHero.jsx`;
-  `LiteraryHero-fontmask.jsx` → `LiteraryHero.jsx` (delete the old versions).
-- Homepage `index.js` uses hardcoded ClubCards + native `.card`/`.button` +
-  inline styles — reconcile with the Scholar palette and hero components.
+- All 26 heroes are pre-built and self-contained.
+- Homepage `index.js` is a plain Infima `hero hero--primary` header (title,
+  subtitle, stat row, CTAs) — real content, not hardcoded `ClubCard`s; the
+  club directory grid lives at `/clubs` via `MiniHeroCard.jsx`.
 - Motion comes from the club's *activity*, not from spinning its noun. Preserve
   the per-hero rationale in each file's header comment.
 - Do reduced-motion, hydration, and off-screen behavior **once in the shared
   hooks** — never per component.
 
-## Directory structure (target)
+## Directory structure
 
-```
-sai-uni-wiki/
-├── docusaurus.config.js  tailwind.config.js  sidebars.js
-├── static/
-│   ├── admin/index.html          # Decap CMS
-│   ├── audio/                     # user-supplied fest/music audio
-│   └── img/
-├── src/
-│   ├── css/custom.css            # Scholar hybrid palette + accent bridge
-│   ├── theme/Footer/index.js     # swizzled --wrap for the easter egg
-│   ├── components/
-│   │   ├── useIntroMotion.js  useClubAccent.js  clubAccents.js
-│   │   ├── primitives/Book.jsx
-│   │   ├── LibraryHero.jsx  ArchivesHero.jsx
-│   │   ├── clubs/                # 21 club heroes (incl. TuringitesHero,
-│   │   │                         # ChessHero, PugwashHero, SportsHero)
-│   │   └── fests/                # FestSound + 3 fest heroes
-│   └── pages/index.js
-├── docs/
-│   ├── resources/
-│   └── clubs/                    # 21 .mdx pages (hero at top of each)
-└── blog/
-    ├── authors.yml
-    └── YYYY-MM-DD-<event>/index.md + co-located images
-```
+Don't duplicate the tree here — `CONTRIBUTING.md`'s "Where things live"
+section (§3) is the maintained, accurate map of `src/`, `docs/`, `blog/`,
+`static/`, `tests/`, and `scripts/`. Read that instead of trusting a second
+copy that will drift out of sync with it.
 
 Accent bridge in `custom.css`:
 ```css
@@ -264,10 +253,10 @@ in `CLUB_ACCENTS`.
 
 Contact/team data is placeholder (`src/data/clubContacts.js`,
 `src/data/teams/<slug>.mjs`), same convention as every newly added club.
-**Known gap:** `scripts/rollover.mjs` only supports `type` `club` (which
-hardcodes reading `docs/clubs/<slug>/_category_.json`) or `fest` — it
-doesn't know about `docs/committees/` yet, so leadership rollover for these
-two has to be done manually until the script gains a `committee` type.
+`scripts/rollover.mjs` has a `committee` type (`npm run rollover -- committee
+cultural-committee 2025-26`) that reads `docs/committees/<slug>/
+_category_.json` for label/icon and `src/data/committeeMeta.mjs` for the
+per-committee heading word ("Committee" vs. "Government") and role examples.
 
 ## Fest audio wiring (once files supplied)
 
@@ -309,15 +298,17 @@ The swizzled `src/theme/Footer/index.js` wraps (not replaces) the default footer
 
 ## Verification checklist (Appendix B)
 
-- [ ] Styling from `scholar-design-system-hybrid (1).md`; accent bridge present
-- [ ] Framer primary; `motion.css`/`motion.js` retained as fallback only
-- [ ] Infra hooks import cleanly; one club page smoke-tested
-- [ ] All 21 heroes render, animate on load, still on scroll, replay on click/tap
-- [ ] Accent unified-mode toggle built and persists (done before pause task)
-- [ ] Off-screen `IntersectionObserver` pause added to `useIntroMotion`
-- [ ] Reduced-motion path verified
-- [ ] Fest audio wired (once supplied); nothing autoplays
-- [ ] Footer easter egg: in-flow bottom, tooltip kept, dino recolors on unified
-- [ ] `LibraryHero-v2`→`LibraryHero`, `LiteraryHero-fontmask`→`LiteraryHero`
-- [ ] Decap CMS reachable at `/admin`; co-located image build works
-- [ ] Deploys to GitHub Pages
+- [x] Styling from `scholar-design-system-hybrid (1).md`; accent bridge present
+- [x] Framer primary; `motion.css`/`motion.js` specified as fallback, never built
+- [x] Infra hooks import cleanly; all club pages integrated
+- [x] All 26 heroes render, animate on load, still on scroll, replay on click/tap
+- [x] Accent unified-mode toggle built and persists
+- [x] Off-screen `IntersectionObserver` pause added to `useIntroMotion`
+- [x] Reduced-motion path verified
+- [ ] Fest audio wired (once supplied); nothing autoplays — mechanism built,
+      files not yet supplied (licensing, see "Fest audio wiring" above)
+- [x] Footer easter egg: in-flow bottom, tooltip kept, dino recolors on unified
+- [x] `LibraryHero-v2`→`LibraryHero`, `LiteraryHero-fontmask`→`LiteraryHero`
+- [ ] Decap CMS reachable at `/admin`; **auth not wired, can't save yet** —
+      see `docs-internal/decap-cms-auth-todo.md`
+- [x] Deploys to GitHub Pages (automatic via GitHub Actions on push to `main`)

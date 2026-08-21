@@ -1,5 +1,71 @@
 # Changes
 
+## 2026-08-21 — Homepage header redesign: display type, real gradient, 21-club foundation line
+
+Files: `src/pages/index.js`, `src/pages/index.module.css`, `src/components/HomepageClubMarks.jsx` (new)
+
+Requested: the homepage's first screen was a flat Infima `hero--primary`
+block — solid color fill, default type, no motion, no motif — while every
+other page on the site carries the Scholar system's own strongest moves.
+Via `/impeccable bolder`: raise the section to what the rest of the system
+already does, using only tokens/patterns it already owns, not new ones.
+
+- **Title** now actually uses the Display role (Playfair Display, 700) —
+  DESIGN.md reserves that role for "hero and cover-page titles only," and
+  the one title built for it wasn't using it. Fluid `clamp(2.25rem, 1.2rem
+  + 4vw, 3rem)` matches DESIGN.md's own documented mobile value exactly
+  (first attempt used `2rem`, a close-but-different number the mechanical
+  detector flagged — fixed to the value already specified in prose).
+- **Background** is the existing `--ds-primary-600`→`-900` ramp as a
+  gradient instead of one flat step; no new color introduced. Those steps
+  hold their light-mode hex in dark theme too (only `-500` gets brightened,
+  for on-dark text/links), so it reads consistently in both themes without
+  a separate override.
+- **Stat row** now uses the Label role (mono, uppercase, tracked) already
+  used sitewide for this category of content (card sub-labels, tags).
+  Dropped "400+ events archived" per review — also a real correction, not
+  just trim: `PRODUCT.md`/`CLAUDE.md` already call that count aspirational
+  and not yet imported into `/blog`, so the claim was false. Now "21 clubs
+  · Chennai".
+- **`HomepageClubMarks.jsx`** — the section's one authored element: a
+  foundation line of 21 marks, one per real club, in that club's real
+  accent color from `clubAccents.js` (the same data every hero reads),
+  honoring the sitewide unified-accent toggle. Not decoration — each mark
+  carries a native tooltip naming its real club, and the whole thing is the
+  wiki's actual subject (21 distinct clubs, one shared record) rendered
+  literally. First version dropped the marks in with a staggered
+  Framer Motion entrance (reusing `primitives/Book.jsx`'s exact
+  mild-overshoot ease); cut after review found the static marks already
+  read as a considered minimal hero and the drop-in didn't earn its place
+  — final version is plain positioned CSS circles, no Framer Motion
+  dependency for this piece.
+
+**Two real bugs found and fixed while building, not just decided against:**
+1. First implementation rendered the marks as SVG `<circle>`s in a
+   `preserveAspectRatio="none"` viewBox stretched to fill the full-bleed
+   header. Since the header's rendered aspect ratio doesn't match the
+   viewBox's, X and Y ended up scaled by different factors — circles
+   rendered as tall ellipses. Fixed by switching to fixed-pixel CSS
+   `border-radius: 9999px` divs, which stay circular regardless of the
+   container's aspect ratio, instead of fighting SVG scaling.
+2. The reduced-motion branch (before the entrance was cut entirely) set
+   `initial`/`animate` to structurally-equal-but-distinct objects
+   `{y:0, opacity:0.9}` in both the playing and not-playing cases, but
+   `initial` still differed from `animate` in the not-playing case too —
+   Framer still animates between distinct `initial`/`animate` values
+   regardless of transition duration, so `prefers-reduced-motion` users
+   would have still seen a fast drop instead of the required no-animation
+   rest state. Caught before it shipped, fixed to match every other hero's
+   pattern (`initial` already equals the rest state when not playing).
+
+Verified via real headless-Chromium screenshots (desktop + mobile,
+Playwright, no new tooling) at each stage, not just reasoning about the
+CSS; zero console/page errors. Ran the Impeccable mechanical detector
+(`detect.mjs`) after finishing — one real finding fixed (the `2rem` clamp
+value above), one pre-existing/out-of-scope finding left alone
+(`index.module.css`'s `.aboutLine` at `1.15rem`, off the DESIGN.md type
+ramp but unrelated to this task).
+
 ## 2026-08-15 — Update FOSS Club and Fashion Club teams
 
 Files: `src/data/teams/fashion-club.mjs`, `src/data/teams/foss-club.mjs`, `src/components/clubAccents.js`, `src/data/clubContacts.js`, `src/data/fossMembers.ts` (new), `src/components/MembersGrid/index.tsx` (new), `src/components/MemberCard/index.tsx` (new), `src/css/custom.css`, `docs/clubs/foss-club/index.mdx`
@@ -2616,3 +2682,85 @@ own club at all. Added all three to both places.
 
 Two throwaway test posts (`ZZTEST...`) created during verification were
 deleted afterward; not part of the real archive.
+
+## 2026-08-21 — Committee rollover support, real pagination + sort on Events/Blog, homepage hero polish
+
+Files: `scripts/rollover.mjs`, `src/data/committeeMeta.mjs` (new),
+`docs/resources/leadership-rollover.mdx`, `CONTRIBUTING.md`,
+`docs-internal/leadership-rollover.md`, `src/components/
+TagFilteredEvents.jsx`, `src/components/usePagination.js` (new),
+`src/components/PageCounter.jsx` (new), `src/pages/index.js`,
+`src/pages/index.module.css`, `src/components/HomepageClubMarks.jsx` (new),
+`blog/tags.yml`, `static/admin/config.yml`,
+`tests/e2e/events-and-blog.spec.js`, 23 new `blog/2026-08-16-*-intro/`
+posts (one per club/committee)
+
+**Leadership rollover now supports committees, not just clubs and
+fests.** `docs/committees/cultural-committee/` and `docs/committees/
+student-government/` already existed as real content — each committee's
+own `src/data/teams/<slug>.mjs` file even already claimed "snapshotted at
+rollover" in its own header comment — but `scripts/rollover.mjs`'s type
+check only ever accepted `club` or `fest`, so a committee genuinely
+couldn't be rolled over at all. `committee` is now a real third type,
+resolved independently of both: its archive category sources from its own
+`docs/committees/<slug>/_category_.json` (same pattern as clubs), and its
+on-page heading word — which isn't uniform across committees the way
+"Board" (club) and "Organisation Committee" (fest) are — is read per-slug
+from the new `src/data/committeeMeta.mjs` ("Committee" for Cultural
+Committee, "Government" for Student Government). Verified with `--dry-run`
+against both real committees, plus a regression check that `club`/`fest`
+still behave identically to before. Confirmed and documented explicitly, in
+all three rollover docs: club, committee, and fest rollovers are three
+separate, independent operations — one slug per invocation, deliberately no
+"roll everything over at once" mode, so a mistake in one can't cascade into
+another and a partially-done end-of-year pass is a normal state, not a
+broken one.
+
+**`/events` and `/student-voices` had a real, increasingly-active content
+ceiling.** `TagFilteredEvents.jsx` (the shared component behind both pages)
+hard-capped its result set at 10 posts total, revealed 5 at a time via a
+"Load more" button — fine when only a handful of real posts existed, but
+the 23 new club/committee intro posts below pushed the real archive past
+that cap, making a growing share of real content permanently unreachable
+regardless of how many times "Load more" was clicked. Replaced with real
+page-number pagination: `usePagination.js` (new hook, a companion to
+`useLoadMore.js` — that one stays exactly as-is for `ClubEventsList`, this
+is specifically for a result set worth jumping around in rather than
+appending to) and `PageCounter.jsx` (the page-number nav itself — Prev/Next
+plus a windowed page-button display with "…" gaps once past 7 pages, so a
+future 400-post archive doesn't render 40 buttons in a row). The `RESULT_CAP`
+is gone entirely — every matching post is now reachable, just paginated
+10-per-page instead of silently truncated.
+
+**Added a sort dropdown** ("Newest first" / "Oldest first" / "Alphabetical
+A–Z") next to the tag checkboxes on both pages, applied before pagination
+splits the list into pages. Sorting on `date` compares the already-ISO-8601
+string directly rather than parsing to a `Date` first (lexical order on ISO
+8601 already matches chronological order); both `date` and `title` are
+guaranteed non-null by `club-events-plugin.js`'s own fallback chain, so no
+null-safety branch was needed. Changing either the tag selection or the
+sort order resets pagination back to page 1 (one shared `resetKey`), so a
+reader never lands on a stale page number that no longer lines up with the
+new result set or ordering.
+
+**Bundled in the same pass, reviewed for safety before committing** (this
+session didn't author these, but they landed in the same working tree and
+this was the first point they got committed): a generic `fest` tag (for
+fest content not tied to one specific fest) was removed from `blog/
+tags.yml` and `static/admin/config.yml`'s Tags dropdown — unused, and its
+own description ("general fest-related content not tied to one specific
+fest") duplicated what the three named fest tags already cover between
+them; the homepage hero (`index.js`/`index.module.css`) gained a subtle
+primary-color gradient background, the Display type role (Playfair
+Display, previously unused anywhere despite being reserved sitewide for
+"hero titles only") on the `<h1>`, a fluid clamp()'d title size, and
+`HomepageClubMarks.jsx` — 21 static accent-colored marks across the hero
+background, one per real club, reading real data (`CLUB_ACCENTS`) rather
+than decorative confetti, honoring unified-accent mode like every hero
+does; and 23 new blog posts (`2026-08-16-<slug>-intro/`), one per club and
+committee, giving `/events` real content to paginate through for the first
+time instead of the near-empty archive every test/screenshot before this
+had to account for.
+
+Full production build clean after every stage; `npm run test:e2e` run in
+full afterward.

@@ -4,16 +4,44 @@
  */
 
 .heroBanner {
-  padding: 4rem 0;
+  padding: 4rem 0 6rem;
   text-align: center;
   position: relative;
   overflow: hidden;
+  /* Same primary token the flat Infima fill used, just the full ramp
+     instead of one flat step — no new color, more of the one it already
+     owns. -600 through -950 hold their light-mode hex in dark theme too
+     (only -500 gets brightened for on-dark text/links), so this reads
+     consistently in both themes without a separate dark-mode override. */
+  background: linear-gradient(160deg, var(--ds-primary-600), var(--ds-primary-900));
 }
 
 @media screen and (max-width: 996px) {
   .heroBanner {
-    padding: 2rem;
+    padding: 2rem 2rem 4rem;
   }
+}
+
+.heroContent {
+  position: relative;
+  /* Sits above HomepageClubMarks' absolutely-positioned background layer —
+     without an explicit stacking order, the positioned decorative layer
+     would paint over this in-flow content, not under it. */
+  z-index: 1;
+}
+
+.heroTitle {
+  /* The Display role (Playfair Display, 700) is reserved sitewide for
+     "hero and cover-page titles only" — this h1 is the one title on the
+     whole site that role was actually built for, and it wasn't using it. */
+  font-family: var(--ds-font-display);
+  font-weight: var(--ds-font-weight-bold);
+  letter-spacing: -0.01em;
+  /* Fluid instead of a hard breakpoint jump — DESIGN.md's Display spec
+     (3rem, clamps down on mobile) as a smooth curve. Bold serif "Sai
+     University Wiki" at Infima's unclamped default size wraps to 3 lines
+     (one word per line) under ~400px; this keeps it to 2. */
+  font-size: clamp(2.25rem, 1.2rem + 4vw, 3rem);
 }
 
 .buttons {
@@ -24,7 +52,14 @@
 }
 
 .statRow {
-  font-weight: 600;
+  /* The Label role — mono, uppercase, tracked — is already used sitewide
+     for exactly this kind of metadata (card sub-labels, tags); this stat
+     line is the same category of content and wasn't using it. */
+  font-family: var(--ds-font-mono);
+  font-size: var(--ds-font-size-sm);
+  font-weight: var(--ds-font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
   opacity: 0.9;
   margin-bottom: 1.5rem;
 }
