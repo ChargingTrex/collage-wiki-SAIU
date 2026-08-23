@@ -23,6 +23,12 @@ already reflected this correctly; this doc didn't.
   them at yet).
 - No architecture or recommendation changed — this was a staleness fix, not a
   plan revision.
+- Follow-up same day: added a dedicated "OAuth-proxy & CMS requirements"
+  section (concrete GitHub OAuth App fields, `oauth-proxy` env vars, the
+  `config.yml` backend snippet, and the editor/club-lead GitHub-account
+  requirement) so the requirements aren't scattered across this doc,
+  `oauth-proxy/README.md`, and `decap-cms-auth-todo.md` — this is the one
+  place to hand to whoever deploys the proxy.
 
 ## 2026-08-21 — Homepage header redesign: display type, real gradient, 21-club foundation line
 
