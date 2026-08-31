@@ -1,7 +1,7 @@
 ---
 title: "Welcome to the Chess Club"
 date: 2026-08-16
-tags: [chess-club, events]
+tags: [chess-club, blog]
 description: "Strategy, tactics, and the quiet art of checkmate."
 ---
 

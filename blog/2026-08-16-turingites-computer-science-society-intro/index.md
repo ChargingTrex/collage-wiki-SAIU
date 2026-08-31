@@ -1,7 +1,7 @@
 ---
 title: "Welcome to the Turingites Computer Science Society"
 date: 2026-08-16
-tags: [turingites-computer-science-society, events]
+tags: [turingites-computer-science-society, blog]
 description: "Computer Science Society — coding, algorithms, hackathons at Sai University."
 ---
 

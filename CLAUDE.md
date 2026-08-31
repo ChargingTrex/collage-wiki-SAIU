@@ -95,6 +95,26 @@ guessing its contents.
   `PugwashHero`, and `SportsHero` — none are missing.
 - **Audio never autoplays.** Players are click-to-play and render only when an
   `audioSrc` is passed. Audio files are the user's to supply (licensing).
+- **`--ds-neutral-0` is not "always-light text" — don't use it for text on an
+  accent-colored fill.** Light mode: `#ffffff`. Dark mode: redefined to
+  `#15181f` (the darkest neutral, i.e. the page background), an inverted
+  ramp, not a fixed color. `EventViewToggle.jsx` originally used it for a
+  filled/active button's text and was unreadable in dark mode (near-black on
+  near-black) — fixed by dropping the accent-fill design entirely rather
+  than chasing a different token. If something genuinely needs
+  theme-invariant white/black, use a literal color, not a semantic `--ds-*`
+  ramp token.
+- **A full-size hero wrapped in a page-level `<Link>` (to make the whole
+  hero clickable, e.g. `/fests`) needs its nested interactive children
+  (`FestSound`'s play button, etc.) to call both `e.stopPropagation()` AND
+  `e.preventDefault()` on click, not just `stopPropagation()`.**
+  `stopPropagation()` alone only stops React's synthetic dispatch from
+  reaching the ancestor `<a>`'s own `onClick` — the underlying anchor still
+  performs its native default navigation regardless, since nothing told it
+  not to. This is different from `MiniHeroCard.jsx`'s scaled-down preview
+  cards, which use `inert`/`pointer-events:none` instead — fine there since
+  a preview doesn't need its own interactivity to survive, wrong for a
+  full-size hero whose audio control needs to keep working.
 
 ## Tech stack
 

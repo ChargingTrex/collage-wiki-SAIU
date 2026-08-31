@@ -1,7 +1,7 @@
 ---
 title: "Welcome to the Student Government"
 date: 2026-08-16
-tags: [student-government, events]
+tags: [student-government, blog]
 description: "The elected student body representing Sai University students."
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: "Welcome to the FOSS Club"
 date: 2026-08-16
-tags: [foss-club, events]
+tags: [foss-club, blog]
 description: "Promoting Free and Open Source Software at Sai University."
 ---
 

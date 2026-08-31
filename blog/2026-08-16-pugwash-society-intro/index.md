@@ -1,7 +1,7 @@
 ---
 title: "Welcome to the Pugwash Society"
 date: 2026-08-16
-tags: [pugwash-society, events]
+tags: [pugwash-society, blog]
 description: "Debating science, policy, and the world's hardest questions."
 ---
 

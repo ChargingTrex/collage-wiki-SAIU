@@ -91,11 +91,42 @@ test.describe('/fests directory', () => {
     await page.goto('fests');
     await page.waitForLoadState('networkidle');
 
+    // 2 links per fest: the hero itself (now wrapped in a Link, see
+    // .fest-hero-link in custom.css) and the explicit "View X →" text CTA
+    // below it — kept both rather than removing the CTA once the hero
+    // became clickable.
     for (const slug of FEST_SLUGS) {
-      await expect(page.locator(`a[href$="/docs/fests/${slug}"]`)).toHaveCount(1);
+      await expect(page.locator(`a[href$="/docs/fests/${slug}"]`)).toHaveCount(2);
     }
 
     expect(errors).toEqual([]);
+  });
+
+  test('clicking a fest hero navigates to that fest\'s page', async ({page}) => {
+    await page.goto('fests');
+    await page.waitForLoadState('networkidle');
+    // Click near the top-left of the hero (title/background, not the
+    // audio button, which intentionally stops propagation instead of
+    // navigating — see FestSound.jsx).
+    await page.locator('a.fest-hero-link').first().click({position: {x: 20, y: 20}});
+    await expect(page).toHaveURL(/\/docs\/fests\/tech-fest$/);
+  });
+
+  test('the fest hero audio button does not navigate away when clicked', async ({page}) => {
+    // Doesn't assert the button flips to "Stop" — static/audio/ only has a
+    // .gitkeep right now (see CLAUDE.md's "Fest audio wiring"), so .play()
+    // 404s and the promise rejects in every environment, not just this
+    // test. What this guards against is real: FestSound.jsx's toggle
+    // handler used to only call stopPropagation(), which stopped it from
+    // re-triggering the hero's own replay handler but did nothing about
+    // the ancestor <a href> (.fest-hero-link) still performing its native
+    // default navigation — confirmed by a real failure here before
+    // FestSound.jsx also gained preventDefault().
+    await page.goto('fests');
+    await page.waitForLoadState('networkidle');
+    const playButton = page.locator('a.fest-hero-link').first().getByRole('button', {name: /play theme/i});
+    await playButton.click();
+    await expect(page).toHaveURL(/\/fests$/);
   });
 
   test('no fest audio autoplays', async ({page}) => {

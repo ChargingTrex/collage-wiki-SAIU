@@ -3,10 +3,10 @@
 // Per-fest label/description/icon — the fest equivalent of a club's own
 // _category_.json, read only by scripts/rollover.mjs when bootstrapping a
 // fest's docs/archive/<slug>/_category_.json for the first time. Keep in
-// sync with each fest's own docs/fests/<slug>.mdx frontmatter by hand.
+// sync with each fest's own docs/fests/<slug>/index.mdx frontmatter by hand.
 //
 // Icons match what's already live in each fest's own frontmatter
-// (docs/fests/<slug>.mdx's sidebar_custom_props.icon) — Rocket, PartyPopper,
+// (docs/fests/<slug>/index.mdx's sidebar_custom_props.icon) — Rocket, PartyPopper,
 // and Music, not a fresh choice, so the archive category's icon matches the
 // live fest page's icon exactly, same as clubs already do.
 

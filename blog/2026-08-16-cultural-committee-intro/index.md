@@ -1,7 +1,7 @@
 ---
 title: "Welcome to the Cultural Committee"
 date: 2026-08-16
-tags: [cultural-committee, events]
+tags: [cultural-committee, blog]
 description: "The student body running cultural events across Sai University."
 ---
 

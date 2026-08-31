@@ -1,7 +1,7 @@
 ---
 title: "Welcome to the Gardening Club"
 date: 2026-08-16
-tags: [gardening-club, events]
+tags: [gardening-club, blog]
 description: "Cultivating green spaces across Sai University."
 ---
 

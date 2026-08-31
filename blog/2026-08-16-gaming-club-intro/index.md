@@ -1,7 +1,7 @@
 ---
 title: "Welcome to the Gaming Club"
 date: 2026-08-16
-tags: [gaming-club, events]
+tags: [gaming-club, blog]
 description: "Casual, competitive, and esports community at Sai University."
 ---
 

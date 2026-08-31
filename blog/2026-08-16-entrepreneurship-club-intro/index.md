@@ -1,7 +1,7 @@
 ---
 title: "Welcome to the Entrepreneurship Club"
 date: 2026-08-16
-tags: [entrepreneurship-club, events]
+tags: [entrepreneurship-club, blog]
 description: "Fostering startup culture and business innovation at Sai University."
 ---
 

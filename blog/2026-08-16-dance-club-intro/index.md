@@ -1,7 +1,7 @@
 ---
 title: "Welcome to the Dance Club"
 date: 2026-08-16
-tags: [dance-club, events]
+tags: [dance-club, blog]
 description: "Expressing rhythm, grace, and movement at Sai University."
 ---
 

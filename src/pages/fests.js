@@ -23,19 +23,28 @@ export default function FestsDirectory() {
 
         <div className="row">
           <div className="col col--12 margin-bottom--sm">
-            <TechFestHero audioSrc="/collage-wiki-SAIU/audio/innovision-theme.mp3" />
+            <Link to="/docs/fests/tech-fest" className="fest-hero-link" aria-label="View Innovision">
+              <TechFestHero audioSrc="/collage-wiki-SAIU/audio/innovision-theme.mp3" />
+            </Link>
             <div className="text--right">
               <Link to="/docs/fests/tech-fest">View Innovision →</Link>
             </div>
           </div>
           <div className="col col--12 margin-top--md margin-bottom--sm">
-            <GeneralFestHero audioSrc="/collage-wiki-SAIU/audio/fest-fanfare.mp3" />
+            <Link
+              to="/docs/fests/general-fest"
+              className="fest-hero-link"
+              aria-label="View the Annual College Fest">
+              <GeneralFestHero audioSrc="/collage-wiki-SAIU/audio/fest-fanfare.mp3" />
+            </Link>
             <div className="text--right">
               <Link to="/docs/fests/general-fest">View the Annual College Fest →</Link>
             </div>
           </div>
           <div className="col col--12 margin-top--md">
-            <CulturalFestHero audioSrc="/collage-wiki-SAIU/audio/vibrance-anthem.mp3" />
+            <Link to="/docs/fests/cultural-fest" className="fest-hero-link" aria-label="View MoSAIc">
+              <CulturalFestHero audioSrc="/collage-wiki-SAIU/audio/vibrance-anthem.mp3" />
+            </Link>
             <div className="text--right">
               <Link to="/docs/fests/cultural-fest">View MoSAIc →</Link>
             </div>

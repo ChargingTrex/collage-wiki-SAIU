@@ -1,5 +1,168 @@
 # Changes
 
+## 2026-08-31 — Fixed an unreadable/broken List/Timeline toggle button in dark mode
+
+Files: `src/components/EventViewToggle.jsx`, `CONTRIBUTING.md`
+
+Reported: a screenshot of `/docs/clubs/literary-club/events` in dark mode
+showed the "List" button as an empty box next to a normal-looking "Timeline"
+button.
+
+Root cause: the two-button radio-group version of this component styled its
+*active* button with `background: var(--club-accent)` and
+`color: var(--ds-neutral-0)`, assuming `--ds-neutral-0` meant "white, for
+text on a colored fill." It doesn't — light mode: `#ffffff`; dark mode:
+redefined to `#15181f` (the darkest neutral, effectively "the page
+background color"), an inverted ramp rather than a fixed color. In dark
+mode the active button's text rendered near-black, on a background that
+also wasn't reliably contrasting, i.e. invisible.
+
+Fixed by dropping the two-button/accent-fill design entirely rather than
+hunting for a different token: `EventViewToggle` is now a single button
+that reads "Timeline" while on List (click to enter) and "List" while on
+Timeline (click to exit), per explicit request — simpler, and there's no
+second/inactive button whose contrast has to work on every club's accent
+color in both themes at once. Uses only `--ds-border` +
+`--ds-text-secondary`, both already theme-adaptive and used this way
+elsewhere on the site already. `CONTRIBUTING.md`'s description of this
+component updated to match (was still describing the old two-button
+version) — see `CLAUDE.md`'s "Decisions already made" for the token
+gotcha itself, recorded there so it isn't reintroduced elsewhere.
+
+Verified via real Playwright screenshots in both themes (not just reasoning
+about the CSS) before and after.
+
+## 2026-08-31 — Fest heroes on /fests are now themselves links to that fest's page
+
+Files: `src/pages/fests.js`, `src/css/custom.css`,
+`src/components/fests/FestSound.jsx`, `tests/e2e/clubs-and-fests.spec.js`
+
+Requested: clicking a hero on `/fests` should navigate to that fest's own
+page, same as a club's mini-hero card already does on `/clubs` — not just
+the small "View X →" text link below it (kept, per explicit request, rather
+than removed once the hero itself became clickable).
+
+Deliberately NOT `MiniHeroCard.jsx`'s `inert`/`pointer-events:none`
+treatment: that's fine for a scaled-down *preview* card where the hero's own
+interactivity (replay, audio) isn't needed — the whole card's only job is
+navigation. Here the hero is the real, full-size one on `/fests` itself, and
+its `FestSound` "Play theme" button needs to keep working. Wrapped each hero
+in a `<Link>` (`.fest-hero-link` in custom.css — hover lift, `color:
+inherit`, no default anchor styling bleeding into the hero's own text) and
+relied on `FestSound`'s existing `e.stopPropagation()` to keep its button
+independent of the wrapping Link's click handling.
+
+**Real bug found via the test written to cover this, not just assumed
+away:** a first pass only added `stopPropagation()` (already there, for a
+different original reason — see FestSound.jsx's own comment) and shipped.
+A dedicated test (`the fest hero audio button does not navigate away when
+clicked`) caught that clicking "Play theme" *did* navigate to the fest's
+page anyway. Root cause: `stopPropagation()` only stops React's synthetic
+dispatch from reaching the ancestor Link's own `onClick` — the underlying
+`<a href>` still performs its native default navigation regardless, since
+nothing told it not to. Fixed by also calling `e.preventDefault()` in
+`FestSound.jsx`'s `toggle()`, which is safe everywhere else `FestSound` is
+used too (a click's default action for a plain `<button>` outside a form is
+a no-op, so `preventDefault()` there does nothing either way).
+
+The "still flips to Stop" half of that same test was dropped, not
+weakened for no reason — `static/audio/` only has a `.gitkeep` right now
+(see CLAUDE.md's "Fest audio wiring": files not supplied yet), so `.play()`
+rejects in every environment. What the test actually needs to guard —
+no navigation on click — doesn't depend on a real audio file existing.
+
+`clubs-and-fests.spec.js`'s existing "renders all 3 fest heroes with working
+view-links" test updated from expecting 1 matching link per fest to 2 (the
+hero + the kept text CTA), plus two new tests for the click-navigates and
+audio-doesn't-navigate behavior. Full build clean; full `npm run test:e2e`
+(83 tests) passes.
+
+## 2026-08-31 — Vertical event timeline for clubs, committees, and fests
+
+Files: `src/components/ClubTimeline.jsx` (new),
+`src/components/ClubTimeline.module.css` (new),
+`src/components/TimelineEmptyState.jsx` (new),
+`src/components/EventViewToggle.jsx` (new),
+`src/components/ClubEventsView.jsx` (new), `src/data/festMeta.mjs`,
+`docs/clubs/*/events.mdx` (21), `docs/committees/*/events.mdx` (2),
+`docs/fests/tech-fest.mdx` → `docs/fests/tech-fest/index.mdx` (moved) +
+`docs/fests/tech-fest/_category_.json` (new) +
+`docs/fests/tech-fest/timeline.mdx` (new), same for `general-fest` and
+`cultural-fest`, `blog/2026-08-16-*-intro/index.md` (23, retagged),
+`CONTRIBUTING.md`
+
+Requested via `docs-internal/timeline-implementation-plan.md`: a
+premium animated vertical timeline per club/committee/fest, alongside (not
+replacing) the existing flat card list, with a discoverable List/Timeline
+toggle, academic-year grouping, and an illustrated empty state.
+
+- **`ClubEventsView.jsx`** is what every `events.mdx`/`timeline.mdx` now
+  imports instead of `ClubEventsList` directly — renders the toggle plus
+  whichever view is active, crossfading between them, persisting the choice
+  to `localStorage` (`sai-wiki-event-view`), defaulting to List so the
+  existing experience is unchanged for anyone who never touches the toggle.
+- **`ClubTimeline.jsx`** reads the same `usePluginData('club-events-plugin')`
+  → `postsByTag[slug]` as `ClubEventsList` (one source of truth), but
+  narrower: only posts also carrying the explicit `events` content-type tag
+  qualify. Groups by academic year (June–May, matching the rollover system's
+  own year-range convention), most recent year first, chronological within a
+  year. Accent comes from `useClubAccent(clubSlug)` via the same
+  `--club-accent-light/-dark` bridge every hero already uses (fests
+  correctly fall back to the unified accent, since none is registered in
+  `clubAccents.js`). Framer Motion `whileInView` staggered reveal, skipped
+  entirely for `prefers-reduced-motion` (variants collapse to
+  `hidden === visible` rather than branching the JSX, same pattern used
+  elsewhere on the site). The most recent event's dot pulses.
+- **Per-club/committee/fest scoping, deliberately**: no cross-organizer fest
+  badges here — that's reserved for a future sitewide `/events` view. Each
+  timeline only ever renders its own slug's events.
+- **The 23 intro posts (`2026-08-16-*-intro/`) were retagged from `events` to
+  `blog`.** They were tagged `events` when created (a previous session, see
+  the 2026-08-21 committee-rollover entry) specifically to give `/events`
+  real content — but this plan's own feedback table is explicit: "Only tag
+  events (not intro blog posts) along clubs... this can generate interactive
+  annual reports." A "Welcome to X" post isn't a dated event, and counting it
+  as one would misrepresent every club's timeline as "one real event: the
+  intro post." `blog` is also the more semantically correct tag regardless —
+  general club writing, not event coverage, per the taxonomy in the
+  2026-08-21 entry. They still show on List (tag-agnostic) and now flow to
+  `/student-voices` instead of `/events`.
+- **Fest restructure**: each fest's flat `docs/fests/<slug>.mdx` became
+  `docs/fests/<slug>/index.mdx` inside its own folder (URL unchanged — a
+  folder's `index.mdx` resolves to the same route as the flat file did,
+  same convention clubs already use), plus a new `_category_.json`
+  (label/icon sourced from `festMeta.mjs`, matching what clubs already do)
+  and `timeline.mdx`. `ClubEventsView` is tag-agnostic, so the exact same
+  component powers a fest's timeline as a club's.
+- Extended past the plan doc's own scope (21 clubs + 3 fests) to the 2
+  committees too — `cultural-committee`/`student-government` have the
+  identical `events.mdx` shape and `ClubEventsView` doesn't care what kind
+  of slug it's given; leaving them on the old list-only view would've been
+  an inconsistency the plan doc just didn't know to account for (it predates
+  the committees work).
+
+**Real bug caught during verification, not just asserted away:** a
+`fullPage: true` Playwright screenshot of a populated timeline showed only
+2 of 4 seeded test events — looked like a real data/rendering bug. Traced it
+to `whileInView`'s `IntersectionObserver` never firing for nodes below the
+fold in a full-page composite capture (opacity stays 0 — present in the DOM,
+invisible in the image) — not a real bug. Confirmed via
+`getBoundingClientRect()` on the raw DOM (all 4 nodes present, correctly
+ordered, real dimensions, correct alternating sides) and via
+`prefers-reduced-motion` emulation (which collapses hidden/visible to the
+same state, sidestepping the scroll-trigger entirely) and via manual
+`mouse.wheel()` scrolling before capture — all three confirm the component
+is correct and it's a screenshot-methodology artifact, not something a real
+reader scrolling the page would ever see.
+
+Verified with 4 temporary seed posts across 3 academic years (deleted before
+finishing, never committed) spanning: grouping, alternating left/right
+nodes, the pulsing most-recent dot, dark mode, mobile single-column layout,
+localStorage persistence across reload, and the empty-state illustration
+(every real club/committee/fest currently shows this, since the archive has
+zero `events`-tagged posts right now — expected, not a bug). Full production
+build clean; full `npm run test:e2e` (81 tests) passes clean.
+
 ## 2026-08-21 — `vps-hosting-plan.md` corrected to match actual repo state
 
 Files: `vps-hosting-plan.md`

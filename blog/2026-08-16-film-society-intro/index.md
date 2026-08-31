@@ -1,7 +1,7 @@
 ---
 title: "Welcome to the Film Society"
 date: 2026-08-16
-tags: [film-society, events]
+tags: [film-society, blog]
 description: "Appreciating, analyzing, and creating cinema at Sai University."
 ---
 

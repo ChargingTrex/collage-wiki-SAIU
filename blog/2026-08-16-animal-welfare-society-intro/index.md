@@ -1,7 +1,7 @@
 ---
 title: "Welcome to the Animal Welfare Society"
 date: 2026-08-16
-tags: [animal-welfare-society, events]
+tags: [animal-welfare-society, blog]
 description: "Advocating, feeding, and caring for campus animals at Sai University."
 ---
 

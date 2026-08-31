@@ -1,0 +1,178 @@
+/* src/components/ClubTimeline.module.css
+ *
+ * Alternating vertical timeline: a centered gradient spine (left-aligned on
+ * mobile), one dot per event, and a glassmorphism card alternating left/right
+ * of the spine. All color via --ds-* tokens + --timeline-accent (set inline
+ * by ClubTimeline from useClubAccent, same accent-bridge mechanism every
+ * hero already uses) so dark mode and unified-accent mode both fall out for
+ * free — nothing here hardcodes a light/dark branch.
+ */
+
+.timeline {
+  padding: var(--ds-space-4) 0;
+}
+
+.yearGroup + .yearGroup {
+  margin-top: var(--ds-space-8);
+}
+
+.yearHeader {
+  font-family: var(--ds-font-heading);
+  font-size: var(--ds-font-size-2xl);
+  font-weight: var(--ds-font-weight-bold);
+  color: var(--timeline-accent);
+  text-align: center;
+  margin: 0 0 var(--ds-space-6);
+}
+
+.spine {
+  position: relative;
+  padding: var(--ds-space-2) 0;
+}
+
+.spine::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(
+    to bottom,
+    var(--timeline-accent),
+    color-mix(in srgb, var(--timeline-accent) 15%, transparent)
+  );
+  transform: translateX(-50%);
+}
+
+.node {
+  position: relative;
+  display: flex;
+  width: 100%;
+  margin-bottom: var(--ds-space-8);
+}
+
+.nodeLeft {
+  justify-content: flex-end;
+  padding-right: calc(50% + 1.75rem);
+}
+
+.nodeRight {
+  justify-content: flex-start;
+  padding-left: calc(50% + 1.75rem);
+}
+
+.nodeDot {
+  position: absolute;
+  left: 50%;
+  top: 1.5rem;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  border-radius: var(--ds-radius-full);
+  background: var(--timeline-accent);
+  border: 3px solid var(--ds-surface);
+  box-shadow: 0 0 0 2px var(--timeline-accent);
+  z-index: 1;
+}
+
+.nodeDotPulse {
+  animation: timelinePulse 2.2s ease-in-out infinite;
+}
+
+@keyframes timelinePulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 2px var(--timeline-accent);
+  }
+  50% {
+    box-shadow: 0 0 0 8px color-mix(in srgb, var(--timeline-accent) 25%, transparent);
+  }
+}
+
+.nodeCard {
+  display: block;
+  max-width: 480px;
+  width: 100%;
+  padding: var(--ds-space-4);
+  border-radius: var(--ds-radius-lg);
+  border: 1px solid var(--ds-border);
+  background: color-mix(in srgb, var(--ds-surface) 72%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--ds-shadow-md);
+  color: var(--ds-text);
+  text-decoration: none;
+  transition: transform var(--ds-transition-base), box-shadow var(--ds-transition-base),
+    border-color var(--ds-transition-base);
+}
+
+.nodeCard:hover,
+.nodeCard:focus-visible {
+  transform: translateY(-4px);
+  box-shadow: var(--ds-shadow-lg);
+  border-color: var(--timeline-accent);
+  color: var(--ds-text);
+  text-decoration: none;
+}
+
+.nodeDate {
+  font-family: var(--ds-font-mono);
+  font-size: var(--ds-font-size-xs);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--timeline-accent);
+  margin-bottom: var(--ds-space-2);
+}
+
+.nodeBody {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ds-space-4);
+}
+
+.nodeImage {
+  flex-shrink: 0;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: var(--ds-radius-md);
+  object-fit: cover;
+}
+
+.nodeText {
+  min-width: 0;
+}
+
+.nodeTitle {
+  font-weight: var(--ds-font-weight-semibold);
+  color: var(--ds-text);
+}
+
+.nodeDescription {
+  margin-top: var(--ds-space-2);
+  font-size: var(--ds-font-size-sm);
+  color: var(--ds-text-secondary);
+}
+
+/* Below Docusaurus's own mobile breakpoint (see index.module.css) — spine
+   moves to a fixed left rail, every card sits to its right, single column. */
+@media screen and (max-width: 996px) {
+  .spine::before {
+    left: 18px;
+  }
+
+  .nodeLeft,
+  .nodeRight {
+    justify-content: flex-start;
+    padding-left: 2.75rem;
+    padding-right: 0;
+  }
+
+  .nodeDot {
+    left: 18px;
+  }
+
+  .nodeCard {
+    max-width: none;
+  }
+}

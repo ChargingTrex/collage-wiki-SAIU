@@ -1,7 +1,7 @@
 ---
 title: "Welcome to the Art Club"
 date: 2026-08-16
-tags: [art-club, events]
+tags: [art-club, blog]
 description: "Unleashing creativity through visual arts at Sai University."
 ---
 

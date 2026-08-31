@@ -1,7 +1,7 @@
 ---
 title: "Welcome to the Oratory Club"
 date: 2026-08-16
-tags: [oratory-club, events]
+tags: [oratory-club, blog]
 description: "Mastering public speaking, debate, and rhetoric."
 ---
 

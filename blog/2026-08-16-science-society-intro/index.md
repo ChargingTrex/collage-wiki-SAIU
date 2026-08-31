@@ -1,7 +1,7 @@
 ---
 title: "Welcome to the Science Society"
 date: 2026-08-16
-tags: [science-society, events]
+tags: [science-society, blog]
 description: "Advancing scientific curiosity and research at Sai University."
 ---
 

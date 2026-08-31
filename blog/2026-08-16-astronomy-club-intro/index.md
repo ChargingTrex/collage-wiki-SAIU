@@ -1,7 +1,7 @@
 ---
 title: "Welcome to the Astronomy Club"
 date: 2026-08-16
-tags: [astronomy-club, events]
+tags: [astronomy-club, blog]
 description: "Exploring the cosmos & stargazing nights at Sai University."
 ---
 

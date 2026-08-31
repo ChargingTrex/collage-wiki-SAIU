@@ -1,7 +1,7 @@
 ---
 title: "Welcome to the Theatre Club"
 date: 2026-08-16
-tags: [theatre-club, events]
+tags: [theatre-club, blog]
 description: "Bringing compelling stories to life on stage at Sai University."
 ---
 

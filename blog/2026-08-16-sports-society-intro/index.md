@@ -1,7 +1,7 @@
 ---
 title: "Welcome to the Sports Society"
 date: 2026-08-16
-tags: [sports-society, events]
+tags: [sports-society, blog]
 description: "Home to the University Premier League — and everything played to win."
 ---
 

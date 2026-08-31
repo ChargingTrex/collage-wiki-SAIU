@@ -1,7 +1,7 @@
 ---
 title: "Welcome to the Fashion Club"
 date: 2026-08-16
-tags: [fashion-club, events]
+tags: [fashion-club, blog]
 description: "Setting trends, design, and celebrating style at Sai University."
 ---
 

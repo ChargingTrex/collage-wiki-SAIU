@@ -194,9 +194,46 @@ src/
                               bigger image/padding/text; everything else
                               (e.g. ClubEventsList) uses the compact default
                               (`size="sm"`)
-    ClubEventsList.jsx        renders a club's Events page — paginated list
-                              of that club's tagged posts + a link to its
-                              full tag-page timeline
+    ClubEventsView.jsx        what events.mdx/timeline.mdx actually import —
+                              renders the List/Timeline toggle
+                              (EventViewToggle.jsx) plus whichever view is
+                              active, crossfading between them
+                              (prefers-reduced-motion-aware). Persists the
+                              choice to localStorage (`sai-wiki-event-view`),
+                              default List
+    ClubEventsList.jsx        the "List" view — paginated list of that
+                              club/committee/fest's tagged posts (any tag,
+                              `blog` or `events`) + a link to its full
+                              tag-page timeline
+    ClubTimeline.jsx          the "Timeline" view — vertical, academic-year
+                              (June-May) grouped timeline of that slug's
+                              posts, narrowed further than ClubEventsList:
+                              only posts also carrying the explicit `events`
+                              tag qualify (a club's "Welcome to X" intro post
+                              is real List content but isn't a dated event —
+                              see "Adding a new event post" below). Accent
+                              via useClubAccent, alternating left/right nodes
+                              on desktop via ClubTimeline.module.css,
+                              Framer Motion whileInView reveal (skipped for
+                              prefers-reduced-motion — see that file's own
+                              comment for why a full-page screenshot can look
+                              like content is missing when it isn't: nodes
+                              below the fold stay opacity:0 until actually
+                              scrolled to, same as a real reader would)
+    TimelineEmptyState.jsx    shown by ClubTimeline when nothing carries the
+                              `events` tag yet for that slug
+    EventViewToggle.jsx       a single List<->Timeline button — reads
+                              "Timeline" on List, "List" on Timeline, so
+                              only one control is ever shown. Not a
+                              two-button radio group (an earlier version
+                              was, and had a real dark-mode bug: its active
+                              button used --ds-neutral-0 as "light text on
+                              an accent fill," but that token flips to
+                              near-black in dark mode, since it's actually
+                              "whatever color the page background is" —
+                              see the note under "Decisions already made"
+                              in CLAUDE.md). Controlled by ClubEventsView,
+                              not stateful itself
     RecentActivity.jsx        homepage "Recent Activity" section — the 5
                               most recent posts site-wide, any club/fest
     TagFilteredEvents.jsx     tag picker + recent-posts feed, same plugin
@@ -284,7 +321,8 @@ docs/
                                 - index.mdx        the club page (hero at top)
                                 - _category_.json  label/description/icon —
                                                    keep in sync with index.mdx
-                                - events.mdx        thin ClubEventsList wrapper,
+                                - events.mdx        thin ClubEventsView wrapper
+                                                   (List + Timeline toggle),
                                                    don't hand-edit its content
                                 - contact.mdx       thin ClubContact wrapper —
                                                    a dedicated Contact page,
@@ -295,7 +333,21 @@ docs/
                                 Student Government (`student-government`);
                                 `useClubAccent` falls back to the unified
                                 accent since neither is in `clubAccents.js`
-  fests/
+  fests/<slug>/                 one folder per fest (was a flat <slug>.mdx
+                                per fest until the timeline feature needed a
+                                second sub-page — moving to index.mdx inside
+                                a folder keeps the URL identical, same as any
+                                club):
+                                - index.mdx        the fest page (hero at top),
+                                                   content unchanged from the
+                                                   old flat file
+                                - _category_.json  label/description/icon,
+                                                   sourced from festMeta.mjs
+                                - timeline.mdx      thin ClubEventsView wrapper,
+                                                   same component clubs use —
+                                                   it's tag-agnostic, so a
+                                                   fest slug works identically
+                                                   to a club slug
   resources/                  linked from the navbar/footer as "Resources";
                               cards ordered alphabetically via each doc's
                               `sidebar_position` (matches the list below)
@@ -386,7 +438,13 @@ tags: [astronomy-club, talk]
   update, an announcement) — see below for how these two decide which
   sitewide page a post shows up on. A post with only an organizer/fest/
   event-type tag and no explicit `blog`/`events` tag still defaults to
-  showing up on Events; `events` just makes the intent explicit.
+  showing up on Events; `events` just makes the intent explicit. **This one
+  also gates the Timeline view** (ClubTimeline.jsx, toggled from List on any
+  club/committee/fest's Events page): only posts explicitly tagged `events`
+  render as timeline nodes, so a "Welcome to X" intro post — real List
+  content, not a dated event — correctly doesn't show up there. Untagged
+  `events` posts still show on List either way; they just won't appear on
+  Timeline until retagged.
 - If it's an **individual student post with no club/committee affiliation**,
   use the `student-voices` tag instead of an organizer tag.
 

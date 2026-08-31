@@ -1,7 +1,7 @@
 ---
 title: "Welcome to the Martial Arts Club"
 date: 2026-08-16
-tags: [martial-arts-club, events]
+tags: [martial-arts-club, blog]
 description: "Building discipline, fitness, and self-defense at Sai University."
 ---
 

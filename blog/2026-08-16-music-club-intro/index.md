@@ -1,7 +1,7 @@
 ---
 title: "Welcome to the Music Club"
 date: 2026-08-16
-tags: [music-club, events]
+tags: [music-club, blog]
 description: "Harmonizing voices, bands, and acoustic instruments at Sai University."
 ---
 

@@ -21,8 +21,16 @@ export function FestSound({ audioSrc, label = 'Play theme', className = '' }) {
     // Stop this from bubbling to the hero's own root onClick/onKeyDown —
     // both now live on the same div (role="button" for keyboard replay),
     // so without this, playing/stopping the theme also toggled the hero's
-    // animation replay on every click.
+    // animation replay on every click. preventDefault matters separately
+    // (not just belt-and-suspenders): on /fests the hero itself is now
+    // wrapped in a real <a href> (see .fest-hero-link), and a plain
+    // stopPropagation only stops React's synthetic dispatch from reaching
+    // that ancestor Link's own onClick — the underlying <a> still performs
+    // its native default navigation regardless, since nothing told it not
+    // to. Confirmed via a real click in tests/e2e/clubs-and-fests.spec.js
+    // before this fix — stopPropagation alone did not stop it.
     e.stopPropagation();
+    e.preventDefault();
     const el = audioRef.current;
     if (!el) return;
     if (el.paused) {

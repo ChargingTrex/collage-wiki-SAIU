@@ -806,6 +806,31 @@
    card crops its content instead; accepted, not chased for a perfect fit.
    See MiniHeroCard.jsx for the full reasoning and the exact scale math.
    ===================================================================== */
+/* /fests — makes each full-size hero itself the link to that fest's page,
+   not just the small text CTA below it. Deliberately NOT the same
+   `inert`/`pointer-events:none` treatment MiniHeroCard.jsx uses on its
+   scaled-down preview cards: those don't need the hero's own interactivity
+   (replay, audio) to survive, since they're decorative previews whose one
+   job is navigation. Here the hero is the real, full-size one — its
+   FestSound play button (see FestSound.jsx) already calls
+   e.stopPropagation() on click/keydown specifically so it doesn't bubble to
+   an ancestor's click handler, which is exactly what lets it keep working
+   normally (play/stop audio, no navigation) while every other click on the
+   hero — background, title, the replay-toggle click that was already
+   there — now also navigates to the fest's page. */
+.fest-hero-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.fest-hero-link:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--ds-shadow-md);
+  color: inherit;
+  text-decoration: none;
+}
+
 .mini-hero-card {
   display: block;
   position: relative;

@@ -1,7 +1,7 @@
 ---
 title: "Welcome to the Literary Club"
 date: 2026-08-16
-tags: [literary-club, events]
+tags: [literary-club, blog]
 description: "Celebrating the written and spoken word at Sai University."
 ---
 
