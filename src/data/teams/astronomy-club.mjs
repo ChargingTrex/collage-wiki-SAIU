@@ -1,6 +1,6 @@
 // src/data/teams/astronomy-club.mjs
 //
-// Current Astronomy Club board. Snapshotted into docs/archive/astronomy-club/ at
+// Current Accretion board. Snapshotted into docs/archive/astronomy-club/ at
 // rollover (see scripts/rollover.mjs), then reset to this same placeholder
 // shape for the incoming board — see CONTRIBUTING.md's
 // "Leadership rollover" section.

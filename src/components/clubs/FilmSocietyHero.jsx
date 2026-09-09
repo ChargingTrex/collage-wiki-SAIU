@@ -1,6 +1,6 @@
 // src/components/clubs/FilmSocietyHero.jsx
 //
-// Film Society — a strip advancing through a gate, not a reel spinning.
+// Creators Club (film society) — a strip advancing through a gate, not a reel spinning.
 //
 // A spinning reel is the machine. Cinema is the frames ADVANCING: the strip
 // pulls down one frame at a time, pauses while that frame is projected, then
@@ -63,7 +63,7 @@ export function FilmSocietyHero() {
             in light mode resolves to a deep maroon meant for text on white,
             which reads as low-contrast/near-invisible on this card. */}
         <h1 className="text-3xl font-bold tracking-wider" style={{ color: accent.dark }}>
-          Film Society
+          Creators Club
         </h1>
         <p className="mt-1 text-zinc-400">Appreciating, analyzing, and creating cinema.</p>
       </div>

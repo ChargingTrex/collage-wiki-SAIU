@@ -1,6 +1,6 @@
 // src/data/teams/science-society.mjs
 //
-// Current Science Society board. Snapshotted into docs/archive/science-society/ at
+// Current Science Club board. Snapshotted into docs/archive/science-society/ at
 // rollover (see scripts/rollover.mjs), then reset to this same placeholder
 // shape for the incoming board — see CONTRIBUTING.md's
 // "Leadership rollover" section.

@@ -1,6 +1,6 @@
 // src/components/clubs/ScienceHero.jsx
 //
-// Science Society — an atom whose electrons actually orbit.
+// Science Club — an atom whose electrons actually orbit.
 //
 // The original spun a static atom glyph in place, which is a picture of an
 // atom rotating — something atoms don't do. Here the nucleus holds still and
@@ -64,7 +64,7 @@ export function ScienceHero() {
     >
       <div className="z-10">
         <h1 className="text-3xl font-extrabold" style={{ color: accent.dark }}>
-          Science Society
+          Science Club
         </h1>
         <p className="mt-1 text-cyan-200/80">
           Advancing scientific curiosity and research.

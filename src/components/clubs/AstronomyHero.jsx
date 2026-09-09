@@ -1,6 +1,6 @@
 // src/components/clubs/AstronomyHero.jsx
 //
-// Astronomy Club — two beats:
+// Accretion (astronomy club) — two beats:
 //   1. An observer at a telescope, small against the frame.
 //   2. The camera pulls back; the figure recedes and the star field takes
 //      over, with constellation lines drawing themselves between stars,
@@ -67,7 +67,7 @@ export function AstronomyHero() {
             white, which is nearly invisible against this permanently-dark
             card. */}
         <h1 className="text-3xl font-extrabold" style={{ color: accent.dark }}>
-          Astronomy Club
+          Accretion
         </h1>
         <p className="text-slate-300">Exploring the cosmos &amp; stargazing nights.</p>
       </div>

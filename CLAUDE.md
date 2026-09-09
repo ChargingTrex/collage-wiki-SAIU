@@ -236,18 +236,18 @@ Accent bridge in `custom.css`:
 | Chess Club | `chess-club` | Slate |
 | Dance Club | `dance-club` | Rose |
 | Gardening Club | `gardening-club` | Green |
-| Astronomy Club | `astronomy-club` | Indigo |
+| Accretion | `astronomy-club` | Indigo |
 | Theatre Club | `theatre-club` | Purple |
 | Photography Club | `photography-club` | Cyan |
-| Gaming Club | `gaming-club` | Violet |
+| Dot.exe | `gaming-club` | Violet |
 | Oratory Club | `oratory-club` | Blue |
 | Entrepreneurship Club | `entrepreneurship-club` | Emerald |
 | Fashion Club | `fashion-club` | Pink |
 | Pugwash Society | `pugwash-society` | Olive |
-| Science Society | `science-society` | Teal |
+| Science Club | `science-society` | Teal |
 | Sports Society | `sports-society` | Gold |
 | Music Club | `music-club` | Orange |
-| Film Society | `film-society` | Crimson |
+| Creators Club | `film-society` | Crimson |
 | Turingites CS Society | `turingites-computer-science-society` | Terminal |
 | Animal Welfare Society | `animal-welfare-society` | Amber |
 | Martial Arts Club | `martial-arts-club` | Red |

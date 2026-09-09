@@ -1,6 +1,6 @@
 // src/data/teams/film-society.mjs
 //
-// Current Film Society board. Snapshotted into docs/archive/film-society/ at
+// Current Creators Club board. Snapshotted into docs/archive/film-society/ at
 // rollover (see scripts/rollover.mjs), then reset to this same placeholder
 // shape for the incoming board — see CONTRIBUTING.md's
 // "Leadership rollover" section.

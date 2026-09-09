@@ -1,11 +1,11 @@
 ---
-title: "Welcome to the Film Society"
+title: "Welcome to the Creators Club"
 date: 2026-08-16
 tags: [film-society, blog]
 description: "Appreciating, analyzing, and creating cinema at Sai University."
 ---
 
-The Film Society runs screenings, director discussions, and a student-made short film program, open to anyone who loves watching or making movies.
+The Creators Club runs screenings, director discussions, and a student-made short film program, open to anyone who loves watching or making movies.
 
 {/* truncate */}
 

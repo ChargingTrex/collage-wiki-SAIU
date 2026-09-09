@@ -536,7 +536,7 @@ import { ImageCarousel } from '@site/src/components/ImageCarousel';
   {src: photo3, alt: 'Saturn and its rings, visible through the eyepiece'},
 ]} />
 
-The Astronomy Club hosted...
+Accretion hosted...
 ```
 
 Swap `ImageCarousel` for `CoverflowCarousel` or `StackCarousel` for a

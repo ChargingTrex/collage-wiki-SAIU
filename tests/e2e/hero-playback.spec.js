@@ -1,4 +1,4 @@
-// Tests the useIntroMotion contract end-to-end on Astronomy Club (the
+// Tests the useIntroMotion contract end-to-end on Accretion (the
 // project's original CP2 smoke-test hero). Deliberately doesn't reach into
 // React internals (`isPlaying` state) — instead diffs pixel screenshots of
 // the animated SVG, the same way this behavior was manually verified
@@ -31,7 +31,7 @@ async function isAnimating(locator, {samples = 6, intervalMs = 120} = {}) {
   return new Set(hashes).size > 1;
 }
 
-test.describe('useIntroMotion contract (Astronomy Club hero)', () => {
+test.describe('useIntroMotion contract (Accretion hero)', () => {
   test('plays its intro automatically on arrival', async ({page}) => {
     await page.goto('docs/clubs/astronomy-club');
     const hero = page.locator(HERO_SELECTOR);

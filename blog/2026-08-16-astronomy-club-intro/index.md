@@ -1,11 +1,11 @@
 ---
-title: "Welcome to the Astronomy Club"
+title: "Welcome to Accretion"
 date: 2026-08-16
 tags: [astronomy-club, blog]
 description: "Exploring the cosmos & stargazing nights at Sai University."
 ---
 
-The Astronomy Club hosts stargazing nights, telescope workshops, and talks on current astronomical events for the Sai University community.
+Accretion hosts stargazing nights, telescope workshops, and talks on current astronomical events for the Sai University community.
 
 {/* truncate */}
 

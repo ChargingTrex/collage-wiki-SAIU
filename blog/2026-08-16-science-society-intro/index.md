@@ -1,11 +1,11 @@
 ---
-title: "Welcome to the Science Society"
+title: "Welcome to the Science Club"
 date: 2026-08-16
 tags: [science-society, blog]
 description: "Advancing scientific curiosity and research at Sai University."
 ---
 
-The Science Society runs experiments, lab demos, and speaker sessions across physics, chemistry, and biology, open to anyone curious about how things work.
+The Science Club runs experiments, lab demos, and speaker sessions across physics, chemistry, and biology, open to anyone curious about how things work.
 
 {/* truncate */}
 

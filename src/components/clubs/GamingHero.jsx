@@ -1,6 +1,6 @@
 // src/components/clubs/GamingHero.jsx
 //
-// Gaming Club — a retro arcade maze-chase, running itself. A wedge muncher
+// Dot.exe (gaming club) — a retro arcade maze-chase, running itself. A wedge muncher
 // eats a row of pellets left to right while three ghosts trail behind, all
 // over a CRT-scanline wash. It reads instantly as "arcade" without being any
 // one specific trademarked game.
@@ -62,7 +62,7 @@ export function GamingHero() {
     >
       <div className="z-10">
         <h1 className="text-3xl font-black tracking-tight" style={{ color: accent.dark }}>
-          Gaming Club
+          Dot.exe
         </h1>
         <p className="mt-1 text-violet-200/80">Casual, competitive, and esports community.</p>
       </div>
