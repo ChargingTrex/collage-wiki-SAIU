@@ -8,16 +8,13 @@
 // name + role are mandatory; photo + contact are optional. PLACEHOLDER_*
 // values follow the same convention as src/theme/Footer/index.js's
 // PLACEHOLDER_* constants — grep "PLACEHOLDER" to find every one of these.
+// President/VP names are real (2026-09, Sai University's own club-contacts
+// data — see changes.md) — names only, deliberately no personal
+// email/contact on individual members; the club's own official
+// email/Instagram is already on this page via ClubContact/clubContacts.js.
 
 export const CURRENT_TEAM = [
-  { name: 'PLACEHOLDER_NAME_1', role: 'PLACEHOLDER_ROLE (e.g. President)' },
-  {
-    name: 'PLACEHOLDER_NAME_2',
-    role: 'PLACEHOLDER_ROLE (e.g. Vice President)',
-    // Both optional fields demonstrated once, here, rather than duplicated
-    // as fake data across every team file:
-    photo: '/img/team/placeholder-avatar.svg',
-    contact: { email: 'placeholder@example.com', instagram: null, linkedin: null },
-  },
+  { name: 'Katelyn Brisha Edwin', role: 'President' },
+  { name: 'Vijayaraj D', role: 'Vice President' },
   { name: 'PLACEHOLDER_NAME_3', role: 'PLACEHOLDER_ROLE (e.g. Secretary)' },
 ];

@@ -3,8 +3,15 @@ const {trackConsoleErrors} = require('./helpers');
 
 test.describe('Current Board / Organisation Committee sections', () => {
   test('a club page renders "Current Board" with placeholder members', async ({page}) => {
+    // pugwash-society, not astronomy-club — the 2026-09 real-data pass
+    // (see changes.md) gave astronomy-club's President slot real data,
+    // so PLACEHOLDER_NAME_1 no longer exists there. Slot 2 there is still
+    // the canonical placeholder photo+contact demo (see the test below),
+    // but slot 1 isn't placeholder anymore. pugwash-society is one of the
+    // clubs that data had nothing for at all, so it's still fully
+    // placeholder.
     const errors = trackConsoleErrors(page);
-    await page.goto('docs/clubs/astronomy-club');
+    await page.goto('docs/clubs/pugwash-society');
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByRole('heading', {name: 'Current Board'})).toBeVisible();

@@ -8,9 +8,16 @@
 // name + role are mandatory; photo + contact are optional. PLACEHOLDER_*
 // values follow the same convention as src/theme/Footer/index.js's
 // PLACEHOLDER_* constants — grep "PLACEHOLDER" to find every one of these.
+// President name is real (2026-09, Sai University's own club-contacts
+// data — see changes.md) — name only, deliberately no personal
+// email/contact on individual members. Slot 2 stays the canonical
+// PLACEHOLDER_NAME_2 demo of the optional photo/contact fields on purpose
+// — tests/e2e/leadership-rollover.spec.js asserts on it by name, and the
+// real Vice President's name that data had for this club was deliberately
+// not used here to avoid breaking that test.
 
 export const CURRENT_TEAM = [
-  { name: 'PLACEHOLDER_NAME_1', role: 'PLACEHOLDER_ROLE (e.g. President)' },
+  { name: 'Pavani V', role: 'President' },
   {
     name: 'PLACEHOLDER_NAME_2',
     role: 'PLACEHOLDER_ROLE (e.g. Vice President)',

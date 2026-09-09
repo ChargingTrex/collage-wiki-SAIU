@@ -10,6 +10,21 @@ import clubEventsPlugin from './src/plugins/club-events-plugin.js';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
+// Netlify sets `NETLIFY=true` (and `URL` to the site's real published
+// origin, incl. previews/branch deploys) on every build it runs — reading
+// it here lets the exact same config produce a correct build for either
+// host without hand-editing anything per deploy. Netlify is a *test*
+// environment only (see vps-hosting-plan.md) — production is GitHub Pages
+// today, moving to a Hostinger VPS (provided by the dean's office) per
+// that plan; this branch never touches either of those.
+const isNetlify = process.env.NETLIFY === 'true';
+// Netlify serves from the domain root, not a repo-name subpath. Single
+// source of truth for `baseUrl` below and for anything else (e.g. the
+// `scripts` entry further down) that needs to build an absolute path —
+// hardcoding '/collage-wiki-SAIU/' a second time there previously meant it
+// silently 404'd on any host using a different baseUrl.
+const SITE_BASE_URL = isNetlify ? '/' : '/collage-wiki-SAIU/';
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Sai University Wiki',
@@ -28,12 +43,15 @@ const config = {
   },
 
   // Set the production url of your site here
-  url: 'https://chargingtrex.github.io',
+  url: isNetlify ? process.env.URL : 'https://chargingtrex.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/collage-wiki-SAIU/',
+  // Netlify serves from the domain root, not a repo-name subpath.
+  baseUrl: SITE_BASE_URL,
 
-  // GitHub pages deployment config.
+  // GitHub pages deployment config. Inert on Netlify — these only affect
+  // the `docusaurus deploy` command (pushes to `gh-pages`), never a plain
+  // `npm run build`, so no `isNetlify` branch is needed here.
   organizationName: 'ChargingTrex', // GitHub org/user name.
   projectName: 'collage-wiki-SAIU', // GitHub repo name.
   deploymentBranch: 'gh-pages',
@@ -48,7 +66,7 @@ const config = {
   ],
 
   scripts: [
-    { src: '/collage-wiki-SAIU/js/github-badge.js', async: true },
+    { src: `${SITE_BASE_URL}js/github-badge.js`, async: true },
   ],
 
   onBrokenLinks: 'throw',

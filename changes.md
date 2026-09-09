@@ -1,5 +1,59 @@
 # Changes
 
+## 2026-09-09 — Real President/Vice President names on club team sections
+
+Files: `src/data/teams/{chess-club,music-club,literary-club,turingites-
+computer-science-society,film-society,science-society,gardening-club,
+dance-club,gaming-club,photography-club,art-club,theatre-club,martial-
+arts-club,oratory-club,entrepreneurship-club,animal-welfare-society,
+astronomy-club}.mjs`, `tests/e2e/leadership-rollover.spec.js`
+
+Requested as a follow-up to the same-day contact-info pass: fill in real
+President/Vice President names on each club's "Current Board" section,
+sourced from the same master contacts/officers sheet used earlier — names
+only. First pass also added each officer's personal email (cross-referenced
+from the club-catalogue survey against the master sheet's name columns,
+since only the survey had emails, keyed to whichever person filled the
+form, not necessarily the President); told explicitly not to publish
+personal officer emails at all, only the club's own official email —
+already covered separately via `ClubContact`/`clubContacts.js` — so every
+`contact: { email: ... }` added in that first pass was stripped back out
+before anything shipped. Phone numbers, present in both sources, were
+never used in either pass. `fashion-club.mjs`'s one real-officer entry
+(President Isabel Alex, pre-existing) had picked up a personal email in
+the first pass too — reverted to its original placeholder rather than left
+half-changed.
+
+`astronomy-club.mjs` needed special handling: its slot 2 is the one
+canonical demo of the optional photo/contact fields that
+`leadership-rollover.spec.js` asserts on by literal placeholder text — the
+real Vice President's name for that club was deliberately *not* used there
+to avoid breaking that demo; the real President went in slot 1 instead,
+which that same test also depended on being placeholder — updated the
+test to use `pugwash-society` instead (still genuinely all-placeholder,
+same fix already applied to a different test earlier today). Secretary
+slots were left untouched (placeholder) — not requested.
+
+Left `foss-club.mjs` untouched entirely — it already has real, more
+detailed board data (individual GitHub/LinkedIn profiles) sourced from the
+club's own real records, not this survey.
+
+**Found, not caused, and left alone as out of scope:** `docs/clubs/foss-club`
+times out loading in the e2e suite specifically in this sandbox —
+`MemberCard.jsx` fetches live `https://github.com/<user>.png` avatars for
+FOSS's 5 real members, which this sandboxed environment can't reach, so the
+image requests hang and the page's `load` event never fires within the
+test's 30s budget. Confirmed via a real screenshot at the moment of timeout
+that the page itself renders perfectly (title, hero, description, all 5
+real members) — this is a test-environment networking limitation, not a
+site bug, and unrelated to anything changed today, so left as-is rather
+than "fixed" by touching working production code.
+
+Full production build clean. Full `test:e2e` passes (82/83 — the 1
+exception is the pre-existing, unrelated foss-club network timeout above,
+confirmed via `curl` to load instantly server-side).
+
+
 ## 2026-09-09 — Real club contact info, 3 club renames, Cultural Committee → Cultural Society
 
 Files: `src/data/clubContacts.js`, `src/data/clubDirectory.js`,
@@ -3126,3 +3180,43 @@ checkboxes, so "what's left before this ships" has one concrete answer
 instead of requiring a re-read of the whole narrative doc. Phase 2 (the ask
 to IT/the dean's office) is flagged as the actual blocker — everything from
 Phase 3 onward needs its answers first.
+
+## 2026-09-09 — Netlify test-deploy prep; production stays a Hostinger VPS
+
+**Files:** `docusaurus.config.js`, `src/pages/index.js`, `netlify.toml` (new).
+
+Confirmed with the maintainer: Netlify is being used purely as a **test**
+environment for the site; the real production host is a **Hostinger VPS**
+provided by the dean's office, per `vps-hosting-plan.md`. That means Option
+A (`github` backend + the custom `oauth-proxy/` service) stays the right
+CMS-auth architecture — Netlify's native `git-gateway`/Identity (Option B)
+was never adopted, since it would only make sense if Netlify were becoming
+the actual production host, which it isn't.
+
+Prepped the repo so a Netlify build doesn't collide with the live GitHub
+Pages deploy: `docusaurus.config.js` now reads Netlify's own `NETLIFY`/
+`URL` build-time env vars to pick `baseUrl`/`url` (root path on Netlify,
+the existing `/collage-wiki-SAIU/` subpath everywhere else) from one
+`SITE_BASE_URL` constant, and `netlify.toml` sets the build command/publish
+dir/Node version. Verified both configurations with real builds (default
+and `NETLIFY=true` simulated) — output is correctly self-consistent in
+each.
+
+That same test surfaced two real hardcoded-URL bugs that predate this
+change and would have silently broken on any host other than GitHub Pages
+(flagged as a risk in `vps-hosting-plan.md`'s "Repo-side changes" section,
+now actually hit): the `js/github-badge.js` `<script>` tag's `src` was a
+literal `/collage-wiki-SAIU/js/github-badge.js` instead of respecting
+`baseUrl`, and would have 404'd on Netlify (confirmed by inspecting the
+Netlify-sim build's HTML before the fix). Fixed by building it from the
+same `SITE_BASE_URL` constant `baseUrl` itself uses. Separately, the
+homepage's structured-data (JSON-LD) `url` field was a hardcoded
+`https://chargingtrex.github.io/collage-wiki-SAIU/` string in
+`src/pages/index.js` — confirmed by inspecting the Netlify-sim build, it
+kept claiming the GitHub Pages URL as canonical even when served from a
+different origin. Fixed by moving `STRUCTURED_DATA` construction into the
+`Home` component and building `url` from `useDocusaurusContext()`'s real
+`siteConfig.url + siteConfig.baseUrl` instead of a second, driftable copy
+of the same value. Both fixes verified against real builds of both
+configurations; `homepage.spec.js` and `navigation.spec.js` (15 tests)
+still pass clean.

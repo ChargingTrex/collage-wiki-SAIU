@@ -1,0 +1,12 @@
+# Netlify is a test environment for this site, not the production target —
+# see vps-hosting-plan.md. Production stays GitHub Pages today, moving to a
+# Hostinger VPS (provided by the dean's office) per that plan. docusaurus
+# .config.js reads Netlify's own NETLIFY/URL build env vars so the exact
+# same config produces a correct build for either host.
+
+[build]
+  command = "npm run build"
+  publish = "build"
+
+[build.environment]
+  NODE_VERSION = "20"
