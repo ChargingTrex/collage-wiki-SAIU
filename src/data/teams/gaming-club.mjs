@@ -1,6 +1,6 @@
 // src/data/teams/gaming-club.mjs
 //
-// Current Gaming Club board. Snapshotted into docs/archive/gaming-club/ at
+// Current DOT.exe (formerly Gaming Club) board. Snapshotted into docs/archive/gaming-club/ at
 // rollover (see scripts/rollover.mjs), then reset to this same placeholder
 // shape for the incoming board — see CONTRIBUTING.md's
 // "Leadership rollover" section.

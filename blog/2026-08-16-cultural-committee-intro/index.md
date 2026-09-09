@@ -1,11 +1,11 @@
 ---
-title: "Welcome to the Cultural Committee"
+title: "Welcome to the Cultural Society"
 date: 2026-08-16
 tags: [cultural-committee, blog]
-description: "The student body running cultural events across Sai University."
+description: "Sai University's cultural body — organizes cultural events campus-wide and reviews new club proposals in the Arts, Culture & Performing Arts category."
 ---
 
-The Cultural Committee organizes cultural events, performances, and celebrations across campus — separate from any single club's own event calendar.
+The Cultural Society organizes cultural events, performances, and celebrations across campus, and reviews proposals from students seeking to establish a new club in the Arts, Culture & Performing Arts category — separate from any single club's own event calendar.
 
 {/* truncate */}
 

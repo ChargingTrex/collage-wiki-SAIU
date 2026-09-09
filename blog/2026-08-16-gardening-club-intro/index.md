@@ -1,11 +1,11 @@
 ---
-title: "Welcome to the Gardening Club"
+title: "Welcome to the Sustainability Club"
 date: 2026-08-16
 tags: [gardening-club, blog]
-description: "Cultivating green spaces across Sai University."
+description: "Sustainable living, campus green spaces, and environmental action at Sai University."
 ---
 
-The Gardening Club maintains campus green spaces and runs hands-on sessions on composting, native planting, and seasonal growing for anyone who wants to get their hands in the soil.
+The Sustainability Club (formerly the Gardening Club) stands for sustainable living — raising awareness about environmental issues, reducing waste, and conserving resources through hands-on activities like plant drives, beach clean-ups, and composting in the campus green spaces it maintains.
 
 {/* truncate */}
 

@@ -35,9 +35,9 @@ dance-club:
   description: Events run by the Dance Club
 
 gardening-club:
-  label: Gardening Club
+  label: Sustainability Club
   permalink: /gardening-club
-  description: Events run by the Gardening Club
+  description: Events run by the Sustainability Club (formerly Gardening Club)
 
 astronomy-club:
   label: Astronomy Club
@@ -55,9 +55,9 @@ photography-club:
   description: Events run by the Photography Club
 
 gaming-club:
-  label: Gaming Club
+  label: DOT.exe
   permalink: /gaming-club
-  description: Events run by the Gaming Club
+  description: Events run by DOT.exe (formerly Gaming Club)
 
 oratory-club:
   label: Oratory Club
@@ -85,9 +85,9 @@ music-club:
   description: Events run by the Music Club
 
 film-society:
-  label: Film Society
+  label: Creators Club
   permalink: /film-society
-  description: Events run by the Film Society
+  description: Events run by Creators Club (formerly Film Society)
 
 turingites-computer-science-society:
   label: Turingites CS Society
@@ -126,9 +126,9 @@ sports-society:
 
 # ---- Committees ----
 cultural-committee:
-  label: Cultural Committee
+  label: Cultural Society
   permalink: /cultural-committee
-  description: Events run by the Cultural Committee
+  description: Events run by the Cultural Society (formerly "Cultural Committee" — slug kept as cultural-committee so existing tags/links don't break)
 
 student-government:
   label: Student Government

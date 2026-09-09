@@ -26,7 +26,7 @@ again), then clears the live page for the incoming team.
 
 **Club, committee, and fest are three separate types, each rolled over
 independently, one slug at a time — never all at once.** Added `committee`
-as its own type (not folded into `fest`) once Cultural Committee and
+as its own type (not folded into `fest`) once Cultural Society and
 Student Government existed as real content with no way to archive them —
 the type check previously only accepted `club`/`fest` and rejected
 `committee` outright.
@@ -43,7 +43,7 @@ The first argument is `club`, `committee`, or `fest`, the second is the
 slug (the same one in its URL, e.g. `art-club`, `cultural-committee`), the
 third is the outgoing year-range. A committee's on-page heading word isn't
 uniform the way club's ("Board") and fest's ("Organisation Committee") are
-— Cultural Committee says "Committee", Student Government says
+— Cultural Society says "Committee", Student Government says
 "Government" — so that's resolved per-slug from `src/data/committeeMeta.mjs`
 rather than hardcoded in the script.
 

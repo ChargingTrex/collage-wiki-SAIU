@@ -34,11 +34,25 @@ function jitter(i) {
   return Math.sin(i * 12.9898) * 5;
 }
 
+// Mechanical title-case of the slug works for 18 of 21 clubs. The other 3
+// were renamed (2026-09, see CLAUDE.md) but kept their old slug so no
+// links/tags broke — their real current name no longer matches a simple
+// title-case of that slug, so those three need an explicit override
+// (matches the `name` used in clubDirectory.js).
+const DISPLAY_NAME_OVERRIDES = {
+  'gardening-club': 'Sustainability Club',
+  'gaming-club': 'DOT.exe',
+  'film-society': 'Creators Club',
+};
+
 function clubDisplayName(slug) {
-  return slug
-    .split('-')
-    .map((w) => w[0].toUpperCase() + w.slice(1))
-    .join(' ');
+  return (
+    DISPLAY_NAME_OVERRIDES[slug] ??
+    slug
+      .split('-')
+      .map((w) => w[0].toUpperCase() + w.slice(1))
+      .join(' ')
+  );
 }
 
 export function HomepageClubMarks() {

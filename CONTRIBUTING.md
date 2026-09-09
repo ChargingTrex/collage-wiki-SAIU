@@ -294,7 +294,7 @@ src/
                               scripts/rollover.mjs when bootstrapping a
                               fest's first archive category
     committeeMeta.mjs         per-committee on-page heading word ("Committee"
-                              for Cultural Committee, "Government" for
+                              for Cultural Society, "Government" for
                               Student Government — not uniform, unlike
                               clubs/fests) + role examples, read only by
                               scripts/rollover.mjs — label/icon still come
@@ -329,10 +329,17 @@ docs/
                                                    same data as index.mdx's
                                                    own inline Contact section
   committees/<slug>/           same 4-file shape as clubs/<slug>/, no hero —
-                                Cultural Committee (`cultural-committee`) and
-                                Student Government (`student-government`);
-                                `useClubAccent` falls back to the unified
-                                accent since neither is in `clubAccents.js`
+                                Cultural Society (`cultural-committee` — slug
+                                kept from before its rename from "Cultural
+                                Committee") and Student Government
+                                (`student-government`); `useClubAccent`
+                                falls back to the unified accent since
+                                neither is in `clubAccents.js`. Cultural
+                                Society's `index.mdx` shows a real logo
+                                (`static/img/cultural-society-logo.jpeg`) —
+                                the only club/committee page with one; every
+                                other page uses the animated-hero/icon
+                                system instead
   fests/<slug>/                 one folder per fest (was a flat <slug>.mdx
                                 per fest until the timeline feature needed a
                                 second sub-page — moving to index.mdx inside
@@ -618,7 +625,7 @@ See `docs-internal/animation-caveats.md` §17 for the full history.
 
 ### Leadership rollover (clubs, committees & fests)
 
-A club exec board, a committee's leadership (Cultural Committee, Student
+A club exec board, a committee's leadership (Cultural Society, Student
 Government), or a fest organisation committee changes every year. Unlike
 event posts (permanently dated once published), a club/committee/fest's
 live page shows the *current* team — editing it in place for the new year
@@ -653,7 +660,7 @@ overwrite an existing snapshot, bootstraps
 (clubs and committees both source their archive category's label/icon from
 their own live `docs/clubs|committees/<slug>/_category_.json`; a
 committee's on-page heading word varies per committee — "Committee" for
-Cultural Committee, "Government" for Student Government — read from
+Cultural Society, "Government" for Student Government — read from
 `src/data/committeeMeta.mjs`, since unlike clubs and fests it isn't
 uniform), writes the year's snapshot `.mdx`, and resets
 `src/data/teams/<slug>.mjs` to a fresh placeholder. The full walkthrough is

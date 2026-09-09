@@ -1,5 +1,83 @@
 # Changes
 
+## 2026-09-09 — Real club contact info, 3 club renames, Cultural Committee → Cultural Society
+
+Files: `src/data/clubContacts.js`, `src/data/clubDirectory.js`,
+`src/components/HomepageClubMarks.jsx`, `blog/tags.yml`,
+`static/admin/config.yml`, `static/img/cultural-society-logo.jpeg` (new),
+`docs/committees/cultural-committee/*` (4 files), `docs/clubs/{gardening,
+gaming,film-society}/*` (index.mdx, _category_.json, contact.mdx,
+events.mdx — 12 files), `docs/clubs/{astronomy,martial-arts,literary}-club/
+index.mdx`, `blog/2026-08-16-{gardening,gaming,film-society,cultural-
+committee}*/index.md`, `src/data/teams/{gardening,gaming,film-society,
+cultural-committee}*.mjs`, `scripts/rollover.mjs`,
+`docs/resources/leadership-rollover.mdx`, `docs-internal/leadership-
+rollover.md`, `CLAUDE.md`, `CONTRIBUTING.md`,
+`tests/e2e/clubs-and-fests.spec.js`
+
+Requested: pull real club details from a linked Google Doc (turned out to be
+a blank club-registration form template, not filled data — flagged rather
+than fabricated), then from `github.com/amarnathreddy07/saiu-club-catalogue`
+(a real 22-response club-overview survey + an official contacts sheet) and a
+follow-up Google Sheet (confirmed identical contact data, just embedded
+alongside real names/phone numbers I did not use or publish). Scope
+decisions — rename ambiguous clubs vs. leave as-is, which new clubs (if any)
+to add, where Cultural Society belongs — were confirmed via AskUserQuestion
+rather than guessed, since they involve public identity changes on a live
+site.
+
+**Contact info** (`clubContacts.js`): 15 of 21 clubs went from
+`@example.com`/`#` placeholders to real official emails + Instagram
+handles (+ a real LinkedIn for Turingites) straight from the university's
+own contacts sheet — official club-level channels only, never a survey
+submitter's personal name/email/phone, which the source data did contain
+but this never touches. `gaming-club` and `chess-club` still have partial
+placeholders (email or Instagram genuinely wasn't in the source);
+`pugwash-society`/`sports-society` weren't in the source at all and are
+still fully placeholder.
+
+**3 club renames** (real current names, per confirmation): Gardening Club →
+**Sustainability Club**, Gaming Club → **DOT.exe**, Film Society →
+**Creators Club**. Slugs, file paths, component/hero names, and blog tags
+were all deliberately kept (`gardening-club`, `gaming-club`, `film-society`)
+so no link/tag/URL broke — every place that showed the old display name
+(frontmatter `title`, `_category_.json` `label`, body intro copy, the blog
+intro post, `clubDirectory.js`'s `name` field, `blog/tags.yml`'s tag
+`label`) was updated to match. One extra spot found by grepping for the old
+names afterward, not by inspection: `HomepageClubMarks.jsx` mechanically
+title-cases each slug for its tooltip (`gardening-club` → "Gardening
+Club"), which doesn't know about a rename — added a 3-entry override map
+rather than teaching it real club-name data it doesn't otherwise need.
+
+**Cultural Committee renamed to Cultural Society**, per its real
+registration-form letterhead — kept the `cultural-committee` slug/tag so
+nothing broke, same reasoning as the club renames. Its `index.mdx` now
+shows a real logo (`static/img/cultural-society-logo.jpeg`, downloaded from
+the catalogue repo) — the first club/committee page on the site with an
+actual raster logo image, since every other page uses the animated-hero/
+icon system instead. The on-page leadership-group heading stays "Committee"
+(`committeeMeta.mjs` untouched) — a "society"'s leadership is still
+correctly called its committee in English; only the entity's own display
+name changed.
+
+**3 small enrichments**, not full rewrites, where the survey had genuinely
+new authentic detail an already-accurate description didn't: Astronomy
+Club's trip to the Satish Dhawan Space Centre, Martial Arts Club's specific
+disciplines (Taekwondo, Silambam), Literary Club's game-adaptation angle.
+Left ~15 other already-accurate club descriptions alone rather than
+rewriting for its own sake.
+
+One real e2e failure found and fixed, not just noted: `clubs-and-fests.
+spec.js`'s "club with placeholder contact info" test used `astronomy-club`
+as its example — broke the instant that club got real data. Switched the
+example to `pugwash-society`, one of the two clubs genuinely still fully
+placeholder.
+
+Full production build clean; full `npm run test:e2e` (83 tests) passes.
+Verified the Cultural Society logo specifically loads (`naturalWidth`
+checked, not just "no 404") via a real Playwright run, screenshotted before
+cleanup.
+
 ## 2026-08-31 — Fixed an unreadable/broken List/Timeline toggle button in dark mode
 
 Files: `src/components/EventViewToggle.jsx`, `CONTRIBUTING.md`
@@ -3017,3 +3095,34 @@ back-to-back runs of the same suite, with failures clustered in code nobody
 touched, is a resource-contention signal before it's a code signal; check
 `ps`/`lsof` for stray dev servers first rather than debugging the failing
 tests themselves.
+
+## 2026-09-09 — OAuth-proxy code verified against real GitHub; VPS plan phase checklist
+
+**Files:** `vps-hosting-plan.md`.
+
+Ran the wiki and the Decap CMS OAuth-proxy as two independent local
+servers — `npm start` (Docusaurus dev server, :3000) and `node server.js`
+(`oauth-proxy/`, :8081, dummy `GITHUB_CLIENT_ID`/`GITHUB_CLIENT_SECRET`
+since no GitHub OAuth App exists yet) — to check the OAuth handshake code
+itself, not just that it's wired up. Confirmed by curl: `/auth` redirects
+to `github.com/login/oauth/authorize` with the correct `client_id`,
+`redirect_uri`, `scope`, and a fresh `state`; `/callback` with no `code`
+returns 400; `/callback` with a bogus code reaches real GitHub's token
+endpoint and correctly turns its error response into a 502 instead of
+crashing; `/admin` loads through the wiki server. This verifies the proxy's
+logic end-to-end against the real GitHub API — the one thing it can't prove
+without an actually-registered OAuth App is a live "Login with GitHub"
+click completing successfully (that needs a real Client ID/Secret and a
+matching registered callback URL, which is Phase 1 of the checklist added
+below). Also confirmed why shipping `local_backend: true` in the committed
+`config.yml` is safe: Decap only activates the local-backend bypass when it
+detects the CMS is running on `localhost`, so a real deployed domain can't
+accidentally trigger it — no repo-side fix needed there.
+
+Added a "Phase checklist" section to `vps-hosting-plan.md` breaking the
+whole plan into 8 dependency-ordered phases (0: repo-side groundwork,
+already done — through 7: post-cutover cleanup), each with its own
+checkboxes, so "what's left before this ships" has one concrete answer
+instead of requiring a re-read of the whole narrative doc. Phase 2 (the ask
+to IT/the dean's office) is flagged as the actual blocker — everything from
+Phase 3 onward needs its answers first.

@@ -1,11 +1,11 @@
 ---
-title: "Welcome to the Gaming Club"
+title: "Welcome to DOT.exe"
 date: 2026-08-16
 tags: [gaming-club, blog]
-description: "Casual, competitive, and esports community at Sai University."
+description: "Casual, competitive, and esports gaming community at Sai University."
 ---
 
-The Gaming Club runs regular casual meetups alongside competitive teams across several titles, organizing LAN nights and representing Sai University at inter-college esports events.
+DOT.exe (formerly the Gaming Club) runs regular casual meetups alongside competitive teams across several titles, organizing LAN nights and representing Sai University at inter-college esports events.
 
 {/* truncate */}
 

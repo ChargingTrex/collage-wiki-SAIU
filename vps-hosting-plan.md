@@ -245,3 +245,114 @@ immediately on cutover, in case DNS needs to roll back.
   than assuming).
 - Whether this VPS already runs other sites/services (affects whether
   nginx/Caddy config needs to share the box with existing vhosts).
+
+## Phase checklist
+
+Working list to take this plan from "written" to "live," in dependency
+order. Phases 0–1 don't need the VPS at all and can happen anytime; Phase 2
+is the actual blocker everything else waits on.
+
+**Phase 0 — Repo-side groundwork (done)**
+
+- [x] `oauth-proxy/server.js` + `README.md` written (Decap's popup-handshake
+      protocol: `/auth` redirect, `/callback` token exchange).
+- [x] `static/admin/config.yml`: `backend.name` switched to `github`.
+- [x] Local dev bypass (`local_backend: true` + `npm run cms:proxy`) built
+      and tested end-to-end against this checkout's real files.
+- [x] OAuth-proxy code paths verified locally this session: ran the wiki
+      (`npm start`, :3000) and the proxy (`node server.js`, :8081) as two
+      separate processes with dummy credentials, then confirmed by curl —
+      `/auth` redirects to `github.com/login/oauth/authorize` with correct
+      `client_id`/`redirect_uri`/`scope`/`state`; `/callback` with no `code`
+      returns 400; `/callback` with a bogus code reaches real GitHub and
+      correctly surfaces its error as a 502; `/admin` loads through the
+      wiki server. Confirms the handshake logic itself is correct — the one
+      thing this *can't* prove without a real registered OAuth App is a
+      live "Login with GitHub" click completing successfully end-to-end.
+- [ ] Optional, only if a full live-login dry run is wanted before the VPS
+      exists: register a throwaway GitHub OAuth App with callback
+      `http://localhost:8081/callback`, temporarily flip `local_backend` to
+      `false` (or run from a non-localhost hostname override — check
+      Decap's docs for the exact detection rule) to force the real
+      `github` backend, and click through the actual consent screen. Not
+      required for Phase 1+ — the proxy code doesn't change based on where
+      it's deployed.
+
+**Phase 1 — GitHub OAuth App (repo owner, ~5 minutes, no VPS needed)**
+
+- [ ] Create the OAuth App: GitHub → Settings → Developer settings → OAuth
+      Apps → New OAuth App.
+- [ ] Homepage URL = site's public URL (VPS domain once known; can be
+      updated later without creating a new app).
+- [ ] Authorization callback URL = `<OAUTH_PROXY_BASE_URL>/callback` —
+      exact match required, update this if the domain changes later.
+- [ ] Save Client ID + Client Secret somewhere secure (secret shown once).
+      Never commit either to the repo.
+
+**Phase 2 — Ask IT / the dean's office (blocking — nothing in Phase 3+ can start until this comes back)**
+
+- [ ] Domain/subdomain pointed at the VPS (A/AAAA record) for the site.
+- [ ] A host or path for the OAuth-proxy (own subdomain, or a path behind
+      the same reverse proxy) — whichever is less setup for them.
+- [ ] Reverse proxy + TLS (nginx or Caddy, Let's Encrypt).
+- [ ] Node.js v20 available persistently (systemd unit or `pm2`) for the
+      OAuth-proxy specifically — the static file path doesn't need it.
+- [ ] A deploy user with SSH key access, write-scoped to one directory
+      (e.g. `/var/www/wiki/`).
+- [ ] Firewall: confirm only 80/443 need to be open; OAuth-proxy and deploy
+      tooling stay behind the reverse proxy.
+- [ ] Confirm SSH-from-GitHub-Actions (deploy mechanism A) is acceptable to
+      IT, or get their preferred alternative — don't assume.
+- [ ] Get the actual domain/subdomain name and confirm whether the VPS
+      already hosts other sites (affects whether nginx/Caddy config needs
+      to share the box with existing vhosts).
+
+**Phase 3 — Deploy the OAuth-proxy (needs Phase 1 + Phase 2)**
+
+- [ ] Copy `oauth-proxy/` to the VPS, `npm install`.
+- [ ] Set real env vars: `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` (Phase
+      1's values), `OAUTH_PROXY_BASE_URL` (Phase 2's domain/path).
+- [ ] Run persistently (systemd unit or `pm2`, matching however IT runs
+      other long-lived processes on that box) behind the reverse proxy —
+      never expose port 8081 directly.
+- [ ] If the callback URL differs from what Phase 1 registered (e.g. moved
+      off a localhost test), update the OAuth App's callback URL to match.
+
+**Phase 4 — Wire the static-site deploy mechanism (needs Phase 2)**
+
+- [ ] `.github/workflows/deploy.yml`: replace the final
+      `actions/configure-pages` + `actions/deploy-pages` steps with an
+      `rsync`-over-SSH step to the deploy user's path.
+- [ ] Add `VPS_HOST` / `VPS_USER` / `VPS_SSH_KEY` as GitHub Actions repo
+      secrets.
+
+**Phase 5 — Remaining repo-side changes (needs Phase 2's real domain)**
+
+- [ ] `docusaurus.config.js`: `url` → the real domain, `baseUrl: '/'`
+      (drop the `/collage-wiki-SAIU/` subpath), remove
+      `organizationName`/`projectName`/`deploymentBranch` (GitHub
+      Pages–specific).
+- [ ] `static/admin/config.yml`: `base_url` → the OAuth-proxy's real
+      deployed URL (currently the literal placeholder
+      `REPLACE-WITH-DEPLOYED-OAUTH-PROXY-URL`).
+- [ ] Check `js/github-badge.js` (referenced in `docusaurus.config.js`'s
+      `scripts`) for GitHub Pages–specific assumptions before the domain
+      changes ship.
+
+**Phase 6 — Cutover**
+
+- [ ] Verify end-to-end on the new domain before touching DNS: site loads,
+      TLS valid, `/admin` authenticates via real GitHub OAuth and saves a
+      real commit.
+- [ ] Keep the GitHub Pages workflow running in parallel until that's
+      confirmed.
+- [ ] Flip DNS to the VPS.
+- [ ] Watch for a stretch (not just the first few hours) before removing
+      the Pages workflow, in case DNS needs to roll back.
+
+**Phase 7 — Post-cutover cleanup**
+
+- [ ] Remove `.github/workflows/deploy.yml`'s GitHub Pages path once the
+      VPS has been serving correctly for a stretch.
+- [ ] Update `docs-internal/decap-cms-auth-todo.md` and this doc's own
+      "Status" line at the top to reflect the finished state.

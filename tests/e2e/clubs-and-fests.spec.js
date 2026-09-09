@@ -75,10 +75,15 @@ test.describe('Club contact pages', () => {
   });
 
   test('a club with placeholder contact info shows all 3 icons (email/Instagram/LinkedIn)', async ({page}) => {
-    await page.goto('docs/clubs/astronomy-club/contact');
-    await expect(page.locator('article').getByRole('link', {name: 'astronomy-club@example.com'})).toHaveAttribute(
+    // pugwash-society, not astronomy-club — the 2026-09 real-data pass
+    // (see changes.md) gave astronomy-club a real email/Instagram from
+    // Sai University's own club-contacts sheet, so it's no longer a valid
+    // "still placeholder" example. pugwash-society and sports-society are
+    // the clubs that sheet had no data for at all.
+    await page.goto('docs/clubs/pugwash-society/contact');
+    await expect(page.locator('article').getByRole('link', {name: 'pugwash-society@example.com'})).toHaveAttribute(
       'href',
-      'mailto:astronomy-club@example.com'
+      'mailto:pugwash-society@example.com'
     );
     await expect(page.locator('article').getByRole('link', {name: 'Instagram', exact: true})).toBeVisible();
     await expect(page.locator('article').getByRole('link', {name: 'LinkedIn', exact: true})).toBeVisible();

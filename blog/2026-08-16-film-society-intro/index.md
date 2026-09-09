@@ -1,11 +1,11 @@
 ---
-title: "Welcome to the Film Society"
+title: "Welcome to Creators Club"
 date: 2026-08-16
 tags: [film-society, blog]
-description: "Appreciating, analyzing, and creating cinema at Sai University."
+description: "Content creation, filmmaking, and creative technology at Sai University."
 ---
 
-The Film Society runs screenings, director discussions, and a student-made short film program, open to anyone who loves watching or making movies.
+Creators Club (formerly the Film Society) is a creative community for students into content creation, reel making, acting, and filmmaking, plus technical craft like editing and DOP — screenings, director discussions, and a student-made short film program are still part of what it does.
 
 {/* truncate */}
 

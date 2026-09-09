@@ -1,6 +1,6 @@
 // src/data/teams/gardening-club.mjs
 //
-// Current Gardening Club board. Snapshotted into docs/archive/gardening-club/ at
+// Current Sustainability Club (formerly Gardening Club) board. Snapshotted into docs/archive/gardening-club/ at
 // rollover (see scripts/rollover.mjs), then reset to this same placeholder
 // shape for the incoming board — see CONTRIBUTING.md's
 // "Leadership rollover" section.

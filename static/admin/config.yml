@@ -108,7 +108,7 @@ collections:
           - chess-club
           - pugwash-society
           - sports-society
-          - cultural-committee
+          - {label: 'Cultural Society', value: cultural-committee}
           - student-government
           - tech-fest
           - general-fest

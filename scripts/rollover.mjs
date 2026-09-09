@@ -81,8 +81,11 @@ const suffix = type === 'club' ? 'board' : 'committee';
 async function main() {
   // Step 3b — the on-page heading word. Clubs are uniformly "Board"; fests
   // are uniformly "Organisation Committee"; committees vary per slug
-  // ("Committee" for Cultural Committee, "Government" for Student
-  // Government) so that one has to be resolved from COMMITTEE_META, which
+  // ("Committee" for Cultural Society — entity renamed from "Cultural
+  // Committee," slug kept as cultural-committee, heading word unchanged
+  // since a "committee" is still what its leadership group is called —
+  // "Government" for Student Government) so that one has to be resolved
+  // from COMMITTEE_META, which
   // needs an async import — hence this lives inside main(), not alongside
   // `suffix` above.
   let heading;
@@ -157,7 +160,7 @@ async function main() {
       // committees already have this file (see docs/committees/*/index.mdx),
       // just under a sibling directory to docs/clubs/. `heading` (resolved
       // in step 3b, per-slug from COMMITTEE_META) drives the phrasing so
-      // "Cultural Committee" reads "Past committees for..." while "Student
+      // "Cultural Society" reads "Past committees for..." while "Student
       // Government" reads "Past governments for..." instead of both saying
       // the generic, less natural "boards" or a hardcoded "committees".
       const committeeCategoryPath = path.join(ROOT, 'docs', 'committees', slug, '_category_.json');
@@ -237,10 +240,14 @@ import { TeamSection } from '@site/src/components/TeamSection';
   } else {
     roleExamples = ['Fest Director', 'Operations Lead', 'Sponsorship Lead'];
   }
-  // Some entities' own title already ends in the heading word ("Cultural
-  // Committee", "Student Government") — appending it again would read as
-  // "Current Cultural Committee committee." Only append when title doesn't
-  // already end with it, case-insensitively.
+  // Some entities' own title already ends in the heading word ("Student
+  // Government") — appending it again would read as "Current Student
+  // Government government." Cultural Society doesn't end with its own
+  // heading word ("Committee") since it was renamed from "Cultural
+  // Committee" — that's fine, it just means "committee" gets appended,
+  // producing "Current Cultural Society committee," still correct English.
+  // Only append when title doesn't already end with heading,
+  // case-insensitively.
   const titleAlreadyHasHeading = title.toLowerCase().endsWith(heading.toLowerCase());
   const teamNoun = titleAlreadyHasHeading ? title : `${title} ${heading.toLowerCase()}`;
   const freshTeamContent = `// src/data/teams/${slug}.mjs

@@ -4,63 +4,64 @@
 // `null` fields render nothing (see ClubContact.jsx) rather than a broken
 // link.
 //
-// FOSS Club's entry is real, sourced from that club's own published contact
-// page (github.com/y-bow/saiufosswiki, a sibling Sai University club wiki
-// for the same real-world FOSS Club). Every other club below is a
-// PLACEHOLDER (href: '#', same convention as src/theme/Footer/index.js's
-// PLACEHOLDER_* constants — grep "PLACEHOLDER" to find every one of these)
-// — replace with that club's actual email/social links before publishing
-// its contact section for real.
+// FOSS Club's entry was already real, sourced from that club's own published
+// contact page (github.com/y-bow/saiufosswiki). Most others below are now
+// also real, sourced from the university's own club-overview survey +
+// contacts sheet (github.com/amarnathreddy07/saiu-club-catalogue/tree/main/data,
+// 2026-09) — official club-level email/Instagram/LinkedIn only, never a
+// submitter's personal contact info. Clubs the survey had no data for keep
+// the PLACEHOLDER convention (href: '#', same as
+// src/theme/Footer/index.js's PLACEHOLDER_* constants).
 
 export const CLUB_CONTACTS = {
   'literary-club': {
-    email: 'literary-club@example.com',
+    email: 'clubofliterature@saiuniversity.edu.in',
     instagram: { url: '#', label: 'Instagram' },
     linkedin: { url: '#', label: 'LinkedIn' },
   },
   'art-club': {
-    email: 'art-club@example.com',
-    instagram: { url: '#', label: 'Instagram' },
+    email: 'theartclub@saiuniversity.edu.in',
+    instagram: { url: 'https://www.instagram.com/saiuartclub/', label: '@saiuartclub' },
     linkedin: { url: '#', label: 'LinkedIn' },
   },
   'dance-club': {
-    email: 'dance-club@example.com',
-    instagram: { url: '#', label: 'Instagram' },
+    email: 'danceclub@saiuniversity.edu.in',
+    instagram: { url: 'https://www.instagram.com/saiudanceclub/', label: '@saiudanceclub' },
     linkedin: { url: '#', label: 'LinkedIn' },
   },
   'gardening-club': {
-    email: 'gardening-club@example.com',
-    instagram: { url: '#', label: 'Instagram' },
+    email: 'gardeningclub@saiuniversity.edu.in',
+    instagram: { url: 'https://www.instagram.com/sustainabilityclubsaiu/', label: '@sustainabilityclubsaiu' },
     linkedin: { url: '#', label: 'LinkedIn' },
   },
   'astronomy-club': {
-    email: 'astronomy-club@example.com',
-    instagram: { url: '#', label: 'Instagram' },
+    email: 'astronomyclub@saiuniversity.edu.in',
+    instagram: { url: 'https://www.instagram.com/the.accretion/', label: '@the.accretion' },
     linkedin: { url: '#', label: 'LinkedIn' },
   },
   'theatre-club': {
-    email: 'theatre-club@example.com',
-    instagram: { url: '#', label: 'Instagram' },
+    email: 'theatreclub@saiuniversity.edu.in',
+    instagram: { url: 'https://www.instagram.com/thetheatreclub/', label: '@thetheatreclub' },
     linkedin: { url: '#', label: 'LinkedIn' },
   },
   'photography-club': {
-    email: 'photography-club@example.com',
-    instagram: { url: '#', label: 'Instagram' },
+    email: 'photographyclub@saiuniversity.edu.in',
+    instagram: { url: 'https://www.instagram.com/photographyclub_saiu/', label: '@photographyclub_saiu' },
     linkedin: { url: '#', label: 'LinkedIn' },
   },
   'gaming-club': {
-    email: 'gaming-club@example.com',
+    email: '#',
     instagram: { url: '#', label: 'Instagram' },
     linkedin: { url: '#', label: 'LinkedIn' },
   },
   'oratory-club': {
-    email: 'oratory-club@example.com',
-    instagram: { url: '#', label: 'Instagram' },
+    email: 'oratoryclub@saiuniversity.edu.in',
+    instagram: { url: 'https://www.instagram.com/oratoryclubsaiu/', label: '@oratoryclubsaiu' },
     linkedin: { url: '#', label: 'LinkedIn' },
   },
   'entrepreneurship-club': {
-    email: 'entrepreneurship-club@example.com',
-    instagram: { url: '#', label: 'Instagram' },
+    email: 'entrepreneurclub@saiuniversity.edu.in',
+    instagram: { url: 'https://www.instagram.com/saiu_entrepreneurshipclub/', label: '@saiu_entrepreneurshipclub' },
     linkedin: { url: '#', label: 'LinkedIn' },
   },
   'fashion-club': {
@@ -69,38 +70,38 @@ export const CLUB_CONTACTS = {
     linkedin: { url: '#', label: 'LinkedIn' },
   },
   'science-society': {
-    email: 'science-society@example.com',
-    instagram: { url: '#', label: 'Instagram' },
+    email: 'saiu.sciencesociety@saiuniversity.edu.in',
+    instagram: { url: 'https://www.instagram.com/saiusciencesociety/', label: '@saiusciencesociety' },
     linkedin: { url: '#', label: 'LinkedIn' },
   },
   'music-club': {
-    email: 'music-club@example.com',
-    instagram: { url: '#', label: 'Instagram' },
+    email: 'musicclub@saiuniversity.edu.in',
+    instagram: { url: 'https://www.instagram.com/saiumusicclub/', label: '@saiumusicclub' },
     linkedin: { url: '#', label: 'LinkedIn' },
   },
   'film-society': {
-    email: 'film-society@example.com',
-    instagram: { url: '#', label: 'Instagram' },
+    email: 'saiu.filmsociety@saiuniversity.edu.in',
+    instagram: { url: 'https://www.instagram.com/creators_club_saiuniversity/', label: '@creators_club_saiuniversity' },
     linkedin: { url: '#', label: 'LinkedIn' },
   },
   'turingites-computer-science-society': {
-    email: 'turingites-computer-science-society@example.com',
-    instagram: { url: '#', label: 'Instagram' },
-    linkedin: { url: '#', label: 'LinkedIn' },
+    email: 'turingites@saiuniversity.edu.in',
+    instagram: { url: 'https://www.instagram.com/turingites/', label: '@turingites' },
+    linkedin: { url: 'https://www.linkedin.com/company/turingites/', label: 'Turingites on LinkedIn' },
   },
   'animal-welfare-society': {
-    email: 'animal-welfare-society@example.com',
-    instagram: { url: '#', label: 'Instagram' },
+    email: 'saiu.animalwelfare@saiuniversity.edu.in',
+    instagram: { url: 'https://www.instagram.com/saiuanimalwelfaresociety/', label: '@saiuanimalwelfaresociety' },
     linkedin: { url: '#', label: 'LinkedIn' },
   },
   'martial-arts-club': {
-    email: 'martial-arts-club@example.com',
-    instagram: { url: '#', label: 'Instagram' },
+    email: 'martialartsclub@saiuniversity.edu.in',
+    instagram: { url: 'https://www.instagram.com/saiu.martialartsclub/', label: '@saiu.martialartsclub' },
     linkedin: { url: '#', label: 'LinkedIn' },
   },
   'chess-club': {
-    email: 'chess-club@example.com',
-    instagram: { url: '#', label: 'Instagram' },
+    email: '#',
+    instagram: { url: 'https://www.instagram.com/saiuchessclub/', label: '@saiuchessclub' },
     linkedin: { url: '#', label: 'LinkedIn' },
   },
   'pugwash-society': {

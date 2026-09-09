@@ -1,6 +1,6 @@
 // src/data/teams/cultural-committee.mjs
 //
-// Current Cultural Committee. Snapshotted into docs/archive/cultural-committee/
+// Current Cultural Society committee. Snapshotted into docs/archive/cultural-committee/
 // at rollover (see scripts/rollover.mjs), then reset to this same placeholder
 // shape for the incoming committee — see CONTRIBUTING.md's
 // "Leadership rollover" section.

@@ -235,11 +235,11 @@ Accent bridge in `custom.css`:
 | Art Club | `art-club` | Fuchsia |
 | Chess Club | `chess-club` | Slate |
 | Dance Club | `dance-club` | Rose |
-| Gardening Club | `gardening-club` | Green |
+| Sustainability Club | `gardening-club` | Green |
 | Astronomy Club | `astronomy-club` | Indigo |
 | Theatre Club | `theatre-club` | Purple |
 | Photography Club | `photography-club` | Cyan |
-| Gaming Club | `gaming-club` | Violet |
+| DOT.exe | `gaming-club` | Violet |
 | Oratory Club | `oratory-club` | Blue |
 | Entrepreneurship Club | `entrepreneurship-club` | Emerald |
 | Fashion Club | `fashion-club` | Pink |
@@ -247,7 +247,7 @@ Accent bridge in `custom.css`:
 | Science Society | `science-society` | Teal |
 | Sports Society | `sports-society` | Gold |
 | Music Club | `music-club` | Orange |
-| Film Society | `film-society` | Crimson |
+| Creators Club | `film-society` | Crimson |
 | Turingites CS Society | `turingites-computer-science-society` | Terminal |
 | Animal Welfare Society | `animal-welfare-society` | Amber |
 | Martial Arts Club | `martial-arts-club` | Red |
@@ -257,6 +257,16 @@ Hex values live in `clubAccents.js`. Chess Club, Pugwash Society, and Sports
 Society (pulled from the companion `campus-club-ui` component library) were
 added after the original 18; team/contact data for all three is still
 placeholder — see `docs-internal/animation-caveats.md` §17.
+
+Three clubs were renamed (2026-09) to match their real current names, per
+Sai University's own club-catalogue/contacts data: Gardening Club →
+**Sustainability Club**, Gaming Club → **DOT.exe**, Film Society →
+**Creators Club**. Slugs, component/hero names, file paths, and blog tags
+were all deliberately kept as-is (`gardening-club`, `gaming-club`,
+`film-society`) so no links/tags/URLs broke — only display names
+(frontmatter `title`, `_category_.json` `label`, body copy) changed. Most
+other clubs' contact info (`clubContacts.js`) was updated the same pass from
+the same real source — see `changes.md`.
 
 ## Committees — slug
 
@@ -268,8 +278,17 @@ in `CLUB_ACCENTS`.
 
 | Committee | Slug (`/docs/committees/<slug>`) |
 |---|---|
-| Cultural Committee | `cultural-committee` |
+| Cultural Society | `cultural-committee` |
 | Student Government | `student-government` |
+
+Cultural Society was renamed from "Cultural Committee" (real institutional
+name, per its club-registration form) — slug/tag kept as
+`cultural-committee` so no existing links/tags break; its logo
+(`static/img/cultural-society-logo.jpeg`, from the real
+`saiu-club-catalogue` repo) is shown on its `index.mdx`, the first
+committee/club on the site to have one — none of the 21 clubs or Student
+Government have a raster logo, they use the animated-hero/icon system
+instead.
 
 Contact/team data is placeholder (`src/data/clubContacts.js`,
 `src/data/teams/<slug>.mjs`), same convention as every newly added club.
