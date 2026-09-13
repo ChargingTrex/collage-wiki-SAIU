@@ -3239,3 +3239,22 @@ from a pending check to done-ahead-of-schedule, since that exact risk was
 the one this doc had already flagged there. No architecture decision
 changed — Option A (`github` backend + `oauth-proxy/`) stays confirmed;
 Netlify being test-only was the reason Option B didn't get reopened.
+
+## 2026-09-13 — Renamed `requirements.txt` → `PREREQUISITES.md` (Netlify build failure)
+
+**Files:** `requirements.txt` → `PREREQUISITES.md` (renamed).
+
+First real Netlify build attempt failed immediately at "Install
+dependencies": `requirements.txt` at the repo root (added 2026-07, a
+plain-English prerequisites list — Node/npm/git versions, deploy target —
+predating any CMS/hosting work, never a real pip manifest despite the
+filename) got auto-detected by Netlify's build image as a Python
+`pip install -r requirements.txt` file. Line 27's bare
+`https://github.com/ChargingTrex/collage-wiki-SAIU` (the deploy-target
+bullet, plain prose) got fed to `pip install` as if it were a package
+reference; pip downloaded the HTML page at that URL, couldn't unpack it as
+an archive, and failed the build before `npm run build` ever ran. Fixed by
+renaming the file to `PREREQUISITES.md` (its content was already
+markdown-shaped) — no build tool auto-installs from that filename. Nothing
+in the repo linked to the old path except this file's own now-historical
+changes.md entries.
