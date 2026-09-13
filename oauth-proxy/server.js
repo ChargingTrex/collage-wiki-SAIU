@@ -77,16 +77,44 @@ app.get('/callback', async (req, res) => {
   // message it first (so it learns a trustworthy `origin` to reply to,
   // rather than broadcasting the access token to '*'), then sends the real
   // payload back to exactly that origin.
-  res.send(`<script>
-    (function() {
-      function receiveMessage(e) {
-        window.opener.postMessage('authorization:github:success:' + ${JSON.stringify(payload)}, e.origin);
-        window.removeEventListener('message', receiveMessage, false);
+  //
+  // The `window.opener` guard below is defensive, not part of that
+  // contract: this page only makes sense opened as a popup from Decap's
+  // own "Login with GitHub" button. If it's reached any other way — a
+  // browser popup blocker silently preventing the popup (some fall back to
+  // a same-tab redirect instead of just failing), a bookmarked/shared link
+  // to this URL, back/forward navigation replaying it — `window.opener` is
+  // `null` and calling `.postMessage` on it throws immediately, which
+  // otherwise leaves the visitor looking at a blank white page with no
+  // indication of what went wrong (confirmed against the Netlify Functions
+  // twin of this route — see netlify/functions/callback.js). A real token
+  // was still successfully exchanged above in that case; there's just
+  // nowhere to deliver it, so say so instead of failing silently.
+  res.send(`<!DOCTYPE html>
+<html><body style="font: 14px system-ui, sans-serif; padding: 2rem; max-width: 32rem; margin: 0 auto;">
+    <div id="no-opener-message" style="display: none;">
+      <p><strong>GitHub authorized this login, but this page isn't running as a
+      popup</strong>, so there's no CMS window to hand the result back to.</p>
+      <p>This usually means the browser blocked the popup, or this URL was
+      opened directly instead of via the CMS's "Login with GitHub" button.
+      Close this tab, allow popups for this site if prompted, and click
+      "Login with GitHub" again from <a href="/admin/">/admin</a>.</p>
+    </div>
+    <script>
+      if (!window.opener) {
+        document.getElementById('no-opener-message').style.display = 'block';
+      } else {
+        (function() {
+          function receiveMessage(e) {
+            window.opener.postMessage('authorization:github:success:' + ${JSON.stringify(payload)}, e.origin);
+            window.removeEventListener('message', receiveMessage, false);
+          }
+          window.addEventListener('message', receiveMessage, false);
+          window.opener.postMessage('authorizing:github', '*');
+        })();
       }
-      window.addEventListener('message', receiveMessage, false);
-      window.opener.postMessage('authorizing:github', '*');
-    })();
-  </script>`);
+    </script>
+</body></html>`);
 });
 
 app.listen(PORT, () => {

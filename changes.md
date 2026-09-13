@@ -3325,3 +3325,26 @@ locally on 2026-09-09). Updated `vps-hosting-plan.md`'s Phase 0 checklist
 to reflect it. Still unconfirmed: an actual save (a real commit landing on
 GitHub through the CMS) — login succeeding doesn't by itself prove write
 access.
+
+## 2026-09-13 — Callback page no longer fails silently when opened outside a popup
+
+**Files:** `netlify/functions/callback.js`, `oauth-proxy/server.js`.
+
+Real report: after the first successful login test, a later attempt landed
+on a blank white page instead of dropping back into the CMS — traced to
+the browser navigating the *same tab* away from `/admin` to the callback
+URL, rather than the popup window Decap's login button is supposed to
+open (likely a popup blocker silently preventing the popup, or the
+callback URL reached directly rather than via that button). In that case
+`window.opener` is `null`, and the existing script called
+`window.opener.postMessage(...)` unconditionally — throwing immediately
+and leaving a blank page with no clue what happened, even though the
+GitHub token exchange above it had already succeeded.
+
+Added a `window.opener` guard to both the Netlify Functions callback
+(`netlify/functions/callback.js`) and the standalone `oauth-proxy/server.js`
+(kept in sync since they implement the identical protocol): when there's no
+opener, the page now shows a plain-English explanation and a link back to
+`/admin` instead of silently failing. The actual success path (popup +
+opener present) is unchanged — verified via the same handler-invocation
+tests used throughout this OAuth work.
