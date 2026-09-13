@@ -3348,3 +3348,38 @@ opener, the page now shows a plain-English explanation and a link back to
 `/admin` instead of silently failing. The actual success path (popup +
 opener present) is unchanged — verified via the same handler-invocation
 tests used throughout this OAuth work.
+
+## 2026-09-13 — Fixed the real login stall: broadcast fallback for the popup handshake
+
+**Files:** `netlify/functions/callback.js`, `oauth-proxy/server.js`.
+
+Real login attempt got further than any previous one: `window.opener` was
+present, the GitHub token exchange succeeded (a real `gho_...` token was in
+the page source), the popup correctly sent `'authorizing:github'` to the
+opener — and then stalled forever. `/admin`'s own UI never updated to a
+logged-in state, meaning the opener never echoed that ping back the way
+the handshake's `receiveMessage` listener was waiting for, so the real
+`authorization:github:success:...` payload never got sent. The token was
+right there, successfully obtained, with no way left to deliver it.
+
+Root cause is a real weak point in this well-known popup-handshake pattern
+(the same one used by community netlify-cms/Decap OAuth-proxy reference
+implementations, which is where this code's shape came from): it assumes
+the opener always echoes the ping back before completing auth, which isn't
+guaranteed — either a given Decap build doesn't implement that echo at all,
+or a backgrounded `/admin` tab has its JS deprioritized enough to delay it
+past any reasonable wait. Fixed by no longer waiting indefinitely: both
+`netlify/functions/callback.js` and `oauth-proxy/server.js` (kept in sync,
+same protocol) now start a 1500ms fallback timer alongside the normal
+echo-and-reply path. If the opener replies first, the real payload goes to
+that reply's confirmed origin (the more careful path); if 1500ms passes
+with no reply, it broadcasts the same payload to `'*'` instead of hanging
+forever. A `done` flag prevents sending twice if a genuine reply arrives
+around the same time the fallback fires. Verified the full script in a
+sandboxed `vm` context (not just `node --check`) with a mocked
+`window.opener`/`setTimeout`: the ping fires immediately, and manually
+triggering the fallback correctly sends the real success payload exactly
+once. (An earlier version of this same edit shipped a literal backtick
+inside a JS comment nested in `callback.js`'s outer template literal,
+silently breaking the file — caught by `node --check` before pushing, not
+after.)

@@ -77,12 +77,29 @@ exports.handler = async (event) => {
         document.getElementById('no-opener-message').style.display = 'block';
       } else {
         (function() {
+          // Real-world finding: a live login got exactly this far — token
+          // exchanged, opener present, "authorizing:github" ping sent — and
+          // then stalled forever with a valid token never delivered, because
+          // the opener never echoed the ping back (confirmed: /admin's own
+          // UI never updated). Rather than wait indefinitely for a reply
+          // that isn't guaranteed, broadcast the real result on a short
+          // timeout if nothing replies first. The done flag guards against
+          // sending twice if a genuine (if slow — e.g. a backgrounded /admin tab
+          // gets its JS throttled) reply arrives right around the same time
+          // as the fallback fires.
+          var done = false;
+          function complete(targetOrigin) {
+            if (done) return;
+            done = true;
+            window.opener.postMessage('authorization:github:success:' + ${JSON.stringify(payload)}, targetOrigin);
+          }
           function receiveMessage(e) {
-            window.opener.postMessage('authorization:github:success:' + ${JSON.stringify(payload)}, e.origin);
             window.removeEventListener('message', receiveMessage, false);
+            complete(e.origin);
           }
           window.addEventListener('message', receiveMessage, false);
           window.opener.postMessage('authorizing:github', '*');
+          setTimeout(function() { complete('*'); }, 1500);
         })();
       }
     </script>
