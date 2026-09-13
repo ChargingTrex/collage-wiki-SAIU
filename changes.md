@@ -3220,3 +3220,22 @@ different origin. Fixed by moving `STRUCTURED_DATA` construction into the
 of the same value. Both fixes verified against real builds of both
 configurations; `homepage.spec.js` and `navigation.spec.js` (15 tests)
 still pass clean.
+
+## 2026-09-10 — vps-hosting-plan.md updated to match confirmed VPS provider + Netlify's role
+
+**Files:** `vps-hosting-plan.md`.
+
+Updated the doc's own "Status" line to name the confirmed production
+target specifically — a **Hostinger** VPS, provided by the dean's office —
+rather than the generic "a VPS" it said before. Added a "Netlify is a test
+environment only, not a hosting candidate" note up top and a matching
+"Netlify test deploy" section documenting what the previous session's
+Netlify prep actually changed in the repo (`netlify.toml`, the
+`docusaurus.config.js` host-detection via `SITE_BASE_URL`, and the two
+hardcoded-URL bugs it surfaced and fixed — `js/github-badge.js`'s script
+`src` and the homepage's JSON-LD `url`). Marked the corresponding Phase 0
+checklist item done and updated Phase 5's `js/github-badge.js` line item
+from a pending check to done-ahead-of-schedule, since that exact risk was
+the one this doc had already flagged there. No architecture decision
+changed — Option A (`github` backend + `oauth-proxy/`) stays confirmed;
+Netlify being test-only was the reason Option B didn't get reopened.

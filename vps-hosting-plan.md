@@ -1,12 +1,24 @@
 # VPS hosting plan — self-hosted site, GitHub stays the content source
 
-**Status: VPS itself not provisioned/reachable yet; one piece of the
-repo-side work is now built ahead of it.** Written because the university
-(via the dean's office) has provisioned a VPS for hosting this site. The VPS
-is **administered by someone else** (university IT) — this repo has no SSH
-access to it and can't stand anything up directly. This doc is meant to be
-handed to whoever administers the VPS as a concrete request list, and to
-record the repo-side changes that follow once that access exists.
+**Status: production target confirmed as a Hostinger VPS (provided by the
+dean's office); the VPS itself not provisioned/reachable yet, but more of
+the repo-side work is now built ahead of it than before.** Written because
+the university (via the dean's office) has provisioned a VPS for hosting
+this site. The VPS is **administered by someone else** (university IT) —
+this repo has no SSH access to it and can't stand anything up directly.
+This doc is meant to be handed to whoever administers the VPS as a concrete
+request list, and to record the repo-side changes that follow once that
+access exists.
+
+**Netlify is a test environment only, not a hosting candidate.** A Netlify
+deploy exists purely to exercise the build/deploy mechanics (and
+eventually a real GitHub OAuth login) on a real public domain before the
+Hostinger VPS is reachable — it is not being considered as where this site
+actually ends up. That matters for the CMS-auth decision below: Option B
+(`git-gateway` + Netlify Identity) stays off the table, because adopting it
+would only make sense if Netlify *were* becoming the production host, and
+it isn't. See "Netlify test deploy" below for what that prep actually
+changed in the repo.
 
 The Decap CMS OAuth-proxy this plan calls for (see "Architecture" below) has
 already been written — `oauth-proxy/` (`server.js` + `README.md`) — and
@@ -121,6 +133,40 @@ From `docs-internal/decap-cms-auth-todo.md`:
   much larger project than this wiki needs. Not worth revisiting unless
   hosting deliberately moves to Netlify itself, which this plan does not
   propose.
+
+## Netlify test deploy
+
+Repo-side prep so a Netlify build can run without disturbing the live
+GitHub Pages deploy, or requiring any of this plan's VPS/Option-A decisions
+to change:
+
+- `netlify.toml` (new) sets the build command (`npm run build`), publish
+  dir (`build`), and Node version (20, matching CI).
+- `docusaurus.config.js` reads Netlify's own `NETLIFY`/`URL` build-time env
+  vars into one `SITE_BASE_URL` constant, so `url`/`baseUrl` are correct on
+  either host from the same config — root path on Netlify (`/`), the
+  existing `/collage-wiki-SAIU/` subpath everywhere else. Neither the
+  GitHub Pages config values nor (once Phase 5 happens) the VPS's own
+  `baseUrl: '/'` need to change because of this — it's additive.
+- Testing that Netlify build surfaced two real hardcoded-URL bugs that
+  predated this and would have silently broken on *any* host other than
+  GitHub Pages — exactly the risk this doc's "Repo-side changes" section
+  had flagged (the `js/github-badge.js` line item below) but hadn't hit
+  yet. Both are now fixed at the source instead of deferred to Phase 5:
+  the `github-badge.js` `<script>` tag's `src` was a literal
+  `/collage-wiki-SAIU/js/github-badge.js` (would 404 under any other
+  `baseUrl`) — now built from the same `SITE_BASE_URL` constant; the
+  homepage's JSON-LD structured-data `url` was a hardcoded
+  `https://chargingtrex.github.io/collage-wiki-SAIU/` string in
+  `src/pages/index.js` (would keep claiming the GitHub Pages URL as
+  canonical from any other origin) — now built from
+  `useDocusaurusContext()`'s real `siteConfig.url + siteConfig.baseUrl`
+  instead of a second, driftable copy of the same value. Full detail:
+  `changes.md`'s 2026-09-09 entry.
+- Connecting this repo to an actual Netlify site (`netlify login` +
+  linking the site, or a `NETLIFY_AUTH_TOKEN`) needs a real Netlify account
+  action — not something doable without the maintainer's own
+  browser-based auth step.
 
 ## OAuth-proxy & CMS requirements
 
@@ -277,6 +323,12 @@ is the actual blocker everything else waits on.
       `github` backend, and click through the actual consent screen. Not
       required for Phase 1+ — the proxy code doesn't change based on where
       it's deployed.
+- [x] Netlify test-deploy prep: `netlify.toml` added, `docusaurus.config.js`
+      made host-aware (`SITE_BASE_URL`), and the two hardcoded-URL bugs
+      that prep surfaced (`js/github-badge.js`'s script `src`, the
+      homepage's JSON-LD `url`) fixed at the source. See "Netlify test
+      deploy" above. Connecting an actual Netlify site to this repo still
+      needs the maintainer's own account/login step.
 
 **Phase 1 — GitHub OAuth App (repo owner, ~5 minutes, no VPS needed)**
 
@@ -335,9 +387,12 @@ is the actual blocker everything else waits on.
 - [ ] `static/admin/config.yml`: `base_url` → the OAuth-proxy's real
       deployed URL (currently the literal placeholder
       `REPLACE-WITH-DEPLOYED-OAUTH-PROXY-URL`).
-- [ ] Check `js/github-badge.js` (referenced in `docusaurus.config.js`'s
-      `scripts`) for GitHub Pages–specific assumptions before the domain
-      changes ship.
+- [x] ~~Check `js/github-badge.js` for GitHub Pages–specific
+      assumptions~~ — done ahead of schedule, surfaced by the Netlify test
+      deploy prep (see "Netlify test deploy" above): its `<script>` `src`
+      no longer hardcodes `/collage-wiki-SAIU/`, it derives from the same
+      `SITE_BASE_URL` constant `baseUrl` itself uses, so it'll be correct
+      once this line's own `baseUrl: '/'` change lands too.
 
 **Phase 6 — Cutover**
 
