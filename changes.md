@@ -3296,3 +3296,14 @@ Authorization callback URL
 `https://glittery-licorice-720230.netlify.app/.netlify/functions/callback`,
 then set `GITHUB_CLIENT_ID`/`GITHUB_CLIENT_SECRET` as Netlify environment
 variables on that site and redeploy.
+
+## 2026-09-13 — `.env` added to `.gitignore` for local OAuth-proxy testing
+
+**Files:** `.gitignore`.
+
+Added `.env` to `.gitignore` (wasn't previously listed) so the maintainer's
+real GitHub OAuth App credentials — created to test the Netlify Functions
+OAuth-proxy (`netlify/functions/`) end-to-end — can live in a local `.env`
+file without any risk of landing in a commit. Confirmed ignored via `git
+check-ignore -v .env` before creating the file. The credentials themselves
+are not recorded here or anywhere in the repo.

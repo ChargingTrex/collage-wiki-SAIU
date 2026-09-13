@@ -1,3 +1,8 @@
+# Local secrets — real GitHub OAuth App credentials for testing the
+# Decap CMS OAuth-proxy (oauth-proxy/server.js and netlify/functions/)
+# locally. Never committed.
+.env
+
 # macOS
 .DS_Store
 
