@@ -23,12 +23,25 @@
 # directly — no GitHub account, no OAuth App, no deployed proxy required.
 # See `docs-internal/decap-cms-auth-todo.md` for the full local-testing
 # steps.
+# `base_url` MUST be a bare origin with no path, and every path segment
+# belongs in `auth_endpoint` instead. This is not cosmetic — it's the single
+# non-obvious trap in this whole setup, and getting it wrong fails silently
+# with no error anywhere. Decap builds the auth URL as
+# `${base_url}/${auth_endpoint}` (so the split below produces the identical
+# URL either way), but its two `postMessage` listeners both gate on
+# `event.origin === base_url`, and `MessageEvent.origin` is *always* a bare
+# origin — never a path. With a path in `base_url`, that comparison can
+# never be true: the handshake ping is ignored, so the success listener is
+# never even installed, so the real token is never accepted. Symptom is a
+# login that looks like it works (GitHub authorizes, a real token is
+# fetched) but leaves `/admin` sitting on the login button forever.
+# Verified by reading the actual shipped decap-cms@3 bundle, not inferred.
 backend:
   name: github
   repo: ChargingTrex/collage-wiki-SAIU
   branch: main
-  base_url: https://glittery-licorice-720230.netlify.app/.netlify/functions
-  auth_endpoint: auth
+  base_url: https://glittery-licorice-720230.netlify.app
+  auth_endpoint: .netlify/functions/auth
 
 local_backend: true
 

@@ -203,9 +203,22 @@ backend:
   name: github
   repo: ChargingTrex/collage-wiki-SAIU
   branch: main
-  base_url: https://oauth.<domain>   # currently the placeholder
+  base_url: https://oauth.<domain>   # bare origin, NO path — see below
   auth_endpoint: auth
 ```
+
+**`base_url` must be a bare origin with no path** — the one genuinely
+non-obvious trap here, and it fails completely silently. Decap's two
+`postMessage` listeners both require `event.origin === base_url`, and
+`MessageEvent.origin` never includes a path, so a path in `base_url` means
+login appears to work (GitHub authorizes, a real token is fetched) while
+`/admin` sits on the login button forever with no error logged anywhere. If
+the proxy lands on a path rather than its own subdomain (item 1 of "The ask
+for IT" allows either), keep `base_url` as the bare host and put the whole
+path in `auth_endpoint` instead. This cost a real debugging session on the
+Netlify test deploy before it was found by reading the shipped decap-cms@3
+bundle — full detail in `oauth-proxy/README.md` and `changes.md`'s
+2026-09-13 entries.
 
 **Editor (club lead) requirements** — the actual cost of Option A, worth
 stating plainly since it's a UX tradeoff, not just an infra one:

@@ -56,6 +56,19 @@ backend:
   auth_endpoint: auth
 ```
 
+**`base_url` must be a bare origin — no path, ever.** Decap builds the auth
+URL as `${base_url}/${auth_endpoint}`, so a path in either field produces
+the same URL and looks equivalent; but its two `postMessage` listeners both
+gate on `event.origin === base_url`, and `MessageEvent.origin` is always a
+bare origin. Put a path in `base_url` and that check silently never
+matches: GitHub authorizes fine, this service fetches a real token fine,
+and `/admin` then sits on the login button forever with no error anywhere.
+If this proxy ends up served under a path rather than its own subdomain
+(e.g. `https://wiki.example.edu/oauth/...`), keep `base_url` as
+`https://wiki.example.edu` and put the whole path in `auth_endpoint`
+(`oauth/auth`). Cost us a real debugging session on the Netlify test
+deploy — see `changes.md`'s 2026-09-13 entries.
+
 ## Local development doesn't need any of this
 
 Testing `/admin` locally uses Decap's own local-backend feature instead

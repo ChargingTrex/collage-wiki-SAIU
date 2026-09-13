@@ -3383,3 +3383,47 @@ once. (An earlier version of this same edit shipped a literal backtick
 inside a JS comment nested in `callback.js`'s outer template literal,
 silently breaking the file — caught by `node --check` before pushing, not
 after.)
+
+## 2026-09-13 — Actual root cause of the login stall: a path in `base_url`
+
+**Files:** `static/admin/config.yml`, `oauth-proxy/README.md`,
+`vps-hosting-plan.md`.
+
+The broadcast fallback added earlier today did not fix the stalled login —
+which was itself the clue that timing was never the problem. Stopped
+guessing and read the actual shipped `decap-cms@3` bundle
+(`unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js`, 4.9MB, grepped for the
+handshake strings). Its authenticator does:
+
+```js
+base_url = trimEnd(config.base_url, '/') || 'https://api.netlify.com'
+auth_endpoint = trimStart(config.auth_endpoint, '/') || 'auth'
+// auth URL:
+`${base_url}/${auth_endpoint}?provider=…&site_id=…`
+// BOTH listeners:
+handshakeCallback: if (e.data === `authorizing:${provider}` && e.origin === this.base_url) …
+authorizeCallback: if (e.origin === this.base_url) { … }
+```
+
+`base_url` was set to
+`https://glittery-licorice-720230.netlify.app/.netlify/functions` — i.e.
+*with a path*. `MessageEvent.origin` is always a bare origin, never a path,
+so `e.origin === this.base_url` could never be true. The handshake ping was
+therefore ignored, which meant `authorizeCallback` was never even
+registered as a listener — which is precisely why broadcasting the success
+payload afterward changed nothing either. Both halves of the handshake were
+dead for the same one-line reason, and it fails with no error logged
+anywhere: GitHub authorizes, a real token gets fetched, `/admin` just sits
+on the login button.
+
+Fixed by splitting the path out of `base_url` into `auth_endpoint`
+(`base_url: https://glittery-licorice-720230.netlify.app`,
+`auth_endpoint: .netlify/functions/auth`). Because Decap composes
+`${base_url}/${auth_endpoint}`, the request URL is byte-identical to before
+— verified — so neither the functions nor the registered GitHub OAuth App
+callback URL needed any change. Documented the trap in
+`static/admin/config.yml`, `oauth-proxy/README.md`, and
+`vps-hosting-plan.md`, since the Hostinger VPS deploy will hit exactly the
+same constraint if the proxy is served under a path instead of its own
+subdomain. The 1500ms broadcast fallback is kept as defense-in-depth (it's
+accepted too, now that the origin check passes).
