@@ -315,14 +315,18 @@ is the actual blocker everything else waits on.
       wiki server. Confirms the handshake logic itself is correct — the one
       thing this *can't* prove without a real registered OAuth App is a
       live "Login with GitHub" click completing successfully end-to-end.
-- [ ] Optional, only if a full live-login dry run is wanted before the VPS
-      exists: register a throwaway GitHub OAuth App with callback
-      `http://localhost:8081/callback`, temporarily flip `local_backend` to
-      `false` (or run from a non-localhost hostname override — check
-      Decap's docs for the exact detection rule) to force the real
-      `github` backend, and click through the actual consent screen. Not
-      required for Phase 1+ — the proxy code doesn't change based on where
-      it's deployed.
+- [x] ~~Optional... full live-login dry run~~ — done, and for real this
+      time (not a throwaway/localhost dry run): a real GitHub OAuth App was
+      registered against the live Netlify test site
+      (`glittery-licorice-720230.netlify.app`), its `/auth`+`/callback`
+      routes deployed as `netlify/functions/` (see "Netlify test deploy"
+      below), and clicking "Login with GitHub" on that site's real `/admin`
+      completed the full handshake — popup closed itself, `/admin` dropped
+      into the CMS editor logged in. Confirms the entire Option A
+      architecture end-to-end against real GitHub, not just the proxy's own
+      logic in isolation. Not yet confirmed: an actual *save* (a real
+      commit landing on GitHub through the CMS) — login working doesn't by
+      itself prove write access.
 - [x] Netlify test-deploy prep: `netlify.toml` added, `docusaurus.config.js`
       made host-aware (`SITE_BASE_URL`), and the two hardcoded-URL bugs
       that prep surfaced (`js/github-badge.js`'s script `src`, the

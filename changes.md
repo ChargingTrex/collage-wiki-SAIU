@@ -3307,3 +3307,21 @@ OAuth-proxy (`netlify/functions/`) end-to-end — can live in a local `.env`
 file without any risk of landing in a commit. Confirmed ignored via `git
 check-ignore -v .env` before creating the file. The credentials themselves
 are not recorded here or anywhere in the repo.
+
+## 2026-09-13 — Real GitHub OAuth login confirmed working end-to-end
+
+**Files:** `vps-hosting-plan.md`.
+
+Milestone: the maintainer registered a real GitHub OAuth App against the
+live Netlify test site, set its Client ID/Secret as Netlify environment
+variables, redeployed, and clicked "Login with GitHub" on
+`glittery-licorice-720230.netlify.app/admin/` — the popup completed the
+full handshake through `netlify/functions/auth.js` + `callback.js` and real
+`github.com`, closed itself, and `/admin` dropped straight into the CMS
+editor logged in. This is the first time Option A's whole chain (Decap →
+OAuth-proxy → GitHub → back to Decap) has been exercised against real
+GitHub end-to-end, not just the proxy's own logic in isolation (as verified
+locally on 2026-09-09). Updated `vps-hosting-plan.md`'s Phase 0 checklist
+to reflect it. Still unconfirmed: an actual save (a real commit landing on
+GitHub through the CMS) — login succeeding doesn't by itself prove write
+access.
