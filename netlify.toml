@@ -3,10 +3,17 @@
 # Hostinger VPS (provided by the dean's office) per that plan. docusaurus
 # .config.js reads Netlify's own NETLIFY/URL build env vars so the exact
 # same config produces a correct build for either host.
+#
+# `functions` deploys netlify/functions/{auth,callback}.js — a serverless
+# twin of oauth-proxy/server.js, so Decap CMS's real GitHub login can be
+# tested on this domain right now instead of waiting on the Hostinger VPS
+# to exist. See netlify/functions/auth.js's header comment and
+# vps-hosting-plan.md's "Netlify test deploy" section.
 
 [build]
   command = "npm run build"
   publish = "build"
+  functions = "netlify/functions"
 
 [build.environment]
   NODE_VERSION = "20"

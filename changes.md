@@ -3258,3 +3258,41 @@ renaming the file to `PREREQUISITES.md` (its content was already
 markdown-shaped) — no build tool auto-installs from that filename. Nothing
 in the repo linked to the old path except this file's own now-historical
 changes.md entries.
+
+## 2026-09-13 — OAuth-proxy deployed as Netlify Functions for a real login test
+
+**Files:** `netlify/functions/auth.js` (new), `netlify/functions/callback.js`
+(new), `netlify.toml`, `static/admin/config.yml`.
+
+The maintainer's first real Netlify deploy (`glittery-licorice-720230
+.netlify.app`) hit exactly the expected wall clicking "Login with GitHub"
+on `/admin`: `config.yml`'s `base_url` was still the literal placeholder
+`REPLACE-WITH-DEPLOYED-OAUTH-PROXY-URL`, since the standalone `oauth-proxy/`
+service has nowhere to run until the Hostinger VPS is reachable (still
+blocked on Phase 2 of `vps-hosting-plan.md`'s checklist). Rather than wait
+on that, ported `oauth-proxy/server.js`'s two routes to
+`netlify/functions/auth.js` and `callback.js` — same handshake logic
+(`/auth` redirects to GitHub with `client_id`/`redirect_uri`/`scope`/
+`state`, `/callback` exchanges the code and posts the token back to the
+opener), verified locally by calling both handlers directly (redirect
+construction, missing-code 400, and a bogus-code 502 that correctly
+reaches real GitHub — same three checks run against the standalone service
+back on 2026-09-09). `netlify.toml` now declares `functions =
+"netlify/functions"`; `config.yml`'s `base_url` points at
+`https://glittery-licorice-720230.netlify.app/.netlify/functions`.
+
+This means production `/admin` (still GitHub Pages) authenticates through
+Netlify's functions too for now, not just the Netlify test site — a
+deliberate, temporary sharing, not a bug: the OAuth-proxy is decoupled from
+wherever the static site itself is served from by design (see
+`vps-hosting-plan.md`'s Architecture diagram), so nothing stops one domain's
+functions serving as the auth backend for another domain's static site.
+Swap `base_url` to the real `oauth-proxy/` deployment once the Hostinger
+VPS is reachable (Phase 3).
+
+Remaining steps only the maintainer can do (real account actions): register
+a GitHub OAuth App (Settings → Developer settings → OAuth Apps) with
+Authorization callback URL
+`https://glittery-licorice-720230.netlify.app/.netlify/functions/callback`,
+then set `GITHUB_CLIENT_ID`/`GITHUB_CLIENT_SECRET` as Netlify environment
+variables on that site and redeploy.

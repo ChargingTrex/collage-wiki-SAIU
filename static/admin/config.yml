@@ -3,12 +3,19 @@
 # hosting was settled, now buildable for real since the OAuth-proxy it
 # needs can run on the VPS (see `vps-hosting-plan.md`).
 #
-# `base_url`/`auth_endpoint` point at that proxy. **Not deployed yet** — the
-# GitHub OAuth App + proxy service still need to exist somewhere reachable
-# before a real, production `/admin` login will work. Update `base_url` to
-# the real deployed URL once that's live; until then, production `/admin`
-# will load the CMS UI but authentication will fail at the "Login with
-# GitHub" step.
+# `base_url`/`auth_endpoint` point at whatever's running that proxy right
+# now. **Currently `netlify/functions/{auth,callback}.js`** — a serverless
+# twin of `oauth-proxy/server.js`, deployed alongside the Netlify *test*
+# site so real GitHub login can actually be exercised before the Hostinger
+# VPS exists (see `vps-hosting-plan.md`'s "Netlify test deploy" section).
+# This means production `/admin` (GitHub Pages) is *also* authenticating
+# through Netlify's functions for now — intentional and fine, the
+# OAuth-proxy is decoupled from wherever the static site itself is served
+# from by design. Swap this to the standalone `oauth-proxy/` service's real
+# deployed URL once the Hostinger VPS is reachable (Phase 3 of the
+# checklist in `vps-hosting-plan.md`); until the Netlify site exists at
+# all, this is the literal placeholder `REPLACE-WITH-DEPLOYED-OAUTH-PROXY-URL`
+# and login fails at the "Login with GitHub" step.
 #
 # Local development doesn't need any of that: `local_backend: true` below
 # makes Decap talk to a local proxy (`npm run cms:proxy`, i.e.
@@ -20,7 +27,7 @@ backend:
   name: github
   repo: ChargingTrex/collage-wiki-SAIU
   branch: main
-  base_url: https://REPLACE-WITH-DEPLOYED-OAUTH-PROXY-URL
+  base_url: https://glittery-licorice-720230.netlify.app/.netlify/functions
   auth_endpoint: auth
 
 local_backend: true
