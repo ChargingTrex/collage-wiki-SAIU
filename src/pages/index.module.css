@@ -4,67 +4,181 @@
  */
 
 .heroBanner {
-  padding: 4rem 0 6rem;
-  text-align: center;
   position: relative;
   overflow: hidden;
-  /* Same primary token the flat Infima fill used, just the full ramp
-     instead of one flat step — no new color, more of the one it already
-     owns. -600 through -950 hold their light-mode hex in dark theme too
-     (only -500 gets brightened for on-dark text/links), so this reads
-     consistently in both themes without a separate dark-mode override. */
-  background: linear-gradient(160deg, var(--ds-primary-600), var(--ds-primary-900));
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: clamp(30rem, 70vh, 44rem);
+
+  /* Dusk, not a flat fill: the hero is the campus at the hour the windows
+     come on, so the sky darkens toward the horizon the building sits on.
+     Same --ds-primary ramp the flat version already used, top to bottom
+     instead of one step. -600 through -950 hold their light-mode hex in
+     dark theme too (only -500 gets brightened for on-dark text), so this
+     reads identically in both themes with no override. */
+  background: linear-gradient(
+    to bottom,
+    var(--ds-primary-600) 0%,
+    var(--ds-primary-800) 52%,
+    var(--ds-primary-900) 100%
+  );
+
+  /* How tall the building band is. The SVG renders `xMidYMax slice`, so it
+     always sits on the hero's bottom edge and crops from the top as this
+     shrinks — every feature in the artwork is drawn below y≈148 of 460 so
+     nothing important is ever cropped away. */
+  --sai-band-h: clamp(14rem, 31vw, 24rem);
+
+  /* Artwork palette for HomepageBuilding. Defined here rather than in the
+     component (DESIGN.md's Token-Only Rule) and derived from --ds-* wherever
+     a real token exists. The four fixed hex values below are deliberate and
+     follow the footer's documented precedent: this band is permanently dark
+     in both themes, and --ds-neutral-* inverts direction between themes,
+     so a neutral token here would silently flip these to near-white in dark
+     mode. */
+  --sai-mass: var(--ds-primary-950);
+  --sai-structure: var(--ds-primary-950);
+  --sai-parapet: rgba(226, 232, 248, 0.8);
+  --sai-glazing: var(--ds-secondary-300);
+  /* The doors, set inside a dark portal reveal. Solid, one step deeper than
+     the glazing above rather than a transparent tint of it, so the slot
+     stays the brightest thing on the facade without the doors going khaki. */
+  --sai-door: var(--ds-secondary-400);
+  --sai-lamp-lit: var(--ds-secondary-200);
+  --sai-lamp-glow: rgba(247, 127, 14, 0.3);
+  --sai-lamp-glow: color-mix(in srgb, var(--ds-secondary-500) 30%, transparent);
+  --sai-window-dark: #0b1230;
+  --sai-plaza: #080d22;
+  /* The entrance sign panel the university mark sits on. Fixed white in both
+     themes on purpose — the mark's own artwork is blue-on-white, so the
+     panel behind it has to stay white for it to read at all. */
+  --sai-sign: #ffffff;
 }
 
-@media screen and (max-width: 996px) {
-  .heroBanner {
-    padding: 2rem 2rem 4rem;
-  }
+.building {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--sai-band-h);
+  /* Clicks pass through to the hero; only the club windows opt back in
+     (they carry a <title> tooltip naming the club). */
+  pointer-events: none;
+}
+
+.building svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .heroContent {
   position: relative;
-  /* Sits above HomepageClubMarks' absolutely-positioned background layer —
-     without an explicit stacking order, the positioned decorative layer
-     would paint over this in-flow content, not under it. */
+  /* Above the building band, which is absolutely positioned. */
   z-index: 1;
+  /* Clears the roofline: the pavilion's mass peaks at ~60% of the band's
+     height, so the CTA row lands just above it while the glazed slot and
+     lamp poles rise past the content behind it. */
+  padding-top: 4rem;
+  padding-bottom: calc(var(--sai-band-h) * 0.52);
 }
 
 .heroTitle {
   /* The Display role (Playfair Display, 700) is reserved sitewide for
      "hero and cover-page titles only" — this h1 is the one title on the
-     whole site that role was actually built for, and it wasn't using it. */
+     whole site that role was built for. */
   font-family: var(--ds-font-display);
   font-weight: var(--ds-font-weight-bold);
-  letter-spacing: -0.01em;
-  /* Fluid instead of a hard breakpoint jump — DESIGN.md's Display spec
-     (3rem, clamps down on mobile) as a smooth curve. Bold serif "Sai
-     University Wiki" at Infima's unclamped default size wraps to 3 lines
-     (one word per line) under ~400px; this keeps it to 2. */
-  font-size: clamp(2.25rem, 1.2rem + 4vw, 3rem);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  /* Fluid rather than a breakpoint jump. Ceiling is 5.25rem: large enough to
+     carry the composition against a full-bleed building, under the 6rem
+     display ceiling, and short enough that "Sai University Wiki" stays on
+     two lines at every width instead of breaking one word per line. */
+  font-size: clamp(2.5rem, 1rem + 6.4vw, 5.25rem);
+  margin-bottom: 1.25rem;
+  text-wrap: balance;
+}
+
+.heroSubtitle {
+  /* Held well under a full body measure — a centered subtitle over artwork
+     reads as a caption to the title, and a 70ch line would run nearly edge
+     to edge under a 5rem display face. */
+  max-width: 44ch;
+  margin: 0 auto 1.5rem;
+  font-size: clamp(1.05rem, 0.95rem + 0.4vw, 1.3rem);
+  line-height: 1.5;
+  /* Without this the line broke one word before its end, leaving "it." alone
+     on a second line under a 5rem display face. */
+  text-wrap: balance;
+  /* Tinted from the hero's own hue rather than a flat gray, and kept well
+     clear of AA on the darkest point of the sky gradient. */
+  color: var(--ds-primary-100);
+}
+
+.statRow {
+  /* The Label role — mono, uppercase, tracked — is already used sitewide for
+     exactly this kind of metadata (card sub-labels, tags). */
+  font-family: var(--ds-font-mono);
+  font-size: var(--ds-font-size-sm);
+  font-weight: var(--ds-font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ds-primary-200);
+  margin-bottom: 2rem;
 }
 
 .buttons {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
   gap: 1rem;
-}
-
-.statRow {
-  /* The Label role — mono, uppercase, tracked — is already used sitewide
-     for exactly this kind of metadata (card sub-labels, tags); this stat
-     line is the same category of content and wasn't using it. */
-  font-family: var(--ds-font-mono);
-  font-size: var(--ds-font-size-sm);
-  font-weight: var(--ds-font-weight-medium);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  opacity: 0.9;
-  margin-bottom: 1.5rem;
 }
 
 .aboutLine {
   font-size: 1.15rem;
   line-height: 1.6;
+}
+
+@media screen and (max-width: 996px) {
+  .heroBanner {
+    min-height: clamp(26rem, 76vh, 34rem);
+  }
+
+  .heroContent {
+    padding-top: 2.5rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .heroBanner {
+    /* A band this wide can't also be tall on a phone without eating the
+       whole screen; the slice crop keeps the massing readable. */
+    --sai-band-h: clamp(9rem, 42vw, 13rem);
+  }
+
+  .heroSubtitle {
+    max-width: 30ch;
+  }
+
+  .buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* The windows' staggered light-up is the hero's one authored moment; it is
+   already skipped by useIntroMotion under reduced motion (rested state =
+   fully lit). This is the belt-and-braces stop for any transition the
+   browser would still run on its own. */
+@media (prefers-reduced-motion: reduce) {
+  .building * {
+    animation: none !important;
+    transition: none !important;
+  }
 }

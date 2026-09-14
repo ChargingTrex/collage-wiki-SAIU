@@ -6,7 +6,7 @@ import Link from '@docusaurus/Link';
 import Heading from '@theme/Heading';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import {RecentActivity} from '@site/src/components/RecentActivity';
-import {HomepageClubMarks} from '@site/src/components/HomepageClubMarks';
+import {HomepageBuilding} from '@site/src/components/HomepageBuilding';
 import styles from './index.module.css';
 
 // Tells search engines what this site is and what it's about — a WebSite
@@ -41,14 +41,17 @@ function buildStructuredData({url, baseUrl}) {
 function HomepageHeader() {
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
-      <HomepageClubMarks />
       <div className={clsx('container', styles.heroContent)}>
         <Heading as="h1" className={clsx('hero__title', styles.heroTitle)}>
           Sai University Wiki
         </Heading>
-        <p className="hero__subtitle">
-          The Sai University wiki for student clubs, events, and student
-          life in Chennai — every gathering kept by the people who ran it.
+        {/* The site's existing subtitle, minus its leading descriptor — "the
+            Sai University wiki for student clubs, events, and student life in
+            Chennai" repeated the h1, the stat row, and both CTAs directly
+            underneath it. The clause that carries the actual idea is kept
+            verbatim. */}
+        <p className={styles.heroSubtitle}>
+          Every gathering kept by the people who ran it.
         </p>
         <p className={styles.statRow}>21 clubs · Chennai</p>
         <div className={styles.buttons}>
@@ -60,6 +63,9 @@ function HomepageHeader() {
           </Link>
         </div>
       </div>
+      {/* After the content in source order, not before: it's the backdrop the
+          content sits on, and the only thing between them is a z-index. */}
+      <HomepageBuilding className={styles.building} />
     </header>
   );
 }

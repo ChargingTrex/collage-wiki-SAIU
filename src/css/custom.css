@@ -1053,3 +1053,49 @@
   }
 }
 
+
+/* =====================================================================
+   Committee identity seals — docs/committees/<slug>/index.mdx
+   The seal sits inline before the page title as a circular avatar, so the
+   two read as one masthead rather than as an image with a heading under it.
+   Requires `hide_title: true` in the page's frontmatter, since the title
+   Docusaurus renders itself always lands above all body content.
+   ===================================================================== */
+.committee-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.committee-title h1 {
+  /* The row owns the spacing; a default heading margin here would push the
+     title off-centre against the seal beside it. */
+  margin: 0;
+}
+
+.committee-logo {
+  width: 76px;
+  height: 76px;
+  flex: none;
+  border-radius: 50%;
+  /* Both seals are square artwork of a circular seal, so a circular mask
+     crops only the corner ground and leaves the seal itself intact. */
+  object-fit: cover;
+  /* They ship on their own near-white paper ground rather than
+     transparency, so the disc keeps that ground deliberate in dark mode
+     instead of reading as a bright cut-out. */
+  background: #ffffff;
+  border: 1px solid var(--ds-border, #e3e6ef);
+}
+
+@media (max-width: 500px) {
+  .committee-logo {
+    width: 56px;
+    height: 56px;
+  }
+
+  .committee-title {
+    gap: 0.75rem;
+  }
+}

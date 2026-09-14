@@ -153,7 +153,7 @@ Each of the 21 clubs carries its own accent color (e.g. Astronomy = Indigo `#433
 **Character:** A serif display/heading pair (Playfair Display for hero moments, Spectral for in-content headings) gives the letterhead register real weight, while Inter keeps long-form reading — 400+ archived event write-ups — neutral and legible. JetBrains Mono marks anything metadata-flavored (tags, dates, code) as distinctly *not* prose.
 
 ### Hierarchy
-- **Display** (700, `3rem` / clamps down to `2.25rem` on mobile, 1.1 line-height): Hero and cover-page titles only — never used inside running content.
+- **Display** (700, `3rem` / clamps down to `2.25rem` on mobile, 1.1 line-height): Hero and cover-page titles only — never used inside running content. **One documented exception:** the homepage `<h1>` runs `clamp(2.5rem, 1rem + 6.4vw, 5.25rem)` at `-0.03em` / `0.98` line-height. It is the only title on the site that has to hold its own against a full-bleed illustration rather than sit on a flat field, and at the shared 3rem it was visually subordinate to the artwork beneath it. Tracking tightens and leading closes at that size because the shared values are calibrated for 3rem and read loose past ~4rem.
 - **Headline** (600, `1.875rem`, 1.3 line-height): Section-level headings (h2).
 - **Title** (600, `1.5rem`, 1.3 line-height): Card titles, h3-level content headings.
 - **Body** (400, `1rem`, 1.55 line-height; `1.75` for relaxed/long-form blocks): Running text — event write-ups, docs prose.

@@ -1,14 +1,32 @@
 ---
 title: Student Government
 description: The elected student body representing Sai University students.
+# The seal sits above the title, which means the title can't be the one
+# Docusaurus renders automatically — that always comes first, before any
+# body content. Hidden here and written as a real <h1> below the seal
+# instead; `title` above still feeds the sidebar, breadcrumb, and metadata.
+hide_title: true
 sidebar_custom_props:
   icon: Landmark
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import { ClubContact } from '@site/src/components/ClubContact';
 import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
 import { TeamSection } from '@site/src/components/TeamSection';
 import { CURRENT_TEAM } from '@site/src/data/teams/student-government.mjs';
+
+{/* useBaseUrl, not a literal path: a raw <img src="/img/…"> is not
+    baseUrl-prefixed the way a markdown image is, so it 404s on any host
+    whose baseUrl isn't this repo's GitHub Pages subpath. */}
+<div className="committee-title">
+  <img
+    src={useBaseUrl('/img/student-council-logo.jpeg')}
+    alt="Student Council seal — a ring of stylised students linking arms around the Sai University mark, captioned “SaiU Student Council · Unity · Strength”"
+    className="committee-logo"
+  />
+  <h1>Student Government</h1>
+</div>
 
 The Student Government represents the student body, runs university-wide
 initiatives, and organizes events on behalf of students at large — separate

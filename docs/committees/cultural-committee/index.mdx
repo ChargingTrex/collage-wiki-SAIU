@@ -1,16 +1,32 @@
 ---
 title: Cultural Society
 description: Sai University's cultural body — organizes cultural events campus-wide and reviews new club proposals in the Arts, Culture & Performing Arts category.
+# The seal sits above the title, which means the title can't be the one
+# Docusaurus renders automatically — that always comes first, before any
+# body content. Hidden here and written as a real <h1> below the seal
+# instead; `title` above still feeds the sidebar, breadcrumb, and metadata.
+hide_title: true
 sidebar_custom_props:
   icon: Sparkles
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import { ClubContact } from '@site/src/components/ClubContact';
 import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
 import { TeamSection } from '@site/src/components/TeamSection';
 import { CURRENT_TEAM } from '@site/src/data/teams/cultural-committee.mjs';
 
-![Cultural Society logo](/img/cultural-society-logo.jpeg)
+{/* useBaseUrl, not a literal path: a raw <img src="/img/…"> is not
+    baseUrl-prefixed the way a markdown image is, so it 404s on any host
+    whose baseUrl isn't this repo's GitHub Pages subpath. */}
+<div className="committee-title">
+  <img
+    src={useBaseUrl('/img/cultural-society-logo.jpeg')}
+    alt="Cultural Society seal — a dancer, film camera, speaker at a podium, chess knight, telescope, musical notes and game controller, ringed by the words “SaiU Cultural Society · Art gives voice to soul”"
+    className="committee-logo"
+  />
+  <h1>Cultural Society</h1>
+</div>
 
 The Cultural Society organizes cultural events, performances, and
 celebrations across campus, and reviews proposals from students seeking to

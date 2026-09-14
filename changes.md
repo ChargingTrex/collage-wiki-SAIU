@@ -3427,3 +3427,127 @@ callback URL needed any change. Documented the trap in
 same constraint if the proxy is served under a path instead of its own
 subdomain. The 1500ms broadcast fallback is kept as defense-in-depth (it's
 accepted too, now that the origin check passes).
+
+## 2026-09-14 — Homepage hero rebuilt: the campus at dusk, one lit window per club
+
+**Files:** `src/components/HomepageBuilding.jsx` (new),
+`src/components/HomepageClubMarks.jsx` (deleted), `src/pages/index.js`,
+`src/pages/index.module.css`, `DESIGN.md`.
+
+Reference brief was IIT Bombay's DevCom landing page. Screenshotted it with
+Playwright rather than guessing (it's a JS-rendered SPA, so fetching the
+markup returns nothing) — the moves worth taking are an oversized centred
+display headline, a near-monochrome ground, and a flat vector illustration
+that overlaps and occludes the composition instead of sitting beside it.
+Taken structurally, not literally: the Scholar's Letterhead type and palette
+stay exactly as they were.
+
+**The hero is now the School of Computing & Data Science at dusk, with one
+lit window per club.** 21 windows carry the 21 real accent colours from the
+same `CLUB_ACCENTS` table every hero reads, and honour the unified-accent
+toggle like everything else does. This replaces `HomepageClubMarks` (a row
+of 21 accent dots), which carried identical data with none of the meaning —
+deleted rather than left around, it had no other caller. Massing is drawn
+from the real building in the photo the maintainer supplied: the long
+two-storey wings, the taller end block, the entrance pavilion whose glazed
+slot runs up past its own parapet, plus the curved-arm forecourt lamps.
+Drawn as a flat elevation, not a trace of the photo's three-quarter
+perspective — a perspective trace has one correct width, and this has to
+bleed edge to edge from 320px to ultrawide. The photo's flagpole was drawn
+in and then removed at the maintainer's request; the whole pole went rather
+than just the tricolour, since a bare pole with nothing flying on it reads
+as a rendering fault.
+
+The university mark sits on a white sign panel above the entrance, as on
+the real building — `static/img/saiu-mark.png`, cropped with `sharp` from
+the official `SAIlogo_media` lockup so it's the real artwork rather than an
+approximation, with the "SAI University" wordmark cropped away since it's
+illegible at the size this renders. The panel is drawn after the glazed
+slot so it reads as mounted onto the tower rather than cut through it, and
+its `rx` corner is the documented fallback for DESIGN.md's squircle rule:
+SVG has no superellipse corner, and CSS `corner-shape` doesn't apply to an
+SVG rect. `--sai-sign` is fixed white in both themes on purpose — the mark's
+own artwork is blue-on-white, so the panel behind it has to stay white for
+it to read at all. The `<image href>` goes through `useBaseUrl()`: an SVG
+`<image>` is no more baseUrl-aware than a raw `<img src>`.
+
+Motion is the subject rather than an entrance effect: windows switch on in a
+scattered order (`(i * 7) % 24` walks every slot exactly once, so rooms light
+independently instead of sweeping left-to-right like a progress bar), driven
+by the shared `useIntroMotion` so it obeys the same arrive-then-settle rule
+as all 26 heroes. Reduced-motion and mid-page arrivals get the finished,
+fully-lit state — verified, all 21 at opacity 1. Only `useIntroMotion`'s ref
+is used, deliberately not its `role="button"`/`onClick`: this sits behind a
+header containing the two real CTAs, and an outer button role would nest
+interactive controls inside a control.
+
+Three defects found by screenshot and fixed before shipping, none of which
+were visible from the code: the glazed slot rose directly behind "Explore
+Clubs" and read as a pole growing out of the button (entrance moved
+off-centre, which also matches the real elevation); the windows read as
+candy until each got a dark reveal and a mullion cross; and the entrance
+doors composited to khaki because warm light at partial alpha over a navy
+wall always lands in brown (both warm fills made solid). Also dropped two
+background blocks that ended inside the frame and read as stray floating
+slabs — both wings now overrun the viewBox instead.
+
+`DESIGN.md` gained a documented exception for the homepage `<h1>`: it runs
+`clamp(2.5rem, 1rem + 6.4vw, 5.25rem)` rather than the shared 3rem Display
+step, since it's the only title on the site that has to hold against a
+full-bleed illustration instead of a flat field. Recorded rather than left
+undocumented so the next reader doesn't "correct" it back. Artwork colours
+are CSS custom properties set on the hero, not hex in the component
+(Token-Only Rule); the four fixed values among them follow the footer's
+documented precedent, since this band is permanently dark in both themes and
+`--ds-neutral-*` inverts between them. Homepage and theme e2e specs pass
+(10/10), no console errors, no mobile overflow.
+
+## 2026-09-14 — Student Council seal added; Cultural Society seal sized properly
+
+**Files:** `static/img/student-council-logo.jpeg` (new),
+`docs/committees/student-government/index.mdx`,
+`docs/committees/cultural-committee/index.mdx`, `src/css/custom.css`.
+
+The maintainer supplied real seals for both committees. Student Government
+had none; added `student-council-logo.jpeg`, centre-cropped from the 1024²
+source to 880² to drop the wide cream margin so it sits at the same visual
+weight as the Cultural Society seal already on file. The Cultural Society
+seal supplied this round turned out to be the same artwork already committed
+as `cultural-society-logo.jpeg`, in a looser crop — kept the existing tighter
+file rather than replacing it with a worse version of itself.
+
+Both now render through a new `.committee-logo` class. Previously the
+Cultural Society seal was a bare markdown image, so it rendered at its
+natural 745px and filled the entire doc column — a banner, not an identity
+mark. Constrained to 200px, centred, on a white backing card: both seals
+ship on their own near-white paper ground rather than transparency, so
+without a backing they'd read as a bright square floating on the dark-mode
+page. Verified in both themes.
+
+Each seal sits **inline before its page title** as a circular avatar — the
+Instagram-profile arrangement the maintainer asked for — so seal and title
+read as one masthead rather than as an image with a heading beneath it.
+Both are square artwork of a circular seal, so a `border-radius: 50%` mask
+crops only the corner ground and leaves the seal itself intact. That
+placement needs `hide_title: true` in frontmatter plus an explicit `<h1>`
+in the body: the title Docusaurus renders from frontmatter always comes
+first, before any body content, so there is no way to put anything ahead of
+it while still using it. `title:` stays in frontmatter regardless — it
+still feeds the sidebar, the breadcrumb, and the page metadata. Verified
+there's exactly one `<h1>` per page afterwards, not a hidden one plus a
+visible one, and that seal and title land on a shared centre line.
+
+Both use `useBaseUrl()` rather than a literal `/img/…` path. A raw `<img
+src="/img/…">` in MDX is *not* baseUrl-prefixed the way a markdown image is,
+so a literal path would 404 on any host whose baseUrl isn't this repo's
+GitHub Pages subpath — the same class of bug as the hardcoded
+`js/github-badge.js` path fixed on 2026-09-09, caught here before it shipped
+rather than after.
+
+**Open question for the maintainer:** the seal reads "SaiU Student Council",
+but the page, slug, sidebar label, team data and role examples all say
+"Student Government". If Student Council is the body's real current name,
+the rename follows the precedent already set by Cultural Committee →
+Cultural Society (change display title and body copy, keep the
+`student-government` slug and tag so no links break). Not done unilaterally
+— that's a factual call about what the body is actually called.
