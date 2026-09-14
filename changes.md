@@ -3551,3 +3551,41 @@ the rename follows the precedent already set by Cultural Committee →
 Cultural Society (change display title and body copy, keep the
 `student-government` slug and tag so no links break). Not done unilaterally
 — that's a factual call about what the body is actually called.
+
+## 2026-09-14 — Committees in the navbar, a /committees directory, and a Committees section on /explore
+
+**Files:** `src/data/committeeDirectory.js` (new),
+`src/components/CommitteeCard.jsx` (new), `src/pages/committees.js` (new),
+`src/pages/explore.js`, `src/css/custom.css`, `docusaurus.config.js`,
+`tests/e2e/navigation.spec.js`, `tests/e2e/explore.spec.js`.
+
+The two standing committees were reachable only through the docs sidebar and
+a generated category index — not from the navbar, and absent from `/explore`
+entirely, which claimed to be "all 21 clubs and all 3 fests in one place"
+while silently omitting them. Added a `Committees` navbar item (and the
+matching footer entry) pointing at a new `/committees` directory page, plus
+a Committees section on `/explore`.
+
+Built as a real directory page rather than pointing the navbar at the
+existing `/docs/category/committees` generated index, for the same reason
+Clubs and Fests have their own pages: the generated index is a bare card
+list that can't show the seals. Committees have no hero component to scale
+down (CLAUDE.md — `useClubAccent` falls back to the unified accent for any
+slug outside `CLUB_ACCENTS`), so `CommitteeCard` leads with the
+institutional seal instead, on the same 416x143 footprint as
+`.mini-hero-card`/`.explore-icon-card` so a committee sits flush beside a
+club or icon card in any mixed grid. One component shared by both surfaces
+so the two can't drift, same reasoning as `MiniHeroCard`.
+
+Test coverage went beyond patching the counts the change broke: the navbar
+fixture went 8 → 9 items, and `/explore` and `/committees` each got a real
+assertion that both committees render, link to their actual doc page, and
+that the seal image actually loaded — a count-only check would pass on a
+card whose seal 404'd and left a bare text row.
+
+**Known trade-off, not yet resolved:** nine navbar items pushes the site
+title into truncation ("Sai Uni…") below ~1366px, which includes 1280px
+laptops — measured at 1180/1280/1366/1440/1600. The fix, if it's wanted, is
+grouping Docs/Resources/Archive into one dropdown (9 items → 7), but that
+restructures navigation the maintainer didn't ask to change, so it's
+flagged rather than done.

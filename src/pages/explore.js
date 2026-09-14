@@ -4,7 +4,9 @@ import Link from '@docusaurus/Link';
 import Heading from '@theme/Heading';
 import {BookOpen, Archive, CalendarDays} from 'lucide-react';
 import {MiniHeroCard} from '@site/src/components/MiniHeroCard';
+import {CommitteeCard} from '@site/src/components/CommitteeCard';
 import {CLUB_DIRECTORY} from '@site/src/data/clubDirectory';
+import {COMMITTEE_DIRECTORY} from '@site/src/data/committeeDirectory';
 import {TechFestHero} from '@site/src/components/fests/TechFestHero';
 import {GeneralFestHero} from '@site/src/components/fests/GeneralFestHero';
 import {CulturalFestHero} from '@site/src/components/fests/CulturalFestHero';
@@ -19,9 +21,9 @@ export default function Explore() {
           <div className="col col--8 col--offset-2 text--center margin-bottom--lg">
             <h1>Explore</h1>
             <p>
-              All 21 clubs and all 3 fests in one place — click any of them
-              to open the real page. Events, Blog, and Archives are below the
-              grid.
+              All 21 clubs, both committees, and all 3 fests in one place —
+              click any of them to open the real page. Events, Blog, and
+              Archives are below the club grid.
             </p>
           </div>
         </div>
@@ -46,6 +48,15 @@ export default function Explore() {
             <Archive size={32} strokeWidth={1.75} />
             <span className="explore-icon-card__label">Archives</span>
           </Link>
+        </div>
+
+        <Heading as="h2" className="margin-bottom--md">
+          Committees
+        </Heading>
+        <div className="committee-grid margin-bottom--lg">
+          {COMMITTEE_DIRECTORY.map((committee) => (
+            <CommitteeCard key={committee.slug} {...committee} />
+          ))}
         </div>
 
         <Heading as="h2" className="margin-bottom--md">

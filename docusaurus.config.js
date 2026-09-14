@@ -126,6 +126,7 @@ const config = {
         items: [
           {to: '/explore', label: 'Explore', position: 'left'},
           {to: '/clubs', label: 'Clubs', position: 'left'},
+          {to: '/committees', label: 'Committees', position: 'left'},
           {to: '/fests', label: 'Fests', position: 'left'},
           {to: '/docs/intro', label: 'Docs', position: 'left'},
           {to: '/docs/category/resources', label: 'Resources', position: 'left'},
@@ -176,6 +177,10 @@ const config = {
               {
                 label: 'Clubs',
                 to: '/clubs',
+              },
+              {
+                label: 'Committees',
+                to: '/committees',
               },
               {
                 label: 'Fests',

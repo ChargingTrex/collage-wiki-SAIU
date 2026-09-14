@@ -4,6 +4,7 @@ const {trackConsoleErrors} = require('./helpers');
 const NAVBAR_LINKS = [
   {label: 'Explore', path: '/explore'},
   {label: 'Clubs', path: '/clubs'},
+  {label: 'Committees', path: '/committees'},
   {label: 'Fests', path: '/fests'},
   {label: 'Docs', path: '/docs/intro'},
   {label: 'Resources', path: '/docs/category/resources'},
@@ -15,6 +16,7 @@ const NAVBAR_LINKS = [
 const FOOTER_WIKI_LINKS = [
   {label: 'Explore', path: '/explore'},
   {label: 'Clubs', path: '/clubs'},
+  {label: 'Committees', path: '/committees'},
   {label: 'Fests', path: '/fests'},
   {label: 'Docs', path: '/docs/intro'},
   {label: 'Resources', path: '/docs/category/resources'},
@@ -24,7 +26,7 @@ const FOOTER_WIKI_LINKS = [
 ];
 
 test.describe('navbar', () => {
-  test('shows all eight items in order', async ({page}) => {
+  test('shows all nine items in order', async ({page}) => {
     const errors = trackConsoleErrors(page);
     await page.goto('');
     const items = (await page.locator('.navbar__item.navbar__link').allTextContents())

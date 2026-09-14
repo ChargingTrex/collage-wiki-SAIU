@@ -1099,3 +1099,80 @@
     gap: 0.75rem;
   }
 }
+
+/* =====================================================================
+   Committee cards — /committees and the Committees section of /explore
+   Same 416x143 footprint as .mini-hero-card and .explore-icon-card so a
+   committee sits flush next to a club or an icon card in any mixed grid,
+   but laid out as seal + text rather than a scaled hero: committees have
+   no hero component to render (see CLAUDE.md), their seal is the identity.
+   ===================================================================== */
+.committee-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.committee-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 416px;
+  height: 143px;
+  padding: 1rem 1.25rem;
+  border-radius: var(--ds-radius-lg);
+  box-shadow: var(--ds-shadow-sm);
+  background: var(--ifm-card-background-color);
+  border: 1px solid var(--ifm-color-emphasis-300);
+  color: var(--ifm-font-color-base);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.committee-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--ds-shadow-md);
+  text-decoration: none;
+  color: var(--ifm-font-color-base);
+}
+
+.committee-card__seal {
+  width: 72px;
+  height: 72px;
+  flex: none;
+  border-radius: 50%;
+  object-fit: cover;
+  /* Both seals ship on their own near-white paper ground rather than
+     transparency, so the disc keeps that ground deliberate in dark mode
+     instead of reading as a bright cut-out. */
+  background: #ffffff;
+  border: 1px solid var(--ds-border, #e3e6ef);
+}
+
+.committee-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.committee-card__name {
+  font-family: var(--ds-font-heading);
+  font-weight: 600;
+  font-size: 1.1rem;
+  line-height: 1.25;
+}
+
+.committee-card__blurb {
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--ds-text-secondary);
+}
+
+@media (max-width: 480px) {
+  .committee-card {
+    width: 100%;
+    height: auto;
+    min-height: 143px;
+  }
+}
