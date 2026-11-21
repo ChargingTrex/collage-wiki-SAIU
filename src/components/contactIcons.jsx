@@ -40,7 +40,9 @@ export function ContactLink({ icon: Icon, href, children }) {
       style={{ color: 'var(--ds-text)' }}
     >
       <Icon className="h-5 w-5 flex-shrink-0" style={{ color: 'var(--club-accent)' }} aria-hidden="true" />
-      <span>{children}</span>
+      {/* An email address has no spaces to wrap at; without this it held
+          its full width and pushed narrow pages sideways (SC 1.4.10). */}
+      <span className="min-w-0" style={{ overflowWrap: 'anywhere' }}>{children}</span>
     </a>
   );
 }

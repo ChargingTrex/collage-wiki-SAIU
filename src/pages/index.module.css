@@ -11,6 +11,13 @@
   flex-direction: column;
   justify-content: flex-end;
   min-height: clamp(30rem, 70vh, 44rem);
+  /* Literal, not a token. Infima's .hero--primary text resolves through
+     --ifm-font-color-base-inverse -> --ifm-color-emphasis-0 ->
+     --ds-neutral-0, which dark mode redefines to #15181f (the inverted
+     ramp), turning the title near-black on the dusk sky (~2:1). The sky
+     is dark in both themes, so the text must be theme-invariant white. */
+  --ifm-hero-text-color: #ffffff;
+  color: #ffffff;
 
   /* Dusk, not a flat fill: the hero is the campus at the hour the windows
      come on, so the sky darkens toward the horizon the building sits on.
@@ -125,7 +132,8 @@
   font-size: var(--ds-font-size-sm);
   font-weight: var(--ds-font-weight-medium);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  /* DESIGN.md's Label role: 0.05–0.06em. */
+  letter-spacing: 0.06em;
   color: var(--ds-primary-200);
   margin-bottom: 2rem;
 }
@@ -139,7 +147,8 @@
 }
 
 .aboutLine {
-  font-size: 1.15rem;
+  font-size: var(--ds-font-size-lg);
+  text-wrap: pretty;
   line-height: 1.6;
 }
 

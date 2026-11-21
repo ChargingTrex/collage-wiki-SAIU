@@ -8,13 +8,13 @@ export default function CommitteesDirectory() {
   return (
     <Layout
       title="Committees"
-      description="Sai University's standing student committees — university-wide bodies distinct from the 21 student clubs.">
+      description="Sai University's standing student committees — university-wide bodies distinct from the 22 student clubs.">
       <main className="container margin-vert--lg">
         <div className="row">
           <div className="col col--8 col--offset-2 text--center margin-bottom--lg">
             <h1>Committees</h1>
             <p>
-              Standing university-wide bodies, distinct from the 21 clubs —
+              Standing university-wide bodies, distinct from the 22 clubs —
               they run campus-wide programming and represent students rather
               than organising around one interest.
             </p>

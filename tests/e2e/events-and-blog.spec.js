@@ -7,10 +7,10 @@ test.describe('/events — real content only', () => {
     await page.goto('events');
     await page.waitForLoadState('networkidle');
 
-    // 21 clubs + 2 committees + 3 fests + 7 event-type + 1 explicit `events`
+    // 22 clubs + 2 committees + 3 fests + 7 event-type + 1 explicit `events`
     // marker = 34. Excludes `blog` and `student-voices` (both are
     // /student-voices' territory) out of the 36 total tags in blog/tags.yml.
-    await expect(page.locator('input[type=checkbox]')).toHaveCount(34);
+    await expect(page.locator('input[type=checkbox]')).toHaveCount(35);
     await expect(page.getByText('Student Voices', {exact: true})).toHaveCount(0);
     // "Blog" (the tag label) never renders as a checkbox — page text alone
     // isn't a safe check since /events' own intro links to "Blog"
@@ -62,7 +62,7 @@ test.describe('/student-voices — the Blog landing page', () => {
     await page.goto('student-voices');
     await page.waitForLoadState('networkidle');
 
-    await expect(page.getByRole('heading', {name: 'Student Voices', level: 2})).toBeVisible();
+    await expect(page.getByRole('heading', {name: 'Student Voices', level: 1})).toBeVisible();
     // Scoped to `blog` + `student-voices` only — club/fest/committee/
     // event-type content lives on /events instead. See NON_EVENT_TAGS in
     // src/pages/events.js for the complementary exclusion.

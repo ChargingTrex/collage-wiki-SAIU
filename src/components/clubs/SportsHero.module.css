@@ -1,0 +1,62 @@
+/* Layout for this hero. A container query (not a viewport breakpoint): the
+   /clubs and /explore cards render the hero at a fixed 560px and scale it
+   down, so a phone-width viewport must not restack it. Only a narrow hero
+   (its own club page on a phone) stacks the text above the artwork.
+
+   The card colour IS the night sky of the scene: the artwork is a 364px
+   slice on the right whose ground and stand fade out to the left, so there
+   is no seam where the SVG starts. */
+.root {
+  container-type: inline-size;
+  background: #0e2136;
+}
+.inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 12rem; /* h-48, like every club hero */
+  padding: 0 2rem;
+}
+.text {
+  position: relative;
+  z-index: 2;
+  /* 196px at the 560px card (ends at x = 228; the artwork slice starts at
+     196 but its first 40 units are bare sky, nothing is painted there);
+     grows with the card beyond that. */
+  max-width: max(12.25rem, calc(100cqw - 22.75rem - 4rem));
+}
+.text h1 {
+  margin: 0;
+  line-height: 1.1;
+}
+.text p {
+  margin: 0.375rem 0 0;
+  line-height: 1.4;
+}
+.art {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: block;
+  width: 22.75rem;
+  height: 12rem;
+}
+@container (max-width: 34rem) {
+  .inner {
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+    padding: 1.5rem 0 0;
+  }
+  .text {
+    max-width: none;
+    padding: 0 1.5rem;
+  }
+  .art {
+    position: static;
+    width: 100%;
+    height: auto;
+    margin-top: 1rem;
+    overflow: visible; /* lets the lamp's glow fade out instead of ending on the SVG's top edge */
+  }
+}

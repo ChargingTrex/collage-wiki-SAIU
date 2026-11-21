@@ -35,6 +35,7 @@ import {
   Sparkles,
   Landmark,
   History,
+  PenTool,
 } from 'lucide-react';
 
 // lucide-react has no literal peace-sign glyph — hand-drawn here in the same
@@ -84,6 +85,7 @@ export const SIDEBAR_ICONS = {
   Sparkles,
   Landmark,
   History,
+  PenTool,
 };
 
 // Doc routes for club pages are the file's own slug (docs/clubs/art-club.mdx

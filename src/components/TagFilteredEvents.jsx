@@ -22,7 +22,8 @@
 // narrower `tagIds` is a filter, not just a UI restriction: a post is only
 // ever matched against tags inside this set.
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { motion } from 'framer-motion';
 import { usePluginData } from '@docusaurus/useGlobalData';
 import { usePagination } from './usePagination';
 import { EventCard } from './EventCard';
@@ -56,8 +57,17 @@ export function TagFilteredEvents({ tagIds }) {
   );
   const [selected, setSelected] = useState(() => new Set(allTagIds));
   const [sortKey, setSortKey] = useState('newest');
+  // Motion only after the reader has changed something: the first render
+  // (and the server render) must ship the list fully visible, never at
+  // opacity 0 waiting on hydration.
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  useEffect(() => {
+    setReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  }, []);
 
   const toggleTag = (id) => {
+    setHasInteracted(true);
     setSelected((prev) => {
       const next = new Set(prev);
       if (next.has(id)) {
@@ -92,14 +102,20 @@ export function TagFilteredEvents({ tagIds }) {
         <button
           type="button"
           className="button button--sm button--secondary"
-          onClick={() => setSelected(new Set(allTagIds))}
+          onClick={() => {
+            setHasInteracted(true);
+            setSelected(new Set(allTagIds));
+          }}
         >
           Select all tags
         </button>
         <button
           type="button"
           className="button button--sm button--secondary button--outline"
-          onClick={() => setSelected(new Set())}
+          onClick={() => {
+            setHasInteracted(true);
+            setSelected(new Set());
+          }}
         >
           Clear
         </button>
@@ -125,7 +141,10 @@ export function TagFilteredEvents({ tagIds }) {
         <select
           id="event-sort"
           value={sortKey}
-          onChange={(e) => setSortKey(e.target.value)}
+          onChange={(e) => {
+            setHasInteracted(true);
+            setSortKey(e.target.value);
+          }}
           className="button button--sm button--secondary button--outline"
         >
           {Object.entries(SORTS).map(([key, {label}]) => (
@@ -136,19 +155,47 @@ export function TagFilteredEvents({ tagIds }) {
         </select>
       </div>
 
+      {/* The status signal a filter change was missing: the count updates
+          with every toggle, and is announced politely to screen readers. */}
+      <p
+        className="text-sm margin-bottom--sm"
+        style={{color: 'var(--ds-text-secondary)'}}
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {filtered.length === 1 ? '1 post' : `${filtered.length} posts`}
+        {totalPages > 1 && `, page ${page} of ${totalPages}`}
+      </p>
+
       {filtered.length === 0 ? (
         <p style={{color: 'var(--ds-text-secondary)'}}>
           No posts match the selected tags.
         </p>
       ) : (
         <>
-          <div className="flex flex-col gap-3">
+          {/* Keyed on the result set + page, so a filter/sort/page change
+              re-enters the list with a short settle (150ms, ease-out) that
+              reads as "this list was just replaced", not as a page load. */}
+          <motion.div
+            key={`${resetKey}|${page}`}
+            className="flex flex-col gap-3"
+            initial={hasInteracted && !reducedMotion ? { opacity: 0, y: 6 } : false}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+          >
             {visibleItems.map((post) => (
               <EventCard key={post.id} {...post} />
             ))}
-          </div>
+          </motion.div>
 
-          <PageCounter page={page} totalPages={totalPages} onChange={setPage} />
+          <PageCounter
+            page={page}
+            totalPages={totalPages}
+            onChange={(next) => {
+              setHasInteracted(true);
+              setPage(next);
+            }}
+          />
         </>
       )}
     </div>

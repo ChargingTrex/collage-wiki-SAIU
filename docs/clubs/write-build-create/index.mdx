@@ -1,0 +1,32 @@
+---
+title: Write Build Create
+description: Writing stories, building games, and dreaming up the worlds they happen in.
+hide_title: true
+sidebar_custom_props:
+  icon: PenTool
+---
+
+import { WriteBuildCreateHero } from '@site/src/components/clubs/WriteBuildCreateHero';
+import { ClubContact } from '@site/src/components/ClubContact';
+import { CLUB_CONTACTS } from '@site/src/data/clubContacts';
+import { TeamSection } from '@site/src/components/TeamSection';
+import { CURRENT_TEAM } from '@site/src/data/teams/write-build-create.mjs';
+
+<WriteBuildCreateHero />
+
+Write Build Create is for students who make things up for a living, or
+would like to: they write stories, build games, and do the world building
+that both depend on, from the first page of a script to a playable level.
+
+## Current Board
+
+<TeamSection clubSlug="write-build-create" members={CURRENT_TEAM} />
+
+Looking for a past board? See the [Archive](/docs/archive).
+
+## Contact
+
+<ClubContact
+  clubSlug="write-build-create"
+  {...CLUB_CONTACTS['write-build-create']}
+/>

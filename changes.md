@@ -1,5 +1,163 @@
 # Changes
 
+## 2026-11-21 — Eight club heroes rebuilt (artistic pass)
+
+Files: `src/components/clubs/{Theatre,Dance,Fashion,Art,FilmSociety,Oratory,
+Sports,Astronomy}Hero.jsx` (rewritten), matching `*.module.css` (new),
+`src/components/clubs/FilmSocietyHeroSound.js` (new),
+`src/components/clubs/rig/{rig.js,RigParts.jsx}` (new), `src/css/custom.css`
+
+A read-only audit of all 22 club heroes (scores, verdicts and art direction
+per hero; screenshots in the session scratchpad) found most were icons that
+move rather than scenes, several looped forever, every hero but Write Build
+Create clipped its text on phones, three let art run under the subtitle,
+and DOT.exe copies Pac-Man's trade dress. Eight were rebuilt to the user's
+briefs, each as one finite 4–5s sequence ending on a composed, finished
+picture, with a container-query phone layout, `font-bold` titles, solid
+subtitle colours and slug-prefixed SVG ids:
+
+- Theatre: a wooden marionette lowered on strings in a toy theatre (curtains,
+  spotlight, wave, bow, flourish); strings track the limbs.
+- Dance: a partnered duet in brush silhouette (rock, double underarm turn,
+  dip), floor reflection; replaces the equalizer bars that duplicated Music.
+- Fashion: a gold croquis inked on its plumb line, a watercolour gown washes
+  in, pose, camera flash (replaces the garment outlines flagged in caveats
+  §11).
+- Art: three paint splats on taped watercolour paper bloom into a floral
+  painting with stems, leaves and a signature.
+- Creators Club: a 3-2-1 film-leader countdown, clapper snap, pull-down to a
+  dusk scene; an opt-in "Play with sound" button synthesizes projector
+  clatter with Web Audio (no audio file; never on load or replay; hidden
+  under reduced motion and in the directory previews).
+- Oratory: a speaker at a lectern gesturing in front of a drawn mic, audience
+  heads turning, chalk rhetoric marks; replaces the lucide mic + looping rings.
+- Sports: a floodlit league night match, a batter lofts a six, the scoreboard
+  reads "SPL 6", football/pickleball/badminton kit on the boundary; replaces
+  the floating boot and the morphing ball.
+- Astronomy: opens inside the eyepiece on Orion (real RA/Dec positions),
+  pulls back to an observer at a refractor on a hill under the same Orion.
+
+Theatre, Dance, Fashion, Oratory and Sports share a small figure rig
+(`clubs/rig/`: forward kinematics, two-bone IK, a keyframe timeline) driven by
+one Framer motion-value clock that rests at the final pose, rather than
+per-element variants: Framer pivots SVG transforms on each element's bounding
+box, and strings, joined hands and bat-on-ball need exact joint positions.
+Astronomy uses the same clock approach for its fixed-pivot zoom.
+Literary's clipping is fixed: it was 317px tall with its title directly in
+the root, so `/explore` cut its card off and `/clubs` needed a special crop
+that cut the quote at "the universe". It now follows the same contract
+(192px, text column, quote set on two lines in the right 364px with its
+attribution, drawn dip pen instead of the lucide Feather, container-query
+phone layout), and the Literary entry in `ClubPlateCard`'s `PLATE_CROP` is
+gone.
+`--astronomy-dot-color` was removed from custom.css (no longer used).
+Production build checked: no hydration or console errors on the eight pages,
+with and without reduced motion. `docs-internal/animation-caveats.md` still
+describes the old versions of these heroes (Oratory rings, Art colour cycle,
+Film loop, Sports morph) and needs a refresh. Not yet rebuilt (audit verdicts):
+Chess, Sustainability, Photography, DOT.exe, Entrepreneurship,
+Pugwash, Science, Music, Animal Welfare, Martial Arts (rebuild); Turingites,
+FOSS (refine).
+
+## 2026-11-21 — Accessibility fixes, Write Build Create club, /clubs plate cards
+
+Files: `src/components/MiniHeroCard.jsx`, `src/components/fests/FestSound.jsx`,
+`src/plugins/static-audio-plugin.js` (new), `src/theme/Footer/index.js`,
+`src/css/custom.css`, `src/components/TeamSection.jsx`,
+`src/components/contactIcons.jsx`, `src/components/clubs/{GardeningHero,
+GamingHero,FilmSocietyHero}.jsx`, `src/components/clubs/WriteBuildCreateHero.jsx`
+(new), `src/components/ClubPlateCard.jsx` (new), `src/pages/clubs.js`,
+`docs/clubs/write-build-create/` (new), `blog/2026-11-21-write-build-create-intro/`
+(new), `src/components/clubAccents.js`, `src/data/{clubDirectory,clubContacts,
+sidebarIcons}.js`, `src/data/teams/write-build-create.mjs` (new),
+`src/components/HomepageBuilding.jsx`, `blog/tags.yml`, `static/admin/config.yml`,
+`docusaurus.config.js`, `src/pages/{index,explore,committees}.js`,
+`docs/intro.mdx`, `tests/e2e/*`, `CLAUDE.md`, `PRODUCT.md`, `DESIGN.md`
+
+Follow-up to the 2026-11-19 critique/audit, fixing the remaining WCAG
+items. `MiniHeroCard`'s `inert=""` was being dropped by React 19 (falsy
+boolean), so every card exposed a second "Replay animation" tab stop and
+an extra `<h1>`; it is now a bare `inert`. Light-mode links use
+`--ds-accent-600` (4.31:1 to above AA) and links inside running text are
+underlined (SC 1.4.1). The fest "Play theme" button had no background
+(Tailwind preflight is off, so it kept the UA grey under white text,
+1.12:1) and its audio files don't exist yet: it now has a dark backing and
+renders only when its file is actually in `static/audio/`, read at build
+time by the new `static-audio-plugin.js` (a browser-side check logged 404
+console errors). The fest audio e2e test skips until a file exists. The
+dino overlay is now a modal dialog: focus moves in, Escape closes, Tab
+stays inside, focus returns to the trigger, and there is a Close button.
+Pages no longer scroll sideways at 375/320px: Infima's mobile footer gives
+links `width: max-content` (capped now), and team rows/emails couldn't
+shrink (min-width/overflow-wrap fixes). The three renamed clubs' heroes
+now show Sustainability Club, DOT.exe and Creators Club. `.tech-club` is
+finally applied: to the Turingites and FOSS doc pages via the
+`docs-doc-id-*` class Docusaurus puts on `<html>`, scoped to the article,
+with `font-family` set directly so body text switches too, not just
+headings. Placeholder board members are still shown (decision: rename
+only).
+
+New 22nd club, Write Build Create (`write-build-create`, accent Magenta
+`#A1137A`/`#F5A3DD`): writing stories, building games, world building. Its
+hero is a three-panel manga strip on a paper card (ink panels, slanted
+gutters, screentone, speed lines) carrying one chibi character from the
+page it's written on, to the world built around it, to the game it jumps
+through. Registered everywhere a club is (docs folder, tag, CMS option,
+contacts, placeholder team, sidebar icon `PenTool`, directory, intro post,
+test fixture); counts moved 21 → 22 in copy and tests. The homepage
+building now leaves two rooms dark instead of three.
+
+`/clubs` now uses `ClubPlateCard`: the live hero as a cropped plate on
+top, the name and `_category_.json` description as real text below,
+instead of text printed inside a scaled-down hero. The layout came from
+the Hallmark redesign mock (`docs-internal/hallmark-redesign/`), whose
+homepage and /clubs page designs were otherwise rejected; it is built in
+the existing Scholar tokens. `/explore` still uses `MiniHeroCard`.
+
+## 2026-11-19 — Critique/audit pass; animate + typeset fixes
+
+Files: `src/pages/index.module.css`, `src/css/custom.css`,
+`src/components/TagFilteredEvents.jsx`, `src/components/EventCard.jsx`,
+`src/components/ClubTimeline.jsx`, `src/components/ClubTimeline.module.css`,
+`src/components/LibraryHero.jsx`, `docusaurus.config.js`
+
+A sitewide impeccable critique (24/40) and technical/WCAG audit (13/20)
+were run first; the snapshot is in `.impeccable/critique/`. This pass only
+applies the motion and typography fixes from it, plus one contrast bug the
+critique surfaced on the type itself: the homepage `<h1>` rendered
+near-black on the dusk sky in dark mode, because Infima's hero text colour
+resolves through `--ds-neutral-0` (the inverted-ramp trap already noted in
+CLAUDE.md). `.heroBanner` now pins `--ifm-hero-text-color` to literal white.
+
+Motion: directory cards (`.mini-hero-card`, `.explore-icon-card`,
+`.committee-card`, `.fest-hero-link`) now lift on `:focus-visible` as
+well as hover, with a 2px primary ring, and settle on `:active`. Reduced
+motion keeps the shadow/ring but drops the translate. Event rows
+(`.event-card`) gained a border + surface hover/focus state, which meant
+moving their border colour out of an inline style. The `/events` and
+`/student-voices` feed now shows a live, `aria-live` result count, and
+re-enters the list with a 150ms settle on filter/sort/page change, only
+after the reader has interacted, so server render and first paint are
+always fully visible. The timeline's infinite "most recent" pulse is off
+under reduced motion (JS and CSS).
+
+Typography: docs prose (`.markdown` direct children only, so heroes inside
+MDX are untouched) is capped at 70ch (it was running ~105 characters per
+line), with `text-wrap: pretty`; content headings and page titles get
+`text-wrap: balance`; `.markdown > h2` uses the documented Headline weight
+600 instead of 700. Tabular numerals are set on event dates and pagination.
+The homepage stat row's tracking moved to the Label role's 0.06em, and the
+about line uses `--ds-font-size-lg` rather than an off-scale 1.15rem.
+`LibraryHero`'s title is now an `<h1>`, since `/student-voices` (its only
+user) had no h1. Google Fonts origins are preconnected via `headTags`.
+
+Not changed, and left for a decision: the remaining audit P1s (link colour
+4.31:1 plus no underline, `inert=""` being dropped by React 19 in
+`MiniHeroCard`, stale hero names after the club renames, the FestSound
+button and its 404 audio, and dino overlay keyboard handling), and
+`.tech-club`, which is specified in DESIGN.md but has never been applied to
+any page, so Space Grotesk/IBM Plex load for nothing.
+
 ## 2026-09-09 — Real President/Vice President names on club team sections
 
 Files: `src/data/teams/{chess-club,music-club,literary-club,turingites-

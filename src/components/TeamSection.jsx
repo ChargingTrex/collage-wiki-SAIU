@@ -55,7 +55,10 @@ function TeamMember({ name, role, photo, contact }) {
   return (
     <div className="flex items-start gap-4">
       <MemberPhoto photo={photo} name={name} />
-      <div>
+      {/* min-w-0 + break-words: a flex item won't shrink below its longest
+          unbroken word, so a long name or email pushed the page sideways
+          at 320px (SC 1.4.10). */}
+      <div className="min-w-0 break-words">
         <div className="font-semibold">{name}</div>
         <div className="text-sm" style={{ color: 'var(--ds-text-secondary)' }}>
           {role}
@@ -90,7 +93,7 @@ export function TeamSection({ clubSlug, members }) {
   if (!members || members.length === 0) return null;
 
   return (
-    <div style={accentStyle} className="my-4 grid gap-6 sm:grid-cols-2">
+    <div style={accentStyle} className="my-4 grid grid-cols-1 gap-6 sm:grid-cols-2">
       {members.map((member) => (
         <TeamMember key={member.name} {...member} />
       ))}

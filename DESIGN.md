@@ -136,7 +136,7 @@ below).
 - The full 50–950 ramp inverts direction between light and dark mode (light mode's `-900` becomes dark mode's near-white) rather than defining two separate ramps — this is why the footer background deliberately uses fixed hex values instead of `--ds-neutral-*` (see Do's and Don'ts).
 
 ### Per-club accent system (signature, not a fixed palette)
-Each of the 21 clubs carries its own accent color (e.g. Astronomy = Indigo `#4338CA`/`#A5B4FC`, Art = Fuchsia `#A21CAF`/`#E879F9`, FOSS = Sky `#0369A1`/`#7DD3FC` — full table in `src/components/clubAccents.js`), applied via a `--club-accent` custom property that each hero sets inline and the rest of the CSS reads. A visitor-facing "unified mode" toggle swaps every club's accent for the single site primary in one variable flip. A few heroes intentionally opt out of unified mode entirely (Gaming's second ghost, Art's color cycle, Fashion's gold, the three fest palettes) because color *is* the concept for that specific club.
+Each of the 22 clubs carries its own accent color (e.g. Astronomy = Indigo `#4338CA`/`#A5B4FC`, Art = Fuchsia `#A21CAF`/`#E879F9`, FOSS = Sky `#0369A1`/`#7DD3FC` — full table in `src/components/clubAccents.js`), applied via a `--club-accent` custom property that each hero sets inline and the rest of the CSS reads. A visitor-facing "unified mode" toggle swaps every club's accent for the single site primary in one variable flip. A few heroes intentionally opt out of unified mode entirely (Gaming's second ghost, Art's color cycle, Fashion's gold, the three fest palettes) because color *is* the concept for that specific club.
 
 ### Named Rules
 **The Token-Only Rule.** No hardcoded hex color in a component. If a needed color isn't in the `--ds-*` token set, it gets added to the token file — never inlined.
@@ -162,7 +162,7 @@ Each of the 21 clubs carries its own accent color (e.g. Astronomy = Indigo `#433
 ### Named Rules
 **The Four Roles Rule.** Display, heading, body, and mono each have exactly one job; none substitutes for another. A card title is never set in the display face, and hero copy is never set in body weight.
 
-**The Tech Forward Exception.** `turingites-computer-science-society` and `foss-club` pages wrap their content in `.tech-club`, swapping the entire type system to Space Grotesk / IBM Plex Sans / IBM Plex Mono. Colors and every other token stay identical — this is a type-only exception, not a sub-brand.
+**The Tech Forward Exception.** `turingites-computer-science-society` and `foss-club` pages swap the article's type system to Space Grotesk / IBM Plex Sans / IBM Plex Mono — applied in `custom.css` by the `docs-doc-id-clubs/<slug>/` class Docusaurus puts on `<html>`, scoped to `.theme-doc-markdown` so the navbar, sidebar and TOC keep the sitewide faces (`.tech-club` remains as an opt-in class). Colors and every other token stay identical — this is a type-only exception, not a sub-brand.
 
 ## Layout
 

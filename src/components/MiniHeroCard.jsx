@@ -20,6 +20,11 @@
 // interaction entirely, leaving the Link as the single, correct interactive
 // element. Replaying the animation isn't a feature this scaled-down,
 // preview-only context needs — the card's one job is navigation.
+//
+// Boolean `inert`, not `inert=""`: React 19 treats `inert` as a boolean
+// attribute, and the empty string is falsy, so `inert=""` was silently
+// dropped from the DOM — every card exposed the hero's replay button as a
+// second tab stop and its <h1> as a page heading (22 h1s on /clubs).
 
 import React from 'react';
 import Link from '@docusaurus/Link';
@@ -46,7 +51,7 @@ export function MiniHeroCard({to, name, Hero}) {
       <div
         className="mini-hero-card__scale-wrap"
         style={{width: SOURCE_WIDTH, transform: `scale(${SCALE})`}}
-        inert="">
+        inert>
         <Hero />
       </div>
     </Link>

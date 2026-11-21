@@ -115,6 +115,12 @@ export const CLUB_CONTACTS = {
     linkedin: { url: '#', label: 'LinkedIn' },
   },
 
+  'write-build-create': {
+    email: 'write-build-create@example.com',
+    instagram: { url: '#', label: 'Instagram' },
+    linkedin: { url: '#', label: 'LinkedIn' },
+  },
+
   'foss-club': {
     email: 'fossclub@saiuniversity.edu.in',
     instagram: { url: 'https://www.instagram.com/foss.saiu', label: '@foss.saiu' },

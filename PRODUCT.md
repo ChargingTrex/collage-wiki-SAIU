@@ -9,7 +9,7 @@ web
 ## Users
 
 **Primary — public visitors.** Students, prospective students, parents, and
-faculty browsing Sai University's 21 student clubs, 3 fests, and the 400+
+faculty browsing Sai University's 22 student clubs, 3 fests, and the 400+
 event archive. Their job is reading and discovering, not editing: find a club,
 see what it actually does, browse its event history, get contact/leadership
 info.
@@ -33,7 +33,7 @@ stays accurate and easy for club leads to keep current year over year.
 Every club and fest gets a hand-built hero animation rooted in what that club
 *actually does* (a telescope pan for Astronomy, a brush stroke for Art, a
 script page for Theatre) rather than a generic spinning icon or stock
-photography — 26 of them, all governed by one shared playback rule and one
+photography — 27 of them, all governed by one shared playback rule and one
 shared accent-color system so the bespoke-per-club craft never turns into
 per-club inconsistency. Combined with a free GitHub Pages hosting model and a
 content pipeline aimed at letting club leads self-serve routine event posts
@@ -50,7 +50,7 @@ couldn't match.
   save (no auth backend wired up).
 - Club/fest pages themselves (MDX with hero-component imports) are not
   CMS-editable by design — only the Events collection is.
-- Developers maintain the 26 hero components, the two shared hooks
+- Developers maintain the 27 hero components, the two shared hooks
   (`useIntroMotion`, `useClubAccent`), the design-token system, and infra;
   changes deploy automatically to GitHub Pages on push to `main`.
 - A club or fest's leadership board changes yearly; the outgoing board is
@@ -62,7 +62,7 @@ couldn't match.
 - Docusaurus v3 static site, Tailwind + a custom `--ds-*` design-token system
   mapped onto Infima, Framer Motion primary for animation (motion.css/js as
   fallback only).
-- 21 club pages + 3 fest pages + Library + Archives, each with a custom hero;
+- 22 club pages + 3 fest pages + Library + Archives, each with a custom hero;
   400+ event posts under `blog/` with co-located images.
 - Decap CMS at `/admin` is structurally scaffolded but not yet saveable —
   content edits currently go through a developer via PR. Club/fest pages are
@@ -76,7 +76,7 @@ couldn't match.
 ## Brand Commitments
 
 - Site identity: "Sai University Club & Event Wiki."
-- The 21 clubs, their slugs, and their individual accent colors are fixed
+- The 22 clubs, their slugs, and their individual accent colors are fixed
   (see the club table in the root `CLAUDE.md`); a handful of heroes
   intentionally keep their own palette even in unified accent mode (Gaming's
   second ghost, Art's color cycle, Fashion's gold, fest palettes) because the

@@ -51,7 +51,7 @@ export function GardeningHero() {
     >
       <div className="z-10">
         <h1 className="text-3xl font-bold" style={{ color: 'var(--club-accent)' }}>
-          Gardening Club
+          Sustainability Club
         </h1>
         <p className="mt-1 text-emerald-800/70 dark:text-emerald-300/70">
           Cultivating green spaces across campus.

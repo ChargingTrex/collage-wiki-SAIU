@@ -3,16 +3,16 @@ const {trackConsoleErrors} = require('./helpers');
 const {CLUB_SLUGS, FEST_SLUGS} = require('./fixtures');
 
 test.describe('/clubs directory', () => {
-  test('renders all 21 clubs as mini-hero cards, each linking to its doc page', async ({page}) => {
+  test('renders all 22 clubs as plate cards, each linking to its doc page', async ({page}) => {
     const errors = trackConsoleErrors(page);
     await page.goto('clubs');
     await page.waitForLoadState('networkidle');
 
-    const cards = page.locator('.mini-hero-card');
+    const cards = page.locator('.club-plate-card');
     await expect(cards).toHaveCount(CLUB_SLUGS.length);
 
     for (const slug of CLUB_SLUGS) {
-      await expect(page.locator(`a.mini-hero-card[href$="/docs/clubs/${slug}"]`)).toHaveCount(1);
+      await expect(page.locator(`a.club-plate-card[href$="/docs/clubs/${slug}"]`)).toHaveCount(1);
     }
 
     expect(errors).toEqual([]);
@@ -30,9 +30,9 @@ test.describe('/clubs directory', () => {
     );
   });
 
-  test('clicking a mini-hero card navigates to that club’s doc page', async ({page}) => {
+  test('clicking a plate card navigates to that club’s doc page', async ({page}) => {
     await page.goto('clubs');
-    await page.locator(`a.mini-hero-card[href$="/docs/clubs/astronomy-club"]`).click();
+    await page.locator(`a.club-plate-card[href$="/docs/clubs/astronomy-club"]`).click();
     await page.waitForLoadState('networkidle');
     await expect(page).toHaveURL(/\/docs\/clubs\/astronomy-club/);
   });
@@ -130,6 +130,11 @@ test.describe('/fests directory', () => {
     await page.goto('fests');
     await page.waitForLoadState('networkidle');
     const playButton = page.locator('a.fest-hero-link').first().getByRole('button', {name: /play theme/i});
+    // FestSound now renders only once its audio file is confirmed to exist
+    // (a button that 404s on click was a dead control). Until the fest
+    // audio is committed to static/audio/ there's no button to guard, so
+    // this skips rather than fails; it starts running again on its own.
+    test.skip((await playButton.count()) === 0, 'fest audio not supplied yet (static/audio/ is empty)');
     await playButton.click();
     await expect(page).toHaveURL(/\/fests$/);
   });

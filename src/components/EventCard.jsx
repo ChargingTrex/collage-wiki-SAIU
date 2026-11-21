@@ -26,10 +26,12 @@ export function EventCard({ title, date, permalink, description, image, size = '
     <Link
       to={permalink}
       className={clsx(
-        'flex items-start rounded-lg border no-underline hover:no-underline',
+        'event-card flex items-start rounded-lg border no-underline hover:no-underline',
         isLarge ? 'gap-6 p-6' : 'gap-4 p-4',
       )}
-      style={{ borderColor: 'var(--ds-border)', color: 'var(--ds-text)' }}
+      // Border colour lives in custom.css (.event-card) so its hover/focus
+      // shift can override it; an inline style would always win.
+      style={{ color: 'var(--ds-text)' }}
     >
       {image && (
         <Image

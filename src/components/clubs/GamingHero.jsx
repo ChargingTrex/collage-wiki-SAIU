@@ -62,7 +62,7 @@ export function GamingHero() {
     >
       <div className="z-10">
         <h1 className="text-3xl font-black tracking-tight" style={{ color: accent.dark }}>
-          Gaming Club
+          DOT.exe
         </h1>
         <p className="mt-1 text-violet-200/80">Casual, competitive, and esports community.</p>
       </div>

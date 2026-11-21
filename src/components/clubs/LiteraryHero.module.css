@@ -1,0 +1,54 @@
+/* LiteraryHero layout. Container query (not viewport breakpoints): in the
+   /clubs and /explore cards the hero renders at a fixed 560px and is
+   scaled down, so only a genuinely narrow hero (its own page on a phone)
+   stacks the quote under the title. */
+.root {
+  container-type: inline-size;
+}
+
+.inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  /* h-48 like every club hero, minus the 1px border top and bottom. */
+  height: calc(12rem - 2px);
+  padding: 2rem;
+}
+
+.text {
+  position: relative;
+  z-index: 1;
+  max-width: 34%;
+}
+
+/* The quote's page: the right 364px at 560 wide (x >= 196), anchored right
+   so a wider hero just gains space between title and quote. */
+.art {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 364px;
+  height: 100%;
+}
+
+@container (max-width: 34rem) {
+  .inner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.25rem;
+    height: auto;
+    padding: 1.5rem;
+  }
+  .text {
+    max-width: none;
+  }
+  .art {
+    position: static;
+    width: 100%;
+    height: auto;
+    /* The page's first ~quarter is blank headroom above line one; pull it
+       up under the subtitle so the stacked hero doesn't show a gap. */
+    margin-top: -2.5rem;
+  }
+}

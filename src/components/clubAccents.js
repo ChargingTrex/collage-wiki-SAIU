@@ -35,6 +35,9 @@ export const CLUB_ACCENTS = {
   'sports-society': { light: '#A16207', dark: '#FDE047', name: 'Gold' },
   'theatre-club': { light: '#7E22CE', dark: '#D8B4FE', name: 'Purple' },
   'turingites-computer-science-society': { light: '#16A34A', dark: '#4ADE80', name: 'Terminal' },
+  // Magenta sits in the one wide hue gap left (between Fuchsia ~292deg and
+  // Pink ~330deg). light #A1137A is ~7:1 on its paper card.
+  'write-build-create': { light: '#A1137A', dark: '#F5A3DD', name: 'Magenta' },
 };
 
 // Used when the reader has opted into a single color. `dark` (white) covers

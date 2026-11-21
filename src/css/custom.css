@@ -223,12 +223,6 @@
   /* Transitions */
   --ifm-transition-fast: var(--ds-transition-fast);
   --ifm-transition-slow: var(--ds-transition-base);
-
-  /* AstronomyHero's background scatter dots: slate gray in light site mode,
-     matching the constellation stars' yellow once the site is in dark mode.
-     The hero's own card background stays dark regardless of site theme, so
-     this tracks the SITE's color scheme, not the club's per-club accent. */
-  --astronomy-dot-color: #94a3b8;
 }
 
 /* =====================================================================
@@ -296,8 +290,6 @@
   --ds-accent-500: #3aa877;
 
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
-
-  --astronomy-dot-color: #fde047;
 }
 
 /* =====================================================================
@@ -337,7 +329,21 @@
    pages' content in <div className="tech-club"> (convert to .mdx if not
    already) — see scholar-design-system-hybrid (1).html for the rationale.
    ===================================================================== */
-.tech-club {
+/* Applied by doc id rather than a wrapper <div> in each MDX file (see the
+   2026-11-19 entry in changes.md): Docusaurus stamps every doc page's
+   <html> with `docs-doc-id-<id>`, so the swap reaches every page in both
+   clubs' sections (index, contact, events) with no per-file markup, and
+   stays scoped to the article (.theme-doc-markdown) so the navbar,
+   sidebar and TOC keep the sitewide faces. `.tech-club` stays as an
+   opt-in class for anything else. */
+.tech-club,
+html[class*='docs-doc-id-clubs/turingites-computer-science-society/'] .theme-doc-markdown,
+html[class*='docs-doc-id-clubs/foss-club/'] .theme-doc-markdown {
+  /* Setting the variables alone isn't enough for body copy: <p> inherits
+     the *computed* font-family from <body>, resolved once against the
+     root variables — only elements that reference the variable themselves
+     (headings, code) would re-resolve. Set the family here too. */
+  font-family: var(--ds-font-body);
   --ds-font-display: 'Space Grotesk', -apple-system, sans-serif;
   --ds-font-heading: 'Space Grotesk', -apple-system, sans-serif;
   --ds-font-body: 'IBM Plex Sans', -apple-system, sans-serif;
@@ -352,7 +358,9 @@
 .tech-club h3,
 .tech-club h4,
 .tech-club h5,
-.tech-club h6 {
+.tech-club h6,
+html[class*='docs-doc-id-clubs/turingites-computer-science-society/'] .theme-doc-markdown :is(h1, h2, h3, h4, h5, h6),
+html[class*='docs-doc-id-clubs/foss-club/'] .theme-doc-markdown :is(h1, h2, h3, h4, h5, h6) {
   letter-spacing: -0.01em;
 }
 
@@ -1175,4 +1183,379 @@
     height: auto;
     min-height: 143px;
   }
+}
+
+/* =====================================================================
+   Interaction feedback (impeccable animate pass, 2026-11-19)
+   The directory cards lifted on :hover only — a keyboard reader tabbing
+   through /clubs got the browser's default 1px ring and no lift, and a
+   tap got no press response at all. Focus now gets the same lift as
+   hover plus the replay ring's 2px primary outline; :active settles the
+   card back down 2px so the press reads before navigation.
+   ===================================================================== */
+.mini-hero-card:focus-visible,
+.explore-icon-card:focus-visible,
+.committee-card:focus-visible,
+.fest-hero-link:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: var(--ds-shadow-md);
+  outline: 2px solid var(--ifm-color-primary);
+  outline-offset: 3px;
+  text-decoration: none;
+}
+.mini-hero-card:active,
+.explore-icon-card:active,
+.committee-card:active,
+.fest-hero-link:active {
+  transform: translateY(-1px);
+  box-shadow: var(--ds-shadow-sm);
+  transition-duration: 80ms;
+}
+
+/* Event rows (homepage Recent Activity, /events, /student-voices, club
+   Events lists) had no hover response at all. A border + surface shift —
+   the smallest change that marks the row as the target — rather than a
+   lift, since these are list rows, not cards in a grid. */
+.event-card {
+  border-color: var(--ds-border);
+  transition: border-color var(--ds-transition-fast), background-color var(--ds-transition-fast);
+}
+.event-card:hover,
+.event-card:focus-visible {
+  border-color: var(--ds-border-strong);
+  background-color: var(--ds-bg-secondary);
+}
+.event-card:focus-visible {
+  outline: 2px solid var(--ifm-color-primary);
+  outline-offset: 2px;
+}
+
+/* Reduced motion: keep the state change (shadow, ring, colour), drop the
+   spatial movement. */
+@media (prefers-reduced-motion: reduce) {
+  .mini-hero-card,
+  .explore-icon-card,
+  .committee-card,
+  .fest-hero-link {
+    transition: box-shadow 0.15s ease;
+  }
+  .mini-hero-card:hover,
+  .mini-hero-card:focus-visible,
+  .mini-hero-card:active,
+  .explore-icon-card:hover,
+  .explore-icon-card:focus-visible,
+  .explore-icon-card:active,
+  .committee-card:hover,
+  .committee-card:focus-visible,
+  .committee-card:active,
+  .fest-hero-link:hover,
+  .fest-hero-link:focus-visible,
+  .fest-hero-link:active {
+    transform: none;
+  }
+}
+
+/* =====================================================================
+   Reading typography (impeccable typeset pass, 2026-11-19)
+   Scoped to DIRECT children of .markdown on purpose: club/fest MDX pages
+   render their hero components inside .markdown too, and those heroes'
+   own h1/p must not inherit a prose measure or a wrap rule (several
+   already sit tight against their artwork).
+   ===================================================================== */
+
+/* Measure: docs prose computed ~823px / ~105 characters per line at 16px
+   Inter. Cap running text at 70ch; tables, code, heroes and images keep
+   the full column. */
+.markdown > p,
+.markdown > ul,
+.markdown > ol,
+.markdown > blockquote {
+  max-width: 70ch;
+}
+.markdown > p,
+.markdown > ul > li,
+.markdown > ol > li,
+.markdown > blockquote {
+  text-wrap: pretty;
+}
+
+/* Headings: balanced breaks, and the Headline role at its documented
+   weight (DESIGN.md: h2 600 — it was computing 700, the same weight as
+   the page title, so the two roles only differed by size). */
+.markdown > header > h1,
+.markdown > h1,
+.markdown > h2,
+.markdown > h3 {
+  text-wrap: balance;
+}
+.markdown > h2 {
+  font-weight: var(--ds-font-weight-semibold, 600);
+}
+
+/* Custom-page titles and directory card names (/explore, /committees). */
+main .container > h1,
+main .container > h2,
+.committee-card__name {
+  text-wrap: balance;
+}
+
+/* Tabular numerals wherever dates and page numbers stack, so columns of
+   digits don't jitter between rows. */
+.event-card,
+.pagination-nav,
+[class*='nodeDate'] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* =====================================================================
+   WCAG fixes (2026-11-21)
+   ===================================================================== */
+
+/* Links — SC 1.4.3. Light mode's --ds-accent-500 (#218a5e) was 4.31:1 on
+   white and 3.85:1 on the footer's #f0f2f7. Pinned to -600 (#186e4c) in
+   light mode, same approach as the pinned button shades. Dark mode
+   redefines only -500 (#3aa877, passes on #15181f); its -600 is still the
+   light-mode dark green, so dark keeps -500 explicitly. */
+:root {
+  --ifm-link-color: var(--ds-accent-600);
+  --ifm-link-hover-color: var(--ds-accent-700);
+}
+[data-theme='dark'] {
+  --ifm-link-color: var(--ds-accent-500);
+  --ifm-link-hover-color: var(--ds-accent-300);
+}
+
+/* Links inside running text — SC 1.4.1. Colour alone was the only cue
+   (1.73:1 against body text in light mode, 2.83:1 in dark), so links
+   that sit in a sentence are underlined. Navigation, cards, buttons and
+   headings' anchor links are not running text and keep their own style. */
+.markdown p a,
+.markdown li a,
+.markdown td a,
+main .container p a,
+.footer__copyright a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+.markdown p a:hover,
+.markdown li a:hover,
+.markdown td a:hover,
+main .container p a:hover,
+.footer__copyright a:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* Reflow — SC 1.4.10. "Commons Clause (commercial use restriction)" is
+   one unbreakable-looking run at footer link size and pushed every page
+   to 383px wide on 375px and 320px phones. */
+.footer__item {
+  /* .footer__items is a wrapping flex row (above); a flex item sizes to
+     its max-content, so a label longer than the line overflowed instead
+     of wrapping. Capping the item at the line width lets it wrap at its
+     spaces like normal text. */
+  max-width: 100%;
+}
+/* Infima's mobile footer sets .footer__link-item { display: block;
+   width: max-content }, which is what actually held the line unbroken. */
+.footer__link-item {
+  max-width: 100%;
+}
+.footer__link-item,
+.footer__copyright {
+  overflow-wrap: break-word;
+}
+
+/* Dino dialog: visible close control and a focus outline for the dialog
+   itself (it takes focus on open so Space still reaches the game). */
+.dino-overlay:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: -6px;
+}
+.dino-overlay__close {
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: var(--ds-radius-md);
+  padding: 0.4rem 1rem;
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.dino-overlay__close:hover {
+  border-color: #ffffff;
+}
+.dino-overlay__close:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+.footer-dino-trigger__button:focus-visible {
+  opacity: 1;
+  outline: 2px solid var(--ifm-color-primary);
+  outline-offset: 2px;
+}
+
+/* =====================================================================
+   /clubs plate cards (ClubPlateCard.jsx, 2026-11-21)
+   The live hero as a picture on top, the club's name and description as
+   real text below it, instead of text printed inside a scaled-down hero.
+   Fixed 352px column so the hero can be scaled with one known factor
+   (3 x 352 + 2 x 24 gap = 1104px, inside the 1140px container's padding).
+   ===================================================================== */
+.club-plate-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 352px);
+  justify-content: center;
+  gap: 2.25rem 1.5rem;
+}
+.club-plate-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  width: 352px;
+  color: var(--ds-text);
+  text-decoration: none;
+}
+.club-plate-card:hover,
+.club-plate-card:focus-visible {
+  color: var(--ds-text);
+  text-decoration: none;
+}
+.club-plate-card__plate {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--ds-radius-lg);
+  box-shadow: var(--ds-shadow-sm);
+  margin-bottom: 0.5rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.club-plate-card:hover .club-plate-card__plate,
+.club-plate-card:focus-visible .club-plate-card__plate {
+  transform: translateY(-3px);
+  box-shadow: var(--ds-shadow-md);
+}
+.club-plate-card:focus-visible {
+  outline: none;
+}
+.club-plate-card:focus-visible .club-plate-card__plate {
+  outline: 2px solid var(--ifm-color-primary);
+  outline-offset: 3px;
+}
+.club-plate-card:active .club-plate-card__plate {
+  transform: translateY(-1px);
+  box-shadow: var(--ds-shadow-sm);
+  transition-duration: 80ms;
+}
+.club-plate-card__scale-wrap {
+  transform-origin: top left;
+  pointer-events: none;
+}
+/* Same margin-collapse fix as .mini-hero-card__scale-wrap: heroes carry
+   my-6 for their full-size page. Their own rounded corners and border are
+   dropped too — the plate supplies the frame, and a second inner radius
+   reads as a card inside a card. */
+.club-plate-card__scale-wrap > * {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  border-radius: 0 !important;
+  border-width: 0 !important;
+  box-shadow: none !important;
+}
+/* The hero's own heading + subtitle: the card prints them below instead.
+   visibility (not display) so the artwork keeps its original position. */
+.club-plate-card__scale-wrap div:has(> h1) > :is(h1, p) {
+  visibility: hidden;
+}
+.club-plate-card__name {
+  font-family: var(--ds-font-heading);
+  font-size: var(--ds-font-size-xl, 1.25rem);
+  font-weight: var(--ds-font-weight-semibold, 600);
+  line-height: 1.25;
+  text-wrap: balance;
+}
+.club-plate-card__description {
+  font-size: var(--ds-font-size-sm, 0.875rem);
+  line-height: 1.5;
+  color: var(--ds-text-secondary);
+  text-wrap: pretty;
+}
+.club-plate-card:hover .club-plate-card__name {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+@media (max-width: 400px) {
+  .club-plate-grid {
+    grid-template-columns: minmax(0, 352px);
+  }
+  .club-plate-card {
+    /* The hero's scale factor is fixed for a 352px plate. Phones of 384px
+       and up fit that exactly; narrower ones crop a little off the plate's
+       right edge rather than leaving an empty strip. */
+    width: 100%;
+    max-width: 352px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .club-plate-card__plate {
+    transition: box-shadow 0.15s ease;
+  }
+  .club-plate-card:hover .club-plate-card__plate,
+  .club-plate-card:focus-visible .club-plate-card__plate,
+  .club-plate-card:active .club-plate-card__plate {
+    transform: none;
+  }
+}
+
+/* WriteBuildCreateHero layout. A container query, not a viewport media
+   query: the hero is also rendered at a fixed 560px inside the scaled
+   /clubs and /explore cards, where it must keep its wide layout whatever
+   the phone's viewport is. Only a genuinely narrow hero (its own club page
+   on a phone) stacks the strip under the title. */
+.wbc-hero {
+  container-type: inline-size;
+}
+.wbc-hero__inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  /* h-48 like every club hero, minus the 1px border top and bottom. */
+  height: calc(12rem - 2px);
+  padding: 2rem;
+}
+.wbc-hero__text {
+  max-width: 42%;
+}
+.wbc-hero__strip {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 60%;
+  height: 100%;
+}
+@container (max-width: 34rem) {
+  .wbc-hero__inner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    height: auto;
+    padding: 1.5rem;
+  }
+  .wbc-hero__text {
+    max-width: none;
+  }
+  .wbc-hero__strip {
+    position: static;
+    width: 100%;
+    height: auto;
+  }
+}
+
+/* Hero sound buttons (e.g. Creators Club's projector sound) are real
+   controls on a club's own page, but inside the inert directory previews
+   they can't be pressed, so they aren't drawn there either. */
+.club-plate-card__scale-wrap .hero-sound-button,
+.mini-hero-card__scale-wrap .hero-sound-button {
+  display: none;
 }

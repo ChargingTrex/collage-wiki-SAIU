@@ -100,7 +100,9 @@ export function ClubTimeline({ clubSlug }) {
             {group.events.map((event) => {
               runningIndex += 1;
               const side = runningIndex % 2 === 0 ? styles.nodeLeft : styles.nodeRight;
-              const isPulsing = event.id === mostRecentId;
+              // The pulse is a nonessential loop: no pulse under reduced motion
+              // (the ring itself still marks the most recent event).
+              const isPulsing = event.id === mostRecentId && !reducedMotion;
               return (
                 <motion.div
                   key={event.id}

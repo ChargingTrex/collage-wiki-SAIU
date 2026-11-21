@@ -43,7 +43,7 @@ test('clicking opens a full-screen overlay with a sized, playable canvas', async
 
   const overlay = page.locator('.dino-overlay');
   await expect(overlay).toBeVisible();
-  await expect(overlay.getByText('click anywhere to close')).toBeVisible();
+  await expect(overlay.getByText(/click anywhere or press Esc to close/)).toBeVisible();
 
   const canvas = overlay.locator('canvas');
   const box = await canvas.boundingBox();

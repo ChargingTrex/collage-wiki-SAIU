@@ -1,6 +1,6 @@
 # Contributing to the Sai University Wiki
 
-This is a Docusaurus v3 site for Sai University's 21 student clubs, fests, and
+This is a Docusaurus v3 site for Sai University's 22 student clubs, fests, and
 400+ archived events. It's built so **two very different kinds of people** can
 contribute to it:
 
@@ -82,7 +82,7 @@ Before opening a PR, always run `npm run build` **and** `npm run test:e2e`
 locally. A page that only breaks in the production build (not `npm start`)
 is a common way bugs slip through — the e2e suite runs against the
 production build for exactly this reason. See `TEST_REPORT.md` for what's
-covered (navigation, all 21 club pages, all 3 fest pages, the Events/Blog
+covered (navigation, all 22 club pages, all 3 fest pages, the Events/Blog
 tag-filtering split, the full `useIntroMotion` playback contract, theme
 toggling, the footer dino easter egg) and what isn't yet: Decap CMS auth
 still doesn't exist, so there's nothing to test there. The accent
@@ -106,6 +106,9 @@ src/
                               global recent-first list — powers
                               ClubEventsList and RecentActivity below via
                               `usePluginData('club-events-plugin')`
+    static-audio-plugin.js    lists the audio files actually in static/audio/
+                              at build time; FestSound renders its play
+                              button only when its `audioSrc` file is there
   theme/
     Footer/index.js           swizzled footer — wraps (not replaces) the
                               default Footer; adds the LinkedIn/Instagram/
@@ -242,8 +245,12 @@ src/
                               `blog` + `student-voices`) via its `tagIds`
                               prop; between the two, every real content-type
                               tag is covered exactly once
+    ClubPlateCard.jsx         /clubs card: the real hero as a cropped plate,
+                              with the club name + its `_category_.json`
+                              description as text below (PLATE_CROP for
+                              heroes whose art isn't on the right)
     MiniHeroCard.jsx          scales a real hero down for a directory grid
-                              card (used by /clubs and /explore). Card is
+                              card (used by /explore). Card is
                               416x143px (custom.css) — sized around the 20
                               of 21 club heroes sharing a fixed 192px/h-48
                               natural height, not around Literary (the one
@@ -283,7 +290,7 @@ src/
                               tried and cut, the static marks alone read as
                               a considered minimal hero (see changes.md,
                               2026-08-21)
-    clubs/                    21 club hero components
+    clubs/                    22 club hero components
     fests/                    fest hero components + FestSound
   data/
     teams/<slug>.mjs          one file per club/fest — CURRENT_TEAM array
@@ -308,7 +315,7 @@ src/
                               section wasn't using before; see
                               HomepageClubMarks.jsx above for the
                               foundation-line piece it renders
-    clubs.js                  /clubs — 21 club mini-hero cards
+    clubs.js                  /clubs — 22 club plate cards
     fests.js                   /fests — 3 full-size fest heroes
     explore.js                 /explore — every hero + Events/Blog/Archives cards
     events.js                  /events — tag-filtered real-content feed
@@ -706,7 +713,7 @@ unconditionally ESM regardless.
 ## 4. Working with the two shared systems
 
 Every hero component is built on two hooks. **Don't reimplement their
-behavior locally in a component** — extend the hook instead, so all 26 heroes
+behavior locally in a component** — extend the hook instead, so all 27 heroes
 stay consistent.
 
 ```jsx
@@ -736,7 +743,7 @@ const { accentStyle, accentName, isUnified } = useClubAccent('astronomy-club');
 
 Motion should come from what the club actually *does* (chess pieces moving,
 brush strokes, telescope panning), not a generic spinning icon. If you're
-adding a 27th hero, follow the pattern of an existing one in `src/components/clubs/`
+adding a 28th hero, follow the pattern of an existing one in `src/components/clubs/`
 rather than starting from scratch.
 
 ---

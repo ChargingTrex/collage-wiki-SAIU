@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import Footer from '@theme-original/Footer';
 import {Mail, Bug} from 'lucide-react';
 import ChromeDinoGame from 'react-chrome-dino';
@@ -152,28 +152,70 @@ function FossClubCredit() {
 const DINO_TINT_DEFAULT = 'var(--ds-accent-500)';
 const DINO_TINT_UNIFIED = 'var(--ifm-color-primary)';
 
+// Keyboard contract (WCAG 2.1.1 / 2.4.3): the overlay is a modal dialog.
+// Opening it moves focus onto the dialog itself — NOT onto the close
+// button, because the game reads Space/ArrowUp from the document to jump,
+// and Space on a focused button would close the overlay instead. Escape
+// closes it, Tab is held inside it (dialog <-> close button), and closing
+// returns focus to the dino trigger the reader came from.
 function DinoEasterEgg() {
   const [showGame, setShowGame] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const {mode} = useAccentMode();
+  const triggerRef = useRef(null);
+  const dialogRef = useRef(null);
+  const closeRef = useRef(null);
+
+  const close = useCallback(() => {
+    setShowGame(false);
+    // Wait for the overlay to unmount before restoring focus.
+    requestAnimationFrame(() => triggerRef.current?.focus());
+  }, []);
+
+  useEffect(() => {
+    if (!showGame) return undefined;
+    dialogRef.current?.focus();
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        close();
+      } else if (e.key === 'Tab') {
+        e.preventDefault();
+        const next = document.activeElement === closeRef.current ? dialogRef.current : closeRef.current;
+        next?.focus();
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [showGame, close]);
 
   return (
     <>
       <div className="footer-dino-trigger">
         {isHovered && <span className="footer-dino-trigger__tooltip">charging trex...</span>}
         <button
+          ref={triggerRef}
           type="button"
           onClick={() => setShowGame(true)}
+          onFocus={() => setIsHovered(true)}
+          onBlur={() => setIsHovered(false)}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          aria-label="secret"
+          aria-label="charging trex... (opens a hidden dino game)"
           className="footer-dino-trigger__button">
           🦖
         </button>
       </div>
 
       {showGame && (
-        <div className="dino-overlay" onClick={() => setShowGame(false)} role="presentation">
+        <div
+          ref={dialogRef}
+          className="dino-overlay"
+          onClick={close}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Dino game. Press Space to jump, Escape to close."
+          tabIndex={-1}>
           <div className="dino-overlay__game" onClick={(e) => e.stopPropagation()}>
             <ChromeDinoGame />
             <div
@@ -181,7 +223,17 @@ function DinoEasterEgg() {
               style={{backgroundColor: mode === 'unified' ? DINO_TINT_UNIFIED : DINO_TINT_DEFAULT}}
             />
           </div>
-          <p className="dino-overlay__hint">click anywhere to close</p>
+          <p className="dino-overlay__hint">click anywhere or press Esc to close</p>
+          <button
+            ref={closeRef}
+            type="button"
+            className="dino-overlay__close"
+            onClick={(e) => {
+              e.stopPropagation();
+              close();
+            }}>
+            Close
+          </button>
         </div>
       )}
     </>

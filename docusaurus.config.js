@@ -7,6 +7,7 @@
 import {themes as prismThemes} from 'prism-react-renderer';
 import tailwindPlugin from './src/plugins/tailwind-plugin.js';
 import clubEventsPlugin from './src/plugins/club-events-plugin.js';
+import staticAudioPlugin from './src/plugins/static-audio-plugin.js';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
@@ -31,6 +32,18 @@ const config = {
   tagline:
     'The Sai University wiki for student clubs, events, and student life at Sai University, Chennai',
   favicon: 'img/favicon.ico',
+
+  // custom.css pulls its faces through Google Fonts @import, which the
+  // browser can't discover until the stylesheet itself has parsed. Opening
+  // both origins' connections up front takes the DNS/TLS round-trips off
+  // that chain, so text swaps from fallback sooner.
+  headTags: [
+    {tagName: 'link', attributes: {rel: 'preconnect', href: 'https://fonts.googleapis.com'}},
+    {
+      tagName: 'link',
+      attributes: {rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: 'anonymous'},
+    },
+  ],
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
@@ -59,6 +72,7 @@ const config = {
   plugins: [
     tailwindPlugin,
     clubEventsPlugin,
+    staticAudioPlugin,
     // Auto-optimizes markdown images in docs/blog (responsive + lazy-load +
     // blur placeholder) with zero content changes — see
     // feature-images-recent-activity-plan.md.

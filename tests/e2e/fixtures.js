@@ -27,6 +27,7 @@ const CLUB_SLUGS = [
   'chess-club',
   'pugwash-society',
   'sports-society',
+  'write-build-create',
 ];
 
 const FEST_SLUGS = ['tech-fest', 'general-fest', 'cultural-fest'];

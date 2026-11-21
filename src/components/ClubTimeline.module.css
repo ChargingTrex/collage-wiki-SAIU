@@ -80,6 +80,12 @@
   animation: timelinePulse 2.2s ease-in-out infinite;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .nodeDotPulse {
+    animation: none;
+  }
+}
+
 @keyframes timelinePulse {
   0%,
   100% {

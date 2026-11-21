@@ -25,6 +25,7 @@ import {ScienceHero} from '@site/src/components/clubs/ScienceHero';
 import {SportsHero} from '@site/src/components/clubs/SportsHero';
 import {TheatreHero} from '@site/src/components/clubs/TheatreHero';
 import {TuringitesHero} from '@site/src/components/clubs/TuringitesHero';
+import {WriteBuildCreateHero} from '@site/src/components/clubs/WriteBuildCreateHero';
 
 export const CLUB_DIRECTORY = [
   {slug: 'literary-club', name: 'Literary Club', Hero: LiteraryHero},
@@ -48,4 +49,5 @@ export const CLUB_DIRECTORY = [
   {slug: 'chess-club', name: 'Chess Club', Hero: ChessHero},
   {slug: 'pugwash-society', name: 'Pugwash Society', Hero: PugwashHero},
   {slug: 'sports-society', name: 'Sports Society', Hero: SportsHero},
+  {slug: 'write-build-create', name: 'Write Build Create', Hero: WriteBuildCreateHero},
 ];

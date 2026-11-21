@@ -2,7 +2,12 @@
 //
 // Shared sound control for fest heroes. Same contract as the Music Club audio:
 //   - click-to-play, NEVER autoplay (hostile on load, and blocked pre-interaction)
-//   - renders nothing unless an audioSrc is provided
+//   - renders nothing unless an audioSrc is provided AND that file actually
+//     exists — every fest page already passes its audioSrc (the wiring in
+//     CLAUDE.md), but static/audio/ is still empty, and a button whose
+//     .play() 404s silently is a dead control. static-audio-plugin.js lists
+//     what's really in static/audio/ at build time; the button appears on
+//     the next build once the file is committed.
 //   - .play() rejections swallowed so a blocked attempt doesn't throw
 //
 // The AUDIO FILE itself is the caller's to supply. See caveats §12: real music
@@ -12,10 +17,15 @@
 
 import React from 'react';
 import { Volume2, VolumeX } from 'lucide-react';
+import { usePluginData } from '@docusaurus/useGlobalData';
 
 export function FestSound({ audioSrc, label = 'Play theme', className = '' }) {
   const audioRef = React.useRef(null);
   const [playing, setPlaying] = React.useState(false);
+  // Build-time list of files in static/audio/ (static-audio-plugin.js).
+  // Compared by file name, so the caller's baseUrl prefix doesn't matter.
+  const { files } = usePluginData('static-audio-plugin');
+  const available = Boolean(audioSrc) && files.includes(audioSrc.split('/').pop());
 
   const toggle = React.useCallback((e) => {
     // Stop this from bubbling to the hero's own root onClick/onKeyDown —
@@ -42,14 +52,14 @@ export function FestSound({ audioSrc, label = 'Play theme', className = '' }) {
     }
   }, []);
 
-  if (!audioSrc) return null;
+  if (!available) return null;
 
   return (
     <>
       <button
         onClick={toggle}
         onKeyDown={(e) => e.stopPropagation()}
-        className={`inline-flex items-center gap-2 rounded-full border border-white/25 px-3 py-1.5 text-xs font-medium text-white/80 backdrop-blur-sm transition-colors hover:border-white/50 hover:text-white ${className}`}
+        className={`inline-flex cursor-pointer items-center gap-2 rounded-full border border-solid border-white/30 bg-black/55 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-sm transition-colors hover:border-white/60 hover:bg-black/70 ${className}`}
         aria-label={playing ? 'Stop the audio' : label}
       >
         {playing ? <VolumeX className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}

@@ -4,10 +4,10 @@ Guidance for Claude Code when working in this repository.
 
 ## What this project is
 
-A **Docusaurus v3** wiki for **Sai University, Chennai**: 21 student clubs, 400+
+A **Docusaurus v3** wiki for **Sai University, Chennai**: 22 student clubs, 400+
 archived events, hosted free on **GitHub Pages**, editable by non-technical club
-leads via **Decap CMS** at `/admin`. The signature feature is **26 custom
-animated hero components** (21 clubs + Library + Archives + 3 fests), each built
+leads via **Decap CMS** at `/admin`. The signature feature is **27 custom
+animated hero components** (22 clubs + Library + Archives + 3 fests), each built
 around the club's *actual activity* rather than a spinning icon, all governed by
 one shared playback rule and one shared accent-color system.
 
@@ -33,7 +33,7 @@ tags at build time and exposes `{posts, postsByTag, tagsMeta}` via
 club/committee's `events.mdx`, and the homepage Recent Activity strip all
 read from that one source.
 
-- **Organizer tags** — one per club (21), one per committee
+- **Organizer tags** — one per club (22), one per committee
   (`cultural-committee`, `student-government`), one per fest
   (`tech-fest`/`general-fest`/`cultural-fest`) — no generic `fest` tag;
   `general-fest` already covers fest content not tied to one specific fest.
@@ -91,10 +91,13 @@ guessing its contents.
 - **Tailwind is required** — the hero components use utility classes.
 - **Shadcn is removed from the stack.** Do not install or init it. Any earlier
   spec mention is void.
-- **All 26 heroes exist**, including `TuringitesHero`, `ChessHero`,
+- **All 27 heroes exist**, including `TuringitesHero`, `ChessHero`,
   `PugwashHero`, and `SportsHero` — none are missing.
-- **Audio never autoplays.** Players are click-to-play and render only when an
-  `audioSrc` is passed. Audio files are the user's to supply (licensing).
+- **Audio never autoplays.** Players are click-to-play. Fest players render
+  only when an `audioSrc` is passed *and* that file is in `static/audio/`
+  (`static-audio-plugin.js` lists them at build time; until then the button
+  is simply absent, not dead). Audio files are the user's to supply
+  (licensing).
 - **`--ds-neutral-0` is not "always-light text" — don't use it for text on an
   accent-colored fill.** Light mode: `#ffffff`. Dark mode: redefined to
   `#15181f` (the darkest neutral, i.e. the page background), an inverted
@@ -205,10 +208,10 @@ Both items below are **done** — kept as a record, not a to-do list:
 
 ## Component integration notes
 
-- All 26 heroes are pre-built and self-contained.
+- All 27 heroes are pre-built and self-contained.
 - Homepage `index.js` is a plain Infima `hero hero--primary` header (title,
   subtitle, stat row, CTAs) — real content, not hardcoded `ClubCard`s; the
-  club directory grid lives at `/clubs` via `MiniHeroCard.jsx`.
+  club directory grid lives at `/clubs` via `ClubPlateCard.jsx`.
 - Motion comes from the club's *activity*, not from spinning its noun. Preserve
   the per-hero rationale in each file's header comment.
 - Do reduced-motion, hydration, and off-screen behavior **once in the shared
@@ -227,7 +230,7 @@ Accent bridge in `custom.css`:
 [data-theme='dark'] { --club-accent: var(--club-accent-dark); }
 ```
 
-## The 21 clubs — slug / accent
+## The 22 clubs — slug / accent
 
 | Club | Slug (`/docs/clubs/<slug>`) | Accent |
 |---|---|---|
@@ -252,11 +255,23 @@ Accent bridge in `custom.css`:
 | Animal Welfare Society | `animal-welfare-society` | Amber |
 | Martial Arts Club | `martial-arts-club` | Red |
 | FOSS Club | `foss-club` | Sky |
+| Write Build Create | `write-build-create` | Magenta |
 
 Hex values live in `clubAccents.js`. Chess Club, Pugwash Society, and Sports
 Society (pulled from the companion `campus-club-ui` component library) were
 added after the original 18; team/contact data for all three is still
 placeholder — see `docs-internal/animation-caveats.md` §17.
+
+Write Build Create (2026-11, writing stories, building games, world
+building) was added as the 22nd club: `WriteBuildCreateHero` is a
+three-panel manga strip carrying one chibi character from page, to world,
+to game. Its team/contact data is placeholder too. Its homepage window
+took one of the building's three dark rooms (`DARK_SLOTS` in
+`HomepageBuilding.jsx`); a 25th club would need more bays.
+
+`/clubs` uses `ClubPlateCard` (hero as a cropped plate, name and
+`_category_.json` description as text below); `/explore` still uses
+`MiniHeroCard`.
 
 Three clubs were renamed (2026-09) to match their real current names, per
 Sai University's own club-catalogue/contacts data: Gardening Club →
@@ -270,7 +285,7 @@ the same real source — see `changes.md`.
 
 ## Committees — slug
 
-Standing bodies distinct from the 21 clubs; same tag/directory mechanism
+Standing bodies distinct from the 22 clubs; same tag/directory mechanism
 (`docs/committees/<slug>/` mirrors `docs/clubs/<slug>/`: `index.mdx` +
 `contact.mdx` + `events.mdx`), no dedicated accent or hero component —
 `useClubAccent` falls back to the unified/monochrome accent for any slug not
@@ -286,7 +301,7 @@ name, per its club-registration form) — slug/tag kept as
 `cultural-committee` so no existing links/tags break; its logo
 (`static/img/cultural-society-logo.jpeg`, from the real
 `saiu-club-catalogue` repo) is shown on its `index.mdx`, the first
-committee/club on the site to have one — none of the 21 clubs or Student
+committee/club on the site to have one — none of the 22 clubs or Student
 Government have a raster logo, they use the animated-hero/icon system
 instead.
 
@@ -340,7 +355,7 @@ The swizzled `src/theme/Footer/index.js` wraps (not replaces) the default footer
 - [x] Styling from `scholar-design-system-hybrid (1).md`; accent bridge present
 - [x] Framer primary; `motion.css`/`motion.js` specified as fallback, never built
 - [x] Infra hooks import cleanly; all club pages integrated
-- [x] All 26 heroes render, animate on load, still on scroll, replay on click/tap
+- [x] All 27 heroes render, animate on load, still on scroll, replay on click/tap
 - [x] Accent unified-mode toggle built and persists
 - [x] Off-screen `IntersectionObserver` pause added to `useIntroMotion`
 - [x] Reduced-motion path verified

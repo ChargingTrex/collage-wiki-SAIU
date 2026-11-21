@@ -53,7 +53,7 @@ function HomepageHeader() {
         <p className={styles.heroSubtitle}>
           Every gathering kept by the people who ran it.
         </p>
-        <p className={styles.statRow}>21 clubs · Chennai</p>
+        <p className={styles.statRow}>22 clubs · Chennai</p>
         <div className={styles.buttons}>
           <Link className="button button--secondary button--lg" to="/clubs">
             Explore Clubs

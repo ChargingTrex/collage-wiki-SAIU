@@ -124,6 +124,11 @@ sports-society:
   permalink: /sports-society
   description: Events run by the Sports Society
 
+write-build-create:
+  label: Write Build Create
+  permalink: /write-build-create
+  description: Events run by Write Build Create
+
 # ---- Committees ----
 cultural-committee:
   label: Cultural Society

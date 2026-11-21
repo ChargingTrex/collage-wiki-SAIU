@@ -2,7 +2,7 @@
 //
 // The homepage hero's subject: Sai University's School of Computing & Data
 // Science, drawn as a flat architectural elevation at dusk, with one lit
-// window per club — 21 windows carrying the 21 real accent colors from the
+// window per club — 22 windows carrying the 22 real accent colors from the
 // same `CLUB_ACCENTS` table every hero reads.
 //
 // Why a building and not a pattern: this wiki's actual subject is what
@@ -92,9 +92,12 @@ const SLOTS = [
   ...WINDOW_REGIONS.flatMap((r) => bayCenters(r, r.bays).map((x) => ({ x, y: FLOOR_LOWER }))),
 ];
 
-// 24 slots, 21 clubs — three rooms stay dark. A fully-lit facade reads as a
-// texture; three dark windows read as a real building on a real evening.
-const DARK_SLOTS = new Set([5, 13, 19]);
+// 24 slots, 22 clubs — two rooms stay dark. A fully-lit facade reads as a
+// texture; a couple of dark windows read as a real building on a real
+// evening. (Was three dark rooms at 21 clubs; a 23rd club would leave one,
+// and past 24 the facade needs more bays — SLUGS beyond LIT_SLOTS are
+// silently dropped by the map below.)
+const DARK_SLOTS = new Set([5, 19]);
 
 const SLUGS = Object.keys(CLUB_ACCENTS);
 

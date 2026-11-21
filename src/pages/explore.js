@@ -21,7 +21,7 @@ export default function Explore() {
           <div className="col col--8 col--offset-2 text--center margin-bottom--lg">
             <h1>Explore</h1>
             <p>
-              All 21 clubs, both committees, and all 3 fests in one place —
+              All 22 clubs, both committees, and all 3 fests in one place —
               click any of them to open the real page. Events, Blog, and
               Archives are below the club grid.
             </p>

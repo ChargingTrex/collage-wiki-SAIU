@@ -1,0 +1,88 @@
+/* Layout and paper for the Astronomy hero.
+
+   A container query (not a viewport breakpoint): the /clubs and /explore
+   cards render the hero at a fixed 560px and scale it down, so a phone-width
+   viewport must not restack it. Only a narrow hero (its own club page on a
+   phone) stacks the text above the artwork.
+
+   The night sky is the card's own background rather than part of the SVG, so
+   the sky runs unbroken behind the text and there is no seam where the
+   artwork box starts. Stops are measured from the bottom edge so the horizon
+   glow sits at the same height in the wide and the stacked layout. */
+.root {
+  container-type: inline-size;
+  background-color: #070920;
+  background-image: linear-gradient(
+    to top,
+    #5a4688 0,
+    #3d3277 1.75rem,
+    #231f58 4.25rem,
+    #111237 8rem,
+    #070920 12rem
+  );
+}
+.inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 12rem; /* h-48, like every club hero */
+  padding: 0 2rem;
+}
+/* Print grain over the whole plate: one static tile, rasterised once. */
+.inner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.9 -0.28'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  mix-blend-mode: soft-light;
+  opacity: 0.8;
+}
+.text {
+  position: relative;
+  z-index: 2;
+  /* Ends at 196px on the 560px card (where the artwork box begins) and
+     grows with the card beyond that. */
+  max-width: max(10.25rem, calc(100cqw - 22.75rem - 4rem));
+}
+.text h1 {
+  margin: 0;
+}
+.text p {
+  margin: 0.25rem 0 0;
+  color: #d5d9f7;
+}
+.art {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: block;
+  width: 22.75rem; /* 364px: the right 65% of the 560px card */
+  height: 12rem;
+  /* The eyepiece's black surround would otherwise end in a hard vertical
+     edge where the artwork box starts. */
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 2.75rem);
+  mask-image: linear-gradient(to right, transparent 0, #000 2.75rem);
+}
+@container (max-width: 34rem) {
+  .inner {
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+    padding: 1.5rem 0 0;
+  }
+  .text {
+    max-width: none;
+    padding: 0 1.5rem;
+  }
+  .art {
+    position: static;
+    width: 100%;
+    height: auto;
+    margin-top: 0.5rem;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 2rem);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 2rem);
+  }
+}

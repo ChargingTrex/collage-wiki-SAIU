@@ -40,9 +40,9 @@ export function LibraryHero({
     >
       <div className="flex items-center justify-between gap-6">
         <div className="z-10">
-          <h2 className="font-serif text-2xl font-bold text-amber-900 dark:text-amber-200">
+          <h1 className="m-0 font-serif text-2xl font-bold text-amber-900 dark:text-amber-200">
             {title}
-          </h2>
+          </h1>
           <p className="mt-1 text-sm text-amber-800/70 dark:text-amber-300/60">{subtitle}</p>
         </div>
 
